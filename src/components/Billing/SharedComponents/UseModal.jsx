@@ -1,7 +1,12 @@
 // react library
-import React, { useEffect } from "react";
+import React, { useEffect , useContext} from "react";
 // reactstrap components
 import { Card, CardBody, CardTitle, Col, Row } from "reactstrap";
+import GradientBorder from "components/GradientBorder/GradientBorder";
+
+import { getUserPerson } from 'helpers/decodeToken';
+
+
 import {
     Box, Button, Flex, Icon, Text, Tabs, TabList, TabPanels, Tab, TabPanel, ButtonGroup, Input,
 
@@ -15,6 +20,8 @@ import {
 
     Stack,
 
+    FormControl, FormLabel, FormErrorMessage,
+
 
     Modal,
     ModalOverlay,
@@ -24,11 +31,24 @@ import {
     ModalBody,
     ModalCloseButton,
 
+    NumberInput,
+    NumberDecrementStepper,
+    NumberIncrementStepper,
+    NumberInputField,
+
 
     Tr,
     Td,
 
-    useToast
+    useToast,
+
+    Grid,
+    SimpleGrid,
+    Table,
+    Thead,
+    Tbody,
+
+    Th
 
 } from "@chakra-ui/react";
 
@@ -46,11 +66,13 @@ import { BsClipboardPlusFill, } from "react-icons/bs";
 
 import { RiSave3Fill } from "react-icons/ri";
 
-import { getPaymentHistory } from 'actions/billing';
+import { getPaymentHistory, payBilling } from 'actions/billing';
+import { UseTable } from "./UseTable";
 
 
 
-
+//Import de componente contexto, para establecer variables globales
+import { UserContext } from 'helpers/UserContext';
 
 export const UseModal = React.memo(
     ({
@@ -62,7 +84,13 @@ export const UseModal = React.memo(
         setNewInfo,
         preChargeInfoModal,
         setPreChargeInfoModal,
+        setRefreshOptions
     }) => {
+
+        useEffect(() => {
+            console.log("newInfo", newInfo);
+        }, [newInfo])
+
 
         //Declarar el Toast de notificaciones
         const toast = useToast()
@@ -82,6 +110,9 @@ export const UseModal = React.memo(
 
         }, [preChargeInfoModal])
 
+                //states globales
+                const { options, setOptions, refreshOptions,refreshBilling, setRefreshBilling } = useContext(UserContext);
+
 
 
 
@@ -97,77 +128,64 @@ export const UseModal = React.memo(
 
 
 
-        //Agregar o no un item del modal
-        const handleAddModal = () => {
+        //Handle para pagar factura
+        const handlePayBilling = () => {
             // debugger;
 
-            let validate = validateForm()
+            payBilling({ idBilling: newInfo.rowBilling.idBilling, payAmount: payAmount, user: getUserPerson()}).then((res) => {
+                // console.log(res)
+                // console.log(res.isAxiosError)
+                if (res.isAxiosError) {
+                    // console.log("login failed")
+                    toast({
+                        title: 'Atención',
+                        description: `Ocurrió un error al realizar el pago!`,
+                        status: 'warning',
+                        duration: 4000,
+                        isClosable: true,
+                    })
 
-            if (validate[0]) { //El [0] es si existe ya
+                } else {
 
+                    console.log(res.data.payload)
 
-                let existIndex = newInfo.modalItems.indexOf(preChargeInfoModal);
-
-                if (existIndex != -1) //En caso de que ya existia eliminarlo y agregar el nuevo
-                {
-                    let modalItemsAux = newInfo.modalItems.filter((item, i) => i != existIndex)
-                    modalItemsAux = [
-                        ...modalItemsAux,
-                        newInfoModal
-                    ]
-
-
-                    setNewInfo({
-                        ...newInfo,
-                        ['modalItems']: [...modalItemsAux]
+                    toast({
+                        title: 'Atención',
+                        description: `¡Pago realizado con éxito!`,
+                        status: 'success',
+                        duration: 4000,
+                        isClosable: true,
                     })
 
 
-                } else { //No existe entonces simplemente se agrega
-                    setNewInfo({
-                        ...newInfo,
-                        ['modalItems']: [
-                            ...newInfo.modalItems,
-                            newInfoModal
-                        ]
-                    })
+                    handleOnClose();
+                    // handleCleanForm()
+                     setRefreshBilling(true)
+
+
 
                 }
-
-                // setNewInfo({
-                //     ...newInfo,
-                //     ['modalItems']: [
-                //         ...newInfo.modalItems,
-                //         newInfoModal
-                //     ]
-                // })
+            })
 
 
-                setVisible(false)
-                setValidateFormNow(false);
-                setPreChargeInfoModal([]);
+            if (payAmount != "") {
+
+
+
 
             } else {
 
                 setValidateFormNow(true);
 
-
-                // alert("Hay" + validate[1] + "Campos vacíos")
-
                 toast({
                     title: 'Atención',
-                    description: `Existen ${validate[1]} campos obligatorios vacíos.`,
+                    description: `Debe ingresar el monto a pagar en el campo inferior.`,
                     status: 'warning',
                     duration: 4000,
                     isClosable: true,
                 })
 
             }
-
-            // console.log(e.target.checked)
-
-
-            // console.log(e.target.id)
 
         }
 
@@ -197,7 +215,7 @@ export const UseModal = React.memo(
         //Cuando arranque traiga el historial de pagos
         useEffect(() => {
 
-            getPaymentHistory({ idBilling: 24}).then((res) => {
+            getPaymentHistory({ idBilling: 24 }).then((res) => {
                 // console.log(res)
                 // console.log(res.isAxiosError)
                 if (res.isAxiosError) {
@@ -212,7 +230,7 @@ export const UseModal = React.memo(
 
                 } else {
 
-                    setPaymentHistory(res.data.payload.historyBillings)
+                    setPaymentHistory(res.data.payload.historyBillings[0])
 
 
                     // handleCleanForm()
@@ -229,7 +247,56 @@ export const UseModal = React.memo(
             console.log(paymentHistory)
         }, [paymentHistory])
 
+        const [columns, setcolumns] = useState(
 
+            [
+                { value: "amount", label: "Pago", type: "input", editable: false },
+                { value: "createdAtF", label: "Fecha", type: "input", editable: false },
+                { value: "createdBy", label: "Cajero", type: "input", editable: false }
+            ]
+        )
+
+        const [rows, setrows] = useState([])
+
+
+        const formatNumber = (number) => {
+            return `₡${number?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+        }
+
+        const getTotal = () => {
+            let total = 0;
+
+            newInfo.modalItems.map(e => {
+                total += parseInt(e.amount);
+            })
+
+            return `₡${total?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+        }
+
+        const [payAmount, setPayAmount] = useState("")
+        // const [payAmount, setPayAmount] = useState("")
+
+        useEffect(() => {
+            setPayAmount(newInfo.rowBilling?.balance)
+        }, [newInfo])
+
+
+
+        const handleAmount = (e) => {
+            console.log(e)
+
+            if ((newInfo.rowBilling?.balance >= e && e > 0) || e == "") {
+                console.log(e)
+                setPayAmount(e)
+            }
+
+        }
+
+
+
+        useEffect(() => {
+            console.log("payAmount", payAmount)
+        }, [payAmount])
 
 
         return (
@@ -246,14 +313,207 @@ export const UseModal = React.memo(
                         <ModalCloseButton />
                         <ModalBody>
 
-                            <UseForm
-                                columns={1}
-                                fields={fields}
-                                newInfo={newInfoModal}
-                                setNewInfo={setNewInfoModal}
-                                validateFormNow={validateFormNow}
-                            />
+                            <Flex flexDirection='column' pt={{ base: '10px', md: '0px' }}>
+                                <Grid templateColumns={{ sm: "1fr", lg: "100% 100%" }}>
+                                    {/* Cards Master Data */}
 
+
+                                    <>
+
+                                        <SimpleGrid columns={{ sm: 1, md: columns, xl: columns }} spacingX='2px' spacingY='20px'>
+
+                                            <Flex direction='column' pt={{ base: "12px", md: "0px" }}>
+                                                {/* Projects Table */}
+
+                                                <Table variant='simple' color='#fff'>
+                                                    <Thead>
+                                                        <Tr my='.2rem' ps='0px'>
+
+                                                            {
+
+                                                                columns.map((col, colIndex) => (
+
+                                                                    <Th
+                                                                        ps='0px'
+                                                                        color='gray.400'
+                                                                        fontFamily='Plus Jakarta Display'
+                                                                        borderBottomColor='#56577A'>
+                                                                        {col.label}
+                                                                    </Th>
+
+                                                                ))}
+                                                            {/*                                                
+                                                            <Th
+                                                                color='gray.400'
+                                                                fontFamily='Plus Jakarta Display'
+                                                                borderBottomColor='#56577A'>
+                                                                Acciones
+                                                            </Th>
+                                                            <Th borderBottomColor='#56577A'></Th> */}
+                                                        </Tr>
+                                                    </Thead>
+                                                    <Tbody>
+
+
+                                                        {newInfo?.modalItems?.map((row, rowIndex) => (
+                                                            <Tr>
+                                                                {
+
+                                                                    columns.map((col, colIndex) => (
+                                                                        <Td borderBottomColor='#56577A' border={true ? "none" : null}>
+
+                                                                            <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
+                                                                                {col.value == "amount" ?
+                                                                                    (row[col.value]?.value != undefined ? formatNumber(row[col.value].label) : formatNumber(row[col.value]))
+                                                                                    : (row[col.value]?.value != undefined ? row[col.value].label : row[col.value])}
+                                                                            </Text>
+
+
+                                                                        </Td>
+                                                                    ))
+                                                                }
+
+
+                                                            </Tr>
+                                                        ))}
+
+
+
+
+
+
+                                                    </Tbody>
+
+                                                </Table>
+                                                <div>
+                                                    <hr
+
+                                                        width='400px'
+                                                        color='#ffff'
+                                                    />
+                                                </div>
+
+                                                <Table variant='simple' color='#fff'>
+
+                                                    <Td borderBottomColor='#56577A' border={true ? "none" : null}>
+
+                                                        <Text fontSize='md' color='#fff' fontWeight='' pb='.5rem'>
+                                                            Saldo total:  {formatNumber(newInfo.rowBilling?.quantity)}
+                                                        </Text>
+
+
+                                                    </Td>
+
+                                                    <Td borderBottomColor='#56577A' border={true ? "none" : null}>
+
+                                                        <Text fontSize='md' color='#fff' fontWeight='' pb='.5rem'>
+                                                            Total pagado:  {getTotal(newInfo.rowBilling?.quantity)}
+                                                        </Text>
+
+
+                                                    </Td>
+                                                </Table>
+                                            </Flex>
+
+                                        </SimpleGrid>
+
+
+                                        {/* ); */}
+                                    </>
+
+
+
+                                </Grid>
+                            </Flex>
+
+                            <Flex flexDirection='column' pt={{ base: '0px', md: '0px' }}>
+                                <Grid templateColumns={{ sm: "1fr", lg: "100% 90%" }}>
+                                    {/* Cards Master Data */}
+
+
+                                    <>
+
+                                        {/* {billingData.map((row) => { */}
+                                        {/* return ( */}
+                                        <SimpleGrid columns={{ sm: 1, md: 1, xl: 1 }} spacingX='40px' spacingY='0px'>
+
+
+
+
+
+                                            <Box>
+
+                                                <FormControl
+                                                    isInvalid={validateFormNow == true && payAmount == ""}
+                                                // onSubmit={handleSubmit}
+                                                >
+                                                    <FormLabel
+                                                        ms='4px'
+                                                        fontSize='sm'
+                                                        fontWeight='normal'
+                                                        color='white'
+
+                                                    >
+                                                        Cliente va a pagar:
+                                                    </FormLabel>
+                                                    <GradientBorder
+                                                        mb='2px'
+                                                        w='300px'
+                                                        borderRadius='20px'>
+                                                        <NumberInput
+                                                            w={{ base: "100%", md: "346px" }}
+                                                            maxW='100%'
+                                                            h='46px'
+                                                            borderRadius='20px'
+                                                            color='white'
+                                                            bg='rgb(19,21,54)'
+                                                            border='transparent'
+                                                            fontSize='sm'
+                                                            size='lg'
+                                                            value={payAmount}
+                                                            onChange={e => handleAmount(e)}
+                                                            placeholder={"Ingrese el monto a pagar del cliente..."}
+
+                                                        >
+
+                                                            <NumberInputField
+                                                                w={{ base: "100%", md: "346px" }}
+                                                                maxW='100%'
+                                                                h='46px'
+                                                                color='white'
+                                                                border='transparent'
+                                                                fontSize='sm'
+                                                                size='lg'
+                                                                borderRadius='20px'
+                                                                value={2000}
+
+                                                            // value={newInfo[field.id] ? newInfo[field.id] : ''}
+                                                            // id={field.id}
+                                                            // type={field.typeField}
+                                                            // placeholder={field.placeholder}
+                                                            // onChange={e => handleNewInfo(e, field.type)}
+                                                            />
+
+                                                        </NumberInput>
+                                                    </GradientBorder>
+                                                    <FormErrorMessage>Campo vacío</FormErrorMessage>
+
+                                                </FormControl>
+
+                                            </Box>
+
+
+
+
+
+
+                                        </SimpleGrid>
+                                    </>
+
+
+
+                                </Grid>
+                            </Flex>
 
                         </ModalBody>
 
@@ -268,10 +528,10 @@ export const UseModal = React.memo(
 
                                         // onClick={onClose}
                                         // onClick={setModalVisible(false)}
-                                        onClick={() => handleAddModal()}
+                                        onClick={() => handlePayBilling()}
 
                                     >
-                                        Agregar
+                                        Pagar
                                     </Button>
                                 </Flex>
 

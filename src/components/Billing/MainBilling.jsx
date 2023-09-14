@@ -288,27 +288,14 @@ export default function MainBilling() {
 
             ],
             modal: {
-                title: "Manejo de factura",
+                title: "Registro de pago",
                 fields: [
 
                     {
                         colWidth: "6",
-                        label: "Nombre completo*",
-                        placeholder: "Ingrese el nombre",
-                        id: "nameRepresentativePartner",
-                        options: "",
-                        type: "input",
-                        dependsAnotherDropdown: false,
-                        idDropdownDepends: "",
-                        valueThatDepends: "",
-                        disabled: false,
-                        required: true
-                    },
-                    {
-                        colWidth: "6",
-                        label: "Teléfono*",
-                        placeholder: "Ingrese el teléfono",
-                        id: "cellphone",
+                        label: "Cantidad a pagar*",
+                        placeholder: "Ingrese la cantidad",
+                        id: "quantityToPayment",
                         options: "",
                         type: "number",
                         dependsAnotherDropdown: false,
@@ -316,19 +303,6 @@ export default function MainBilling() {
                         valueThatDepends: "",
                         disabled: false,
                         required: true
-                    },
-                    {
-                        colWidth: "6",
-                        label: "Cédula",
-                        placeholder: "Ingrese la cédula",
-                        id: "dni",
-                        options: "dni",
-                        type: "number",
-                        dependsAnotherDropdown: false,
-                        idDropdownDepends: "",
-                        valueThatDepends: "",
-                        disabled: false,
-                        required: false
                     },
 
                 ]
@@ -337,9 +311,11 @@ export default function MainBilling() {
                 { value: "actions", label: "", type: "button", editable: false },
                 { value: "idBilling", label: "# Factura", type: "number", editable: false },
                 { value: "enterpriseName", label: "Cliente", type: "input", editable: false },
-                { value: "quantity", label: "Total", type: "input", editable: false },
-                { value: "wayPayment", label: "Tipo de pago", type: "input", editable: false },
-                { value: "createdAt", label: "Fecha", type: "input", editable: false },
+                { value: "quantity", label: "Total", type: "input", editable: false, formatNumber:true },
+                { value: "balance", label: "Saldo pendiente", type: "input", editable: false,  formatNumber:true},
+                { value: "wayPayment", label: "Tipo de pago", type: "badge", editable: false, applyBadge:true,  formatNumber:true},
+                { value: "expirationState", label: "Estado", type: "badge", editable: false, applyBadge: true },
+                { value: "createdAt", label: "Fecha", type: "date", editable: false },
 
 
 
@@ -381,7 +357,7 @@ export default function MainBilling() {
     const [refreshOptions, setRefreshOptions] = useState(false);
 
 
-    //Efecto para cargar las opciiones cuando arranque
+    //Efecto para cargar las opciones cuando arranque
     useEffect(() => {
 
         if (refreshOptions == true) {
@@ -408,10 +384,13 @@ export default function MainBilling() {
         }
     }, [refreshOptions])
 
+//Para refrescar las facturas
+    const [refreshBilling, setRefreshBilling] = useState(false);
+
     return (
 
         <UserContext.Provider value={
-            { options, setOptions, refreshOptions, setRefreshOptions }
+            { options, setOptions, refreshOptions, setRefreshOptions , refreshBilling, setRefreshBilling}
         }>
 
             <Flex flexDirection='column' pt={{ base: '120px', md: '55px' }}>
@@ -457,6 +436,7 @@ export default function MainBilling() {
                             <ManageRequest
                                 formActive={formActive}
                                 setFormActive={setFormActive}
+                                setRefreshOptions={setRefreshOptions}
                             />
                         }
                     </Card>

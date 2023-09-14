@@ -5,11 +5,11 @@ import { Card, CardBody, CardTitle, Col, Row } from "reactstrap";
 import {
     Box, Button, Flex, Icon, Text, ChakraProvider, FormControl, Input, FormLabel, FormErrorMessage, SimpleGrid, Grid, Select, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper,
     Td, Tbody, Tr, Table, Thead, Th, NumberDecrementStepper, useColorModeValue,
-    Stack, chakra
+    Stack, chakra, HStack, Badge
 
 } from "@chakra-ui/react";
 
-import { Paginate } from "react-paginate-chakra-ui";
+// import { Paginate } from "react-paginate-chakra-ui";
 
 
 import IconBox from 'components/Icons/IconBox';
@@ -17,13 +17,16 @@ import IconBox from 'components/Icons/IconBox';
 import { BsClipboardPlusFill, BsFillSendPlusFill, BsFillSendFill, BsFillBrushFill, BsFillPencilFill, BsFillPenFill } from "react-icons/bs";
 
 
-import { FaEdit, FaUserEdit, FaRegEdit } from "react-icons/fa";
+import { FaEdit, FaUserEdit, FaRegEdit, FaMoneyBill, FaMoneyBillAlt, FaMoneyBillWaveAlt, FaMoneyBillWave, FaMoneyCheckAlt, FaMoneyCheck } from "react-icons/fa";
 import { DeleteIcon, EditIco, ViewIcon } from '@chakra-ui/icons';
 
 
 
 import { CartIcon, DocumentIcon, GlobeIcon, RocketIcon, StatsIcon, WalletIcon, FulgerIcon, CreditIcon, IconEdit } from 'components/Icons/Icons.js';
 import GradientBorder from "components/GradientBorder/GradientBorder";
+
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import { FaUser } from "react-icons/fa";
 
@@ -38,7 +41,7 @@ import { HiArrowUturnLeft } from "react-icons/hi2";
 import { UserContext } from 'helpers/UserContext';
 
 //Ruta para crear nuevo dato maestro
-import { getBillings } from 'actions/billing';
+import { getBillings, getPaymentHistory } from 'actions/billing';
 
 
 import {
@@ -50,7 +53,6 @@ import {
     // Button,
     // Input,
     // Table,
-    Badge,
     // Card,
     // Col,
     // Row
@@ -58,10 +60,15 @@ import {
 
 import CardFooter from 'reactstrap/lib/CardFooter';
 
+import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
+import { Paginate } from "./Paginate";
+import { UseForm } from "./UseForm";
+
+
 
 export const UseTableCustomBilling = React.memo(
     ({
-        edit, columns, newInfo, setNewInfo, validateFormNow, setModalVisible
+        edit, columns, newInfo, setNewInfo, validateFormNow, setModalVisible, setRefreshOptions
     }) => {
 
         const [rowsG, setRowsG] = useState([])
@@ -103,7 +110,7 @@ export const UseTableCustomBilling = React.memo(
 
 
         //states globales
-        const { options } = useContext(UserContext);
+        const { options, refreshBilling, setRefreshBilling } = useContext(UserContext);
 
         useEffect(() => {
 
@@ -292,9 +299,8 @@ export const UseTableCustomBilling = React.memo(
 
         const bgIconColor = useColorModeValue("white.300", "gray.700");
 
-
         useEffect(() => {
-            getBillings().then((res) => {
+            getBillings({ startDate: selectedDates.startDate, endDate: selectedDates.endDate }).then((res) => {
                 // console.log(res.isAxiosError)
                 if (res.isAxiosError) {
                     console.log("Fallo de cargar las opciones", res)
@@ -310,6 +316,30 @@ export const UseTableCustomBilling = React.memo(
 
 
 
+        useEffect(() => {
+            if (refreshBilling) {
+                setRefreshBilling(false)
+
+                getBillings({ startDate: selectedDates.startDate, endDate: selectedDates.endDate }).then((res) => {
+                    // console.log(res.isAxiosError)
+                    if (res.isAxiosError) {
+                        console.log("Fallo de cargar las opciones", res)
+
+
+                    } else {
+                        setRowsG(res.data.payload.billings)
+                    }
+
+                })
+            }
+        }, [refreshBilling])
+
+
+
+
+
+
+
 
 
         useEffect(() => {
@@ -319,7 +349,7 @@ export const UseTableCustomBilling = React.memo(
 
         const [sizePerPage, setSizePerPage] = useState(5)
 
-        // const [page, setPage] = useState(1);
+
 
         const paginations = rows.length > sizePerPage ?
             rows.length / sizePerPage > Math.round(rows.length / sizePerPage) ?
@@ -327,46 +357,85 @@ export const UseTableCustomBilling = React.memo(
                 : Math.round(rows.length / sizePerPage)
             : 1
 
-        // const renderPaginations = () => {
-        //     const options = [];
-        //     for (let i = 1; i <= paginations; i++) {
-        //         options.push(
-        //             <PaginationItem className={page === i ? "active" : ""} key={i}>
-        //                 <PaginationLink
-        //                     onClick={() => handleOnSetPage(i, "page")}
-        //                 >
-        //                     {i}
-        //                 </PaginationLink>
-        //             </PaginationItem>
-        //         )
-        //     }
-        //     return options.length >= 5 ? page >= 5 ? options.slice(page - 3, page + 2) : options.slice(0, 5) : options;
-        // }
-
-        const handleOnSetPage = (page) => {
-            setPage(page);
-        };
-
-        const handleSetNumPag = (e) => {
-            setPage(1);
-            const value = e.target.value;
-            setSizePerPage(value);
-        }
-
-
-        // const [page, setPage] = React.useState(1);
-
         const [page, setPage] = useState(1);
 
-        const handlePageClick =(page) => {
+        //Lista de opciones de números de página a escoger en la tabla.
+        const [listPaginations, setListPagionations] = useState([5, 25, 50, 100, 1000, 5000, 10000])
 
-            // alert("aqui" , p)
-            console.log(page)
-            setPage(page);
+        //Función para establecer la cantidad de registros por página.
+        const handlePageQuantity = (e) => {
+            setSizePerPage(parseInt(e.target.children[e.target.selectedIndex].value))
         }
 
+        useEffect(() => {
+            console.log("newInfo", newInfo)
+        }, [newInfo])
+
+        const handleModalVisible = (row) => {
+
+            // console.log("row", row);
+
+            getPaymentHistory({ idBilling: row.idBilling }).then((res) => {
+                // console.log(res.isAxiosError)
+                if (res.isAxiosError) {
+                    console.log("Fallo de cargar las opciones", res)
 
 
+                } else {
+                    // console.log("ESTA ES LA DATA" , res.data.payload.historyBillings)
+                    setModalVisible(true);
+
+                    setNewInfo({
+                        ...newInfo,
+                        ['modalItems']:
+                            res.data.payload.historyBillings,
+                        ['rowBilling']: row
+
+                    })
+
+                }
+
+            })
+
+
+        }
+
+        //Realizar un formato a los números tipo colones
+        const formatNumber = (number) => {
+            return `₡${number?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+        }
+
+        //Array con las fechas especiales a escoger
+        const [datesFields, setDatesFields] = useState([
+            {
+                id: "startDate",
+                label: "Fecha de inicio",
+                placeholder: "Toque"
+            },
+            {
+                id: "endDate",
+                label: "Fecha final",
+                placeholder: "Toque"
+            }
+        ])
+
+
+        //Las fechas escogidas
+        const [selectedDates, setSelectedDates] = useState({ startDate: null, endDate: null });
+
+        //Para cambiar las fechas del state
+        const handleDateChange = (index, date) => {
+            setSelectedDates((prevSelectedDates) => ({
+                ...prevSelectedDates,
+                [index]: date,
+            }));
+
+            setRefreshBilling(true);
+        };
+
+        useEffect(() => {
+            console.log("Filtros de fechas", selectedDates)
+        }, [selectedDates])
 
 
 
@@ -388,58 +457,98 @@ export const UseTableCustomBilling = React.memo(
                         <>
                             {/* Filtros  */}
 
-                            <SimpleGrid columns={{ sm: 1, md: columns.length - 1, xl: columns.length - 1 }} spacingX='40px' spacingY='0px'>
+                            <SimpleGrid columns={{ sm: 1, md: 4, xl: 4 }} spacingX='20px' spacingY='0px'>
 
                                 {columns.map((col, colIndex) => {
                                     return (
 
 
-                                        col.type != "button" &&
+                                        col.type != "button" && col.type != "date" ?
 
-                                        <Box>
+                                            <Box>
 
-                                            <FormControl
-                                            // isInvalid={field.required && (newInfo[field.id] == '' || newInfo[field.id] == undefined) && validateFormNow}
-                                            // onSubmit={handleSubmit}
-                                            >
-                                                <FormLabel
-                                                    ms='4px'
-                                                    fontSize='sm'
-                                                    fontWeight='normal'
-                                                    color='white'
-
+                                                <FormControl
+                                                // isInvalid={field.required && (newInfo[field.id] == '' || newInfo[field.id] == undefined) && validateFormNow}
+                                                // onSubmit={handleSubmit}
                                                 >
-                                                    {col.label}
-
-                                                </FormLabel>
-                                                <GradientBorder
-                                                    mb='24px'
-                                                    w='130px'
-                                                    borderRadius='20px'>
-                                                    <Input
-                                                        color='white'
-                                                        bg='rgb(19,21,54)'
-                                                        border='transparent'
-                                                        borderRadius='20px'
+                                                    <FormLabel
+                                                        ms='0px'
                                                         fontSize='sm'
-                                                        size='lg'
-                                                        w={{ base: "100%", md: "346px" }}
-                                                        maxW='100%'
-                                                        h='46px'
-                                                        placeholder={`Buscar...`}
-                                                        onChange={(e) => handleOnfilterDynamic(col.value, e.target.value)}
-                                                    // value={newInfo[field.id] ? newInfo[field.id] : ''}
-                                                    // id={field.id}
-                                                    // type={field.typeField}
-                                                    // placeholder={field.placeholder}
-                                                    // onChange={e => handleNewInfo(e, field.type)}
-                                                    />
-                                                </GradientBorder>
-                                                {/* <FormErrorMessage>Campo vacío</FormErrorMessage> */}
+                                                        fontWeight='normal'
+                                                        color='white'
 
-                                            </FormControl>
+                                                    >
+                                                        {col.label}
 
-                                        </Box>
+                                                    </FormLabel>
+                                                    <GradientBorder
+                                                        mb='24px'
+                                                        w='150px'
+                                                        borderRadius='20px'>
+                                                        <Input
+                                                            color='white'
+                                                            bg='rgb(19,21,54)'
+                                                            border='transparent'
+                                                            borderRadius='20px'
+                                                            fontSize='sm'
+                                                            size='lg'
+                                                            w={{ base: "100%", md: "346px" }}
+                                                            maxW='100%'
+                                                            h='46px'
+                                                            placeholder={`Buscar...`}
+                                                            onChange={(e) => handleOnfilterDynamic(col.value, e.target.value)}
+                                                        // value={newInfo[field.id] ? newInfo[field.id] : ''}
+                                                        // id={field.id}
+                                                        // type={field.typeField}
+                                                        // placeholder={field.placeholder}
+                                                        // onChange={e => handleNewInfo(e, field.type)}
+                                                        />
+                                                    </GradientBorder>
+                                                    {/* <FormErrorMessage>Campo vacío</FormErrorMessage> */}
+
+                                                </FormControl>
+
+                                            </Box> :
+                                            col.type != "button" &&
+                                            <>
+                                                {datesFields.map((date, i) => (
+                                                    <Box key={i}>
+                                                        <FormControl>
+                                                            <FormLabel ms='4px' fontSize='sm' fontWeight='normal' color='white'>
+                                                                {date.label}
+                                                            </FormLabel>
+                                                            <GradientBorder mb='24px' w='150px' borderRadius='20px'>
+                                                                {/* <DatePicker
+                                                                    selected={selectedDates[date.id]}
+                                                                    onChange={(dateAux) => handleDateChange(date.id, dateAux)}
+                                                                    dateFormat="yyyy-MM-dd"
+                                                                    placeholderText={date.placeholder}
+                                                                /> */}
+                                                                <Input
+                                                                    as={DatePicker} // Use the DatePicker component as an input
+                                                                    selected={selectedDates[date.id]}
+                                                                    onChange={(dateAux) => handleDateChange(date.id, dateAux)}
+                                                                    dateFormat="yyyy-MM-dd"
+                                                                    // placeholder={date.placeholder}   
+                                                                    color='white'
+                                                                    bg='rgb(19,21,54)'
+                                                                    border='transparent'
+                                                                    borderRadius='20px'
+                                                                    fontSize='sm'
+                                                                    size='lg'
+                                                                    w={{ base: "100%", md: "145px" }}
+                                                                    maxW='100%'
+                                                                    h='46px'
+                                                                    placeholder={`Buscar...`}
+                                                                />
+                                                            </GradientBorder>
+                                                        </FormControl>
+                                                    </Box>
+                                                ))}
+
+
+                                            </>
+
 
 
 
@@ -495,31 +604,42 @@ export const UseTableCustomBilling = React.memo(
                                                         columns.map((col, colIndex) => (
                                                             <Td borderBottomColor='#56577A' border={true ? "none" : null}>
 
-                                                                {col.type != 'button' ?
-                                                                    <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
-                                                                        {row[col.value]?.value != undefined ? row[col.value].label : row[col.value]}
-                                                                    </Text>
-                                                                    :
-                                                                    <>
+                                                                {col.type == 'button' ?
 
-                                                                        {/* <Button size="sm" leftIcon={<BsClipboardPlusFill />} colorScheme='blue' variant='solid'
-                                                                        onClick={() => { setPreChargeInfoModal(row); setModalVisible(true); }}
+                                                                    edit
+                                                                    && row.wayPayment == "Credito"
+                                                                    && row.balance > 0
+                                                                    &&
+
+
+                                                                    <Button size="sm" leftIcon={<FaMoneyBillAlt />} colorScheme='blue' variant='solid' ml={4}
+                                                                        onClick={() => handleModalVisible(row)}
                                                                     >
-                                                                        Editar
-                                                                    </Button> */}
-                                                                        {
-                                                                            edit &&
+
+                                                                    </Button>
 
 
-                                                                            <Button size="sm" leftIcon={<FaEdit />} colorScheme='blue' variant='solid' ml={4}
-                                                                                onClick={() => setModalVisible(true)}
-                                                                            >
+                                                                    : col.type == 'badge' ?
+
+                                                                        <Badge colorScheme=
+                                                                            {(row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Vencida" ? "red" :
+                                                                                (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Credito" ? "purple" :
+                                                                                    (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Contado" ? "blue" :
+                                                                                        "green"}
+
+                                                                        > {row[col.value]?.value != undefined ? row[col.value].label : row[col.value]}</Badge>
+
+                                                                        : col.formatNumber == true ?
+                                                                            <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
+                                                                                {row[col.value]?.value != undefined ? formatNumber(row[col.value].label) : formatNumber(row[col.value])}
+                                                                            </Text>
+                                                                            :
+
+                                                                            <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
+                                                                                {row[col.value]?.value != undefined ? row[col.value].label : row[col.value]}
+                                                                            </Text>
 
 
-
-                                                                            </Button>
-                                                                        }
-                                                                    </>
                                                                 }
 
                                                             </Td>
@@ -561,42 +681,87 @@ export const UseTableCustomBilling = React.memo(
                                         />
                                     </div>
 
-                                    {/* <Table variant='simple' color='#fff'>
-
-                                        <Td borderBottomColor='#56577A' border={true ? "none" : null}>
-
-                                            <Text fontSize='md' color='#fff' fontWeight='' pb='.5rem'>
-                                            Mostrando del {((page - 1) * sizePerPage) + 1} al {page * sizePerPage > rows.length ? rows.length : page * sizePerPage} de {rows.length} resultados
-                                            </Text>
+                                    <Flex alignItems="center" justifyContent="space-between">
 
 
-                                        </Td>
-                                    </Table> */}
 
-                                    <Stack p={1}>
-                                        <chakra.div>        <Text fontSize='md' color='#fff' fontWeight='' pb='.5rem'>
-                                            Mostrando del {((page - 1) * sizePerPage) + 1} al {page * sizePerPage > rows.length ? rows.length : page * sizePerPage} de {rows.length} resultados
-                                            La page {page}
-                                            </Text></chakra.div>
-                                        <Paginate
-                                            // required props 👇
-                                            page={page}
-                                            count={rows.length}
-                                            pageSize={5}
-                                            onPageChange={(e)=>handlePageClick(e)}
-                                            // optional props 👇
-                                            margin={2}
-                                            shadow="lg"
-                                            fontWeight="white"
-                                            variant="outline"
-                                            colorScheme="purple"
-                                            // ...border and other props also work 💪
-                                            border="2px solid"
-                                            // you can use w to adjust to parent
-                                            // container
-                                            w="full"
-                                        />
-                                    </Stack>
+                                        {<Stack p={1}>
+                                            <chakra.div>
+                                                <Text fontSize='md' color='#fff' fontWeight='' pb='.5rem'>
+                                                    Mostrando del {((page - 1) * sizePerPage) + 1} al {page * sizePerPage > rows.length ? rows.length : page * sizePerPage} de {rows.length} resultados.
+                                                </Text>
+                                            </chakra.div>
+                                            <Paginate
+                                                count={rows.length}
+                                                paginations={paginations}
+                                                pageSize={sizePerPage}
+                                                page={page}
+                                                onPageChange={setPage}
+                                                margin={2}
+                                                size={"md"}
+                                                selectedVariant={"solid"}
+                                                variant={"outline"}
+                                                previousIcon={<ChevronLeftIcon />}
+                                                nextIcon={<ChevronRightIcon />}
+                                                colorScheme={"purple"}
+                                                fontWeight={"light"}
+                                                borderRadius={"md"}
+                                            ></Paginate>
+
+                                        </Stack>}
+
+                                        <Stack p={1}>
+                                            <FormControl
+                                            >
+                                                <FormLabel
+                                                    ms='4px'
+                                                    fontSize='sm'
+                                                    fontWeight='normal'
+                                                    color='white'
+
+                                                >
+                                                    Cantidad de filas por página:
+                                                </FormLabel>
+                                                <GradientBorder
+                                                    mb='24px'
+                                                    w='100px'
+                                                    borderRadius='20px'>
+
+                                                    <Select
+                                                        // placeholder={field.placeholder}
+                                                        // id={field.id}
+
+                                                        color='gray'
+                                                        colorOptions='Black'
+                                                        bg='rgb(19,21,54)'
+                                                        border='transparent'
+                                                        borderRadius='20px'
+                                                        fontSize='sm'
+                                                        size='lg'
+                                                        w={{ base: "100%", md: "346px" }}
+                                                        maxW='100%'
+                                                        h='46px'
+                                                        onChange={e => handlePageQuantity(e)}
+                                                        // value={newInfo[field.id]?.value ? newInfo[field.id]?.value : ''}
+
+
+                                                        _focus={{ bg: 'black' }} // Establecer el color de fondo cuando el componente está enfocado
+
+                                                    >
+                                                        {listPaginations.map((number, i) => (
+                                                            <option key={i} value={number} label={number.toString()}>{number}</option>
+                                                        ))}
+
+
+                                                    </Select>
+
+                                                </GradientBorder>
+
+                                            </FormControl>
+
+
+                                        </Stack>
+                                    </Flex>
                                 </Flex>
 
                             </SimpleGrid>

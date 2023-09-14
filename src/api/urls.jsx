@@ -27,6 +27,7 @@ export default {
     todeleteorder: `${urlBase}/billing/to-delete-order`,
     getbillings: `${urlBase}/billing/get-billings`,
     getpaymenthistory: `${urlBase}/billing/get-payment-history`,
+    paybilling: `${urlBase}/billing/pay-billing`,
 
 
 

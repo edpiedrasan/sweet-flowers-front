@@ -99,10 +99,10 @@ export const ManageRequest = React.memo(
     ({
         formActive,
         id,
-        setFormActive }) => {
+        setFormActive,setRefreshOptions }) => {
 
         //states globales
-        const { options, setOptions, refreshOptions, setRefreshOptions } = useContext(UserContext);
+        const { options, setOptions, refreshOptions} = useContext(UserContext);
 
 
         //Se almacena la nueva información 
@@ -404,6 +404,7 @@ console.log(formActive)
                         setNewInfo={setNewInfo}
                         preChargeInfoModal={preChargeInfoModal}
                         setPreChargeInfoModal={setPreChargeInfoModal}
+                        setRefreshOptions={setRefreshOptions}
                     />
                 }
                 <Flex justify='space-between' w='100%' align='center' h='13%'>
@@ -458,7 +459,7 @@ console.log(formActive)
                                         columns={formActive.columnsTable}
                                         newInfo={newInfo}
                                         setNewInfo={setNewInfo}
-                                        validateFormNow={validateFormNow}
+                                        validateFormNow={validateFormNow} 
                                     />
                                 </>
                                 : formActive.id == 'manageBilling' ?
@@ -470,6 +471,7 @@ console.log(formActive)
                                             setNewInfo={setNewInfo}
                                             validateFormNow={validateFormNow}
                                             setModalVisible={setModalVisible}
+                                            setRefreshOptions={setRefreshOptions}
                                         />
                                     </>
                                     :

@@ -46,20 +46,16 @@ export default function Footer(props) {
         <Text as='span'>
           {document.documentElement.dir === "rtl"
             ? " مصنوع من ❤️ بواسطة"
-            : "Made with ❤️ by "}
+            : "Desarrollado por "}
         </Text>
-        <Link href='https://www.simmmple.com' target='_blank'>
+        <Link href='https://www.google.com' target='_blank'>
           {document.documentElement.dir === "rtl"
             ? " توقيت الإبداعية"
-            : "Simmmple "}
-        </Link>
-        &
-        <Link href='https://www.creative-tim.com' target='_blank'>
-          {document.documentElement.dir === "rtl" ? "سيممبل " : " Creative Tim"}
+            : "Eduardo Piedra Sanabria"}
         </Link>
         {document.documentElement.dir === "rtl"
           ? "للحصول على ويب أفضل"
-          : " for a better web"}
+          : " 85465958"}
       </Text>
       <List display='flex'>
         <ListItem

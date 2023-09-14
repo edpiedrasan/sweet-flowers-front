@@ -270,7 +270,7 @@ export const UseTable = React.memo(
                                     <Tbody>
 
 
-                                        {newInfo.modalItems.map((row, rowIndex) => (
+                                        {newInfo?.modalItems?.map((row, rowIndex) => (
                                             <Tr>
                                                 {
 
