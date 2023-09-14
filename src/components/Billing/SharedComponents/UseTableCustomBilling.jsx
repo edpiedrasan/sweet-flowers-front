@@ -5,7 +5,8 @@ import { Card, CardBody, CardTitle, Col, Row } from "reactstrap";
 import {
     Box, Button, Flex, Icon, Text, ChakraProvider, FormControl, Input, FormLabel, FormErrorMessage, SimpleGrid, Grid, Select, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper,
     Td, Tbody, Tr, Table, Thead, Th, NumberDecrementStepper, useColorModeValue,
-    Stack, chakra, HStack, Badge
+    Stack, chakra, HStack, Badge, Progress,
+
 
 } from "@chakra-ui/react";
 
@@ -437,6 +438,27 @@ export const UseTableCustomBilling = React.memo(
             console.log("Filtros de fechas", selectedDates)
         }, [selectedDates])
 
+        //Array para desplegar reporte rápido
+        const [statsItems, setstatsItems] = useState([
+            {
+                id: "pendingBillings",
+                text: "Facturas pendientes"
+            },
+            {
+                id: "totalAmount",
+                text: "Total facturado"
+            },
+            {
+                id: "pendingAmount",
+                text: "Saldo pendiente"
+            },
+            {
+                id: "Vencidas",
+                text: "Cantidad vencidas"
+            },
+
+        ])
+
 
 
         return (
@@ -573,7 +595,8 @@ export const UseTableCustomBilling = React.memo(
                             <SimpleGrid columns={{ sm: 1, md: columns, xl: columns }} spacingX='2px' spacingY='20px'>
 
                                 <Flex direction='column' pt={{ base: "12px", md: "0px" }}>
-                                    {/* Projects Table */}
+                                    {/* Tabla */}
+
 
                                     <Table variant='simple' color='#fff'>
                                         <Thead>
@@ -594,6 +617,8 @@ export const UseTableCustomBilling = React.memo(
                                                     ))}
                                             </Tr>
                                         </Thead>
+
+                                        {/* Filas */}
                                         <Tbody>
 
 
@@ -650,27 +675,7 @@ export const UseTableCustomBilling = React.memo(
                                                 </Tr>
                                             ))}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                                         </Tbody>
-
-                                        {/* Contenido de la tabla */}
-
-
-                                        {/* </nav> */}
 
                                     </Table>
                                     <div>
@@ -681,6 +686,7 @@ export const UseTableCustomBilling = React.memo(
                                         />
                                     </div>
 
+                                    {/* Paginación */}
                                     <Flex alignItems="center" justifyContent="space-between">
 
 
@@ -761,6 +767,60 @@ export const UseTableCustomBilling = React.memo(
 
 
                                         </Stack>
+                                    </Flex>
+
+                                    {/* Estadística */}
+
+
+                                    <Flex flexDirection='column' pt={{ base: '0px', md: '0px' }}>
+           
+                                        
+                                        <Card p='16px'>
+                                            <CardBody>
+                                                <Flex direction='column' w='100%'>
+                                                    {/* <Flex direction='column' mt='24px' mb='36px' alignSelf='flex-start'>
+                                                        <Text fontSize='lg' color='#fff' fontWeight='bold' mb='6px'>
+                                                            Reporte rápido
+                                                        </Text>
+                                                        {/* <Text fontSize='md' fontWeight='medium' color='gray.400'>
+                                                            <Text as='span' color='green.400' fontWeight='bold'>
+                                                                (+23%)
+                                                            </Text>{' '}
+                                                            than last week
+                                                        </Text> 
+                                                    </Flex> */}
+                                                           <SimpleGrid gap={{ sm: '12px' }} columns={4}>
+                                                    {
+                                                        statsItems.map((stat, i) => {
+                                                            return (
+                                                         
+                                                                    <Flex direction='column'>
+                                                                        <Flex alignItems='center'>
+                                                                            <IconBox as='box' h={'30px'} w={'30px'} bg='brand.200' me='6px'>
+                                                                                <WalletIcon h={'15px'} w={'15px'} color='#fff' />
+                                                                            </IconBox>
+                                                                            <Text fontSize='sm' color='gray.400'>
+                                                                                {stat.text}
+                                                                            </Text>
+                                                                        </Flex>
+                                                                        <Text
+                                                                            fontSize={{ sm: 'md', lg: 'lg' }}
+                                                                            color='#fff'
+                                                                            fontWeight='bold'
+                                                                            mb='6px'
+                                                                            my='6px'>
+                                                                            32,984
+                                                                        </Text>
+                                                                        {/* <Progress colorScheme='brand' bg='#2D2E5F' borderRadius='30px' h='5px' value={20} /> */}
+                                                                    </Flex>
+                                                                
+                                                            )
+                                                        })
+                                                    }
+                                                    </SimpleGrid>
+                                                </Flex>
+                                            </CardBody>
+                                        </Card>
                                     </Flex>
                                 </Flex>
 
