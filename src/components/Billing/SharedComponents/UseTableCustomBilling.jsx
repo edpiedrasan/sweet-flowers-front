@@ -441,33 +441,134 @@ export const UseTableCustomBilling = React.memo(
         //Array para desplegar reporte rápido
         const [statsItems, setstatsItems] = useState([
             {
-                id: "pendingBillings",
-                text: "Facturas pendientes"
-            },
-            {
                 id: "totalAmount",
-                text: "Total facturado"
+                text: "Total facturado",
+                keyToSearch: "quantity",
+                typeSearch: "number"
             },
             {
                 id: "pendingAmount",
-                text: "Saldo pendiente"
+                text: "Saldo pendiente",
+                keyToSearch: "balance",
+                typeSearch: "number"
+
             },
             {
                 id: "Vencidas",
-                text: "Cantidad vencidas"
+                text: "Cantidad vencidas",
+                keyToSearch: "expirationState",
+                valueToSearch: "Vencida",
+                typeSearch: "quantity"
             },
 
         ])
+
+        const [dataQuickStats, setDataQuickStats] = useState({})
+
+        useEffect(() => {
+
+            // debugger;
+
+            let data = {};
+
+            statsItems.map((stat, i) => {
+
+                let result = 0;
+
+                rows.map((row, rowI) => {
+
+                    if (stat.typeSearch == "number") {
+                        result += parseInt(row[stat.keyToSearch])
+                    } else if (stat.typeSearch == "quantity") {
+                        debugger;
+                        if (row[stat.keyToSearch /*wayPayment */] == stat.valueToSearch/*Credito */) {
+                            result++;
+                        }
+                    }
+
+
+                });
+
+                data = { ...data, [stat.id]: stat.typeSearch == "number" ? formatNumber(result) : result }
+
+
+            });
+
+            console.log(data)
+            setDataQuickStats(data)
+
+
+
+
+
+            // rows.map((row, rowIndex) => (
+            //     console.log(row)
+            // ))
+        }, [filters])
+
 
 
 
         return (
 
             <>
+                {/* Estadística */}
 
-                <Flex direction='column' maxW='80%' align='start'>
 
-                    <Text color='#fff' fontSize='md' fontWeight='bold'>
+                <Flex flexDirection='column' pt={{ base: '0px', md: '0px' }}>
+
+
+                    <Card p='16px'>
+                        <CardBody>
+                            <Flex direction='column' w='100%'>
+                                {/* <Flex direction='column' mt='24px' mb='36px' alignSelf='flex-start'>
+                <Text fontSize='lg' color='#fff' fontWeight='bold' mb='6px'>
+                    Reporte rápido
+                </Text>
+                {/* <Text fontSize='md' fontWeight='medium' color='gray.400'>
+                    <Text as='span' color='green.400' fontWeight='bold'>
+                        (+23%)
+                    </Text>{' '}
+                    than last week
+                </Text> 
+            </Flex> */}
+                                <SimpleGrid gap={{ sm: '12px' }} columns={statsItems.length}>
+                                    {
+                                        statsItems.map((stat, i) => {
+                                            return (
+
+                                                <Flex direction='column'>
+                                                    <Flex alignItems='center'>
+                                                        <IconBox as='box' h={'30px'} w={'30px'} bg='brand.200' me='6px'>
+                                                            <WalletIcon h={'15px'} w={'15px'} color='#fff' />
+                                                        </IconBox>
+                                                        <Text fontSize='sm' color='gray.400'>
+                                                            {stat.text}
+                                                        </Text>
+                                                    </Flex>
+                                                    <Text
+                                                        fontSize={{ sm: 'md', lg: 'lg' }}
+                                                        color='#fff'
+                                                        fontWeight='bold'
+                                                        mb='6px'
+                                                        my='6px'>
+                                                        {dataQuickStats[stat.id]}
+                                                    </Text>
+                                                    {/* <Progress colorScheme='brand' bg='#2D2E5F' borderRadius='30px' h='5px' value={20} /> */}
+                                                </Flex>
+
+                                            )
+                                        })
+                                    }
+                                </SimpleGrid>
+                            </Flex>
+                        </CardBody>
+                    </Card>
+                </Flex>
+
+                <Flex direction='column' maxW='90%' align='start' marginTop='20px'>
+
+                    <Text color='#fff' fontSize='xl' fontWeight='bold'>
                         Filtros
                     </Text>
                 </Flex>
@@ -769,59 +870,7 @@ export const UseTableCustomBilling = React.memo(
                                         </Stack>
                                     </Flex>
 
-                                    {/* Estadística */}
 
-
-                                    <Flex flexDirection='column' pt={{ base: '0px', md: '0px' }}>
-           
-                                        
-                                        <Card p='16px'>
-                                            <CardBody>
-                                                <Flex direction='column' w='100%'>
-                                                    {/* <Flex direction='column' mt='24px' mb='36px' alignSelf='flex-start'>
-                                                        <Text fontSize='lg' color='#fff' fontWeight='bold' mb='6px'>
-                                                            Reporte rápido
-                                                        </Text>
-                                                        {/* <Text fontSize='md' fontWeight='medium' color='gray.400'>
-                                                            <Text as='span' color='green.400' fontWeight='bold'>
-                                                                (+23%)
-                                                            </Text>{' '}
-                                                            than last week
-                                                        </Text> 
-                                                    </Flex> */}
-                                                           <SimpleGrid gap={{ sm: '12px' }} columns={4}>
-                                                    {
-                                                        statsItems.map((stat, i) => {
-                                                            return (
-                                                         
-                                                                    <Flex direction='column'>
-                                                                        <Flex alignItems='center'>
-                                                                            <IconBox as='box' h={'30px'} w={'30px'} bg='brand.200' me='6px'>
-                                                                                <WalletIcon h={'15px'} w={'15px'} color='#fff' />
-                                                                            </IconBox>
-                                                                            <Text fontSize='sm' color='gray.400'>
-                                                                                {stat.text}
-                                                                            </Text>
-                                                                        </Flex>
-                                                                        <Text
-                                                                            fontSize={{ sm: 'md', lg: 'lg' }}
-                                                                            color='#fff'
-                                                                            fontWeight='bold'
-                                                                            mb='6px'
-                                                                            my='6px'>
-                                                                            32,984
-                                                                        </Text>
-                                                                        {/* <Progress colorScheme='brand' bg='#2D2E5F' borderRadius='30px' h='5px' value={20} /> */}
-                                                                    </Flex>
-                                                                
-                                                            )
-                                                        })
-                                                    }
-                                                    </SimpleGrid>
-                                                </Flex>
-                                            </CardBody>
-                                        </Card>
-                                    </Flex>
                                 </Flex>
 
                             </SimpleGrid>
