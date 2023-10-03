@@ -116,6 +116,19 @@ export default function MainMasterData() {
                     disabled: false,
                     required: false
                 },
+                {
+                    colWidth: "6",
+                    label: "Límite días de crédito",
+                    placeholder: "Ingrese el límite",
+                    id: "creditLimitDays",
+                    options: "",
+                    type: "number",
+                    dependsAnotherDropdown: false,
+                    idDropdownDepends: "",
+                    valueThatDepends: "",
+                    disabled: false,
+                    required: false
+                },
 
             ],
             modal: {

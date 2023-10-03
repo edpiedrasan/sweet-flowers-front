@@ -131,15 +131,18 @@ export default function MainBilling() {
             ],
             modal: null,
             columnsTable: [
-                { value: "quantity", label: "Cantidad", type: "number", editable: true },
-                { value: "product", label: "Producto", type: "select", editable: true },
-                { value: "unitaryPrice", label: "Precio Unitario", type: "number", editable: false },
-                { value: "totaly", label: "Total", type: "number", editable: false },
                 { value: "actions", label: "", type: "button", editable: false },
-
-
-
-                // { value: "detail", label: "Detalle", type: "button" },
+                { value: "idBilling", label: "# Factura", type: "number", editable: false },
+                { value: "enterpriseName", label: "Cliente", type: "input", editable: false },
+                { value: "quantity", label: "Total", type: "input", editable: false, formatNumber: true },
+                { value: "balance", label: "Saldo pendiente", type: "input", editable: false, formatNumber: true },
+                { value: "wayPayment", label: "Tipo de pago", type: "badge", editable: false, applyBadge: true, formatNumber: true },
+                { value: "expirationState", label: "Estado", type: "badge", editable: false, applyBadge: true },
+                { value: "createdAt", label: "Fecha", type: "date", editable: false },
+            
+            
+            
+            
             ]
 
         },

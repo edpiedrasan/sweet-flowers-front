@@ -55,7 +55,7 @@ export default function Footer(props) {
         </Link>
         {document.documentElement.dir === "rtl"
           ? "للحصول على ويب أفضل"
-          : " 85465958"}
+          : " "}
       </Text>
       <List display='flex'>
         <ListItem
