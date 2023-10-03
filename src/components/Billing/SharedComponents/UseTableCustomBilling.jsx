@@ -580,7 +580,7 @@ export const UseTableCustomBilling = React.memo(
                         <>
                             {/* Filtros  */}
 
-                            <SimpleGrid columns={{ sm: 1, md: 4, xl: 4 }} spacingX='20px' spacingY='0px'>
+                            <SimpleGrid columns={{ sm: 2, md: 4, xl: 4 }} spacingX='20px' spacingY='0px'>
 
                                 {columns.map((col, colIndex) => {
                                     return (
