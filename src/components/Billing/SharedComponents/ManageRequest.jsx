@@ -436,10 +436,10 @@ console.log(formActive)
                 </Flex>
 
                 <Box
-                    p='12px'
-                    bg='linear-gradient(127.09deg, rgba(24, 29, 60, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%)'
+                    p='0px'
+                    // bg='linear-gradient(127.09deg, rgba(24, 29, 60, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%)'
                     my='px'
-                    borderRadius='25px'
+                    borderRadius='10px'
                 >
 
                     <Flex justify='space-between' w='100%' align='center'>

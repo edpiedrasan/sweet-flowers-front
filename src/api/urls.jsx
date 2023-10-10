@@ -1,4 +1,4 @@
-export const urlBase = "http://192.168.0.9:43888";
+export const urlBase = "http://localhost:43888";
 export const urlLogin = "https://vault-qa.gbm.net";
 
 export default {

@@ -1,7 +1,7 @@
 // react library
 import React, { useContext, useState } from "react";
 // reactstrap components
-import { Card, CardBody, CardTitle, Col, Row } from "reactstrap";
+import { CardTitle, Col, Row } from "reactstrap";
 import {
     Box, Button, Flex, Icon, Text, ChakraProvider, FormControl, Input, FormLabel, FormErrorMessage, SimpleGrid, Grid, Select, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper,
     Td, Tbody, Tr, Table, Thead, Th, NumberDecrementStepper, useColorModeValue,
@@ -9,6 +9,9 @@ import {
 
 
 } from "@chakra-ui/react";
+
+import Card from 'components/Card/Card.js';
+import CardBody from 'components/Card/CardBody.js';
 
 // import { Paginate } from "react-paginate-chakra-ui";
 
@@ -698,94 +701,100 @@ export const UseTableCustomBilling = React.memo(
                                 <Flex direction='column' pt={{ base: "12px", md: "0px" }}>
                                     {/* Tabla */}
 
+                                    <Card overflowX={{ sm: 'scroll', xl: 'hidden' }}> 
+                                        <CardBody>
 
-                                    <Table variant='simple' color='#fff'>
-                                        <Thead>
-                                            <Tr my='.8rem' ps='0px'>
 
-                                                {
 
-                                                    columns.map((col, colIndex) => (
+                                            <Table variant='simple' color='#fff' p={"0px"}>
+                                                <Thead>
+                                                    <Tr my='.8rem' ps='0px'>
 
-                                                        <Th
-                                                            ps='0px'
-                                                            color='gray.400'
-                                                            fontFamily='Plus Jakarta Display'
-                                                            borderBottomColor='#56577A'>
-                                                            {col.label}
-                                                        </Th>
+                                                        {
 
+                                                            columns.map((col, colIndex) => (
+
+                                                                <Th
+                                                                    ps='0px'
+                                                                    color='gray.400'
+                                                                    fontFamily='Plus Jakarta Display'
+                                                                    borderBottomColor='#56577A'>
+                                                                    {col.label}
+                                                                </Th>
+
+                                                            ))}
+                                                    </Tr>
+                                                </Thead>
+
+                                                {/* Filas */}
+                                                <Tbody>
+
+
+                                                    {rows.slice((page - 1) * sizePerPage, page * sizePerPage).map((row, rowIndex) => (
+                                                        <Tr>
+                                                            {
+
+                                                                columns.map((col, colIndex) => (
+                                                                    <Td borderBottomColor='#56577A' border={true ? "none" : null}>
+
+                                                                        {col.type == 'button' ?
+
+                                                                            edit
+                                                                            && row.wayPayment == "Credito"
+                                                                            && row.balance > 0
+                                                                            &&
+
+
+                                                                            <Button size="sm" leftIcon={<FaMoneyBillAlt />} colorScheme='blue' variant='solid' ml={4}
+                                                                                onClick={() => handleModalVisible(row)}
+                                                                            >
+
+                                                                            </Button>
+
+
+                                                                            : col.type == 'badge' ?
+
+                                                                                <Badge colorScheme=
+                                                                                    {(row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Vencida" ? "red" :
+                                                                                        (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Credito" ? "purple" :
+                                                                                            (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Contado" ? "blue" :
+                                                                                                "green"}
+
+                                                                                > {row[col.value]?.value != undefined ? row[col.value].label : row[col.value]}</Badge>
+
+                                                                                : col.formatNumber == true ?
+                                                                                    <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
+                                                                                        {row[col.value]?.value != undefined ? formatNumber(row[col.value].label) : formatNumber(row[col.value])}
+                                                                                    </Text>
+                                                                                    :
+
+                                                                                    <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
+                                                                                        {row[col.value]?.value != undefined ? row[col.value].label : row[col.value]}
+                                                                                    </Text>
+
+
+                                                                        }
+
+                                                                    </Td>
+                                                                ))
+                                                            }
+
+
+                                                        </Tr>
                                                     ))}
-                                            </Tr>
-                                        </Thead>
 
-                                        {/* Filas */}
-                                        <Tbody>
+                                                </Tbody>
 
+                                            </Table>
+                                            {/* <div>
+                                                <hr
 
-                                            {rows.slice((page - 1) * sizePerPage, page * sizePerPage).map((row, rowIndex) => (
-                                                <Tr>
-                                                    {
-
-                                                        columns.map((col, colIndex) => (
-                                                            <Td borderBottomColor='#56577A' border={true ? "none" : null}>
-
-                                                                {col.type == 'button' ?
-
-                                                                    edit
-                                                                    && row.wayPayment == "Credito"
-                                                                    && row.balance > 0
-                                                                    &&
-
-
-                                                                    <Button size="sm" leftIcon={<FaMoneyBillAlt />} colorScheme='blue' variant='solid' ml={4}
-                                                                        onClick={() => handleModalVisible(row)}
-                                                                    >
-
-                                                                    </Button>
-
-
-                                                                    : col.type == 'badge' ?
-
-                                                                        <Badge colorScheme=
-                                                                            {(row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Vencida" ? "red" :
-                                                                                (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Credito" ? "purple" :
-                                                                                    (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Contado" ? "blue" :
-                                                                                        "green"}
-
-                                                                        > {row[col.value]?.value != undefined ? row[col.value].label : row[col.value]}</Badge>
-
-                                                                        : col.formatNumber == true ?
-                                                                            <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
-                                                                                {row[col.value]?.value != undefined ? formatNumber(row[col.value].label) : formatNumber(row[col.value])}
-                                                                            </Text>
-                                                                            :
-
-                                                                            <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
-                                                                                {row[col.value]?.value != undefined ? row[col.value].label : row[col.value]}
-                                                                            </Text>
-
-
-                                                                }
-
-                                                            </Td>
-                                                        ))
-                                                    }
-
-
-                                                </Tr>
-                                            ))}
-
-                                        </Tbody>
-
-                                    </Table>
-                                    <div>
-                                        <hr
-
-                                            width='740px'
-                                            color='#ffff'
-                                        />
-                                    </div>
+                                                    width='740px'
+                                                    color='#ffff'
+                                                />
+                                            </div> */}
+                                        </CardBody>
+                                    </Card>
 
                                     {/* Paginación */}
                                     <Flex alignItems="center" justifyContent="space-between">
@@ -869,7 +878,6 @@ export const UseTableCustomBilling = React.memo(
 
                                         </Stack>
                                     </Flex>
-
 
                                 </Flex>
 
