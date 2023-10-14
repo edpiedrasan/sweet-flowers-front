@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 //Ruta para crear nuevo dato maestro
 import { newMasterData } from 'actions/masterdata';
 
-import { newPurchaseOrder, newBilling, newDeleteOrder } from 'actions/billing';
+import { newPurchaseOrder, newBilling, newDeleteOrder, printBilling } from 'actions/billing';
 //Ruta para crear nuevo dato maestro
 import { getOptions } from 'actions/masterdata';
 
@@ -14,6 +14,10 @@ import { getUserPerson } from 'helpers/decodeToken';
 
 //Import de componente contexto, para establecer variables globales
 import { UserContext } from 'helpers/UserContext';
+
+import { urlBase } from "api/urls.jsx"
+
+import urls from "api/urls.jsx"
 
 
 
@@ -30,11 +34,11 @@ import {
     // Card,
     // Col,
     // Row
-  } from "reactstrap";
-  
-  import CardFooter from 'reactstrap/lib/CardFooter';
+} from "reactstrap";
+
+import CardFooter from 'reactstrap/lib/CardFooter';
 import {
-    Box, Button, Flex, Icon, Text, Tabs, TabList, TabPanels, Tab, TabPanel, ButtonGroup, Input,
+    Box, Link, Button, Flex, Icon, Text, Tabs, TabList, TabPanels, Tab, TabPanel, ButtonGroup, Input,
 
     Drawer,
     DrawerBody,
@@ -92,17 +96,27 @@ import { useEffect } from "react";
 import { UseTable } from "./UseTable";
 import { UseTableCustomBilling } from "./UseTableCustomBilling";
 
+import html2canvas from 'html2canvas';
+
+import jsPDF from 'jspdf';
+
+const { createCanvas, loadImage } = require('canvas');
+// const fs = require('fs');
 
 
 
+
+
+
+import { Br, Cut, Line, Printer, render, Row } from 'react-thermal-printer';
 export const ManageRequest = React.memo(
     ({
         formActive,
         id,
-        setFormActive,setRefreshOptions }) => {
+        setFormActive, setRefreshOptions }) => {
 
         //states globales
-        const { options, setOptions, refreshOptions} = useContext(UserContext);
+        const { options, setOptions, refreshOptions } = useContext(UserContext);
 
 
         //Se almacena la nueva información 
@@ -387,9 +401,7 @@ export const ManageRequest = React.memo(
 
         }
 
-
-
-console.log(formActive)
+        console.log(formActive)
 
         return (
             <>
@@ -407,7 +419,7 @@ console.log(formActive)
                         setRefreshOptions={setRefreshOptions}
                     />
                 }
-                <Flex justify='space-between' w='100%' align='center' h='13%'>
+                {/* <Flex justify='space-between' w='100%' align='center' h='13%'>
                     <Flex direction='column' maxW='80%' align='center'>
 
                         <Text color='#fff' fontSize='lg' fontWeight='bold'>
@@ -416,6 +428,74 @@ console.log(formActive)
                     </Flex>
 
                     <Flex direction='column' maxW='20%' align='center'>
+                   s
+                        <a
+                            href={urls.BILLING.printbilling}
+                            style={{
+                                display: "inline-block",
+                                padding: "10px 20px",
+                                backgroundColor: "#007bff",
+                                color: "#fff",
+                                textDecoration: "none",
+                                border: "1px solid #007bff",
+                                borderRadius: "5px",
+                                cursor: "pointer",
+                                transition: "background-color 0.3s, color 0.3s"
+                            }}
+                        >
+                            <i className="fas fa-download"></i>
+                            {" "}Imprimir
+                        </a>
+
+                        <Button leftIcon={<HiArrowUturnLeft />}
+                            variant='brand'
+                            fontSize='15px'
+                            type='submit'
+                            w='100%'
+                            maxW='350px'
+                            h='45'
+                            mb='20px'
+                            mt='20px'
+                            //   colorScheme='red'
+                            onClick={() => setFormActive("")}
+                        >
+                            Volver
+                        </Button>
+                    </Flex>
+
+                </Flex> */}
+
+<Flex justify='space-between' w='100%' align='center' h='13%'>
+                    <Flex direction='column' maxW='60%' align='center'>
+
+                        <Text color='#fff' fontSize='lg' fontWeight='bold'>
+                            Gestión de {formActive.title}
+                        </Text>
+                    </Flex>
+
+                    <Flex direction='column' maxW='20%' align='center'>
+                   
+                        <a
+                            href={urls.BILLING.printbilling}
+                            style={{
+                                display: "inline-block",
+                                padding: "10px 20px",
+                                backgroundColor: "#007bff",
+                                color: "#fff",
+                                textDecoration: "none",
+                                border: "1px solid #007bff",
+                                borderRadius: "5px",
+                                cursor: "pointer",
+                                transition: "background-color 0.3s, color 0.3s"
+                            }}
+                        >
+                            <i className="fas fa-download"></i>
+                            {" "}Imprimir
+                        </a>
+                    </Flex>
+
+                    <Flex direction='column' maxW='20%' align='center'>
+               
 
                         <Button leftIcon={<HiArrowUturnLeft />}
                             variant='brand'
@@ -459,7 +539,7 @@ console.log(formActive)
                                         columns={formActive.columnsTable}
                                         newInfo={newInfo}
                                         setNewInfo={setNewInfo}
-                                        validateFormNow={validateFormNow} 
+                                        validateFormNow={validateFormNow}
                                     />
                                 </>
                                 : formActive.id == 'manageBilling' ?

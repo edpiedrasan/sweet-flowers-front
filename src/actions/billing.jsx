@@ -23,5 +23,7 @@ export const getPaymentHistory =  (props) => method.post(urls.BILLING.getpayment
 //Este es para realizar un pago en una factura
 export const payBilling =  (props) => method.post(urls.BILLING.paybilling, props)();
 
+//Este es para descargar una factura
+export const printBilling =  (props) => method.post(urls.BILLING.printbilling, props)();
 
 

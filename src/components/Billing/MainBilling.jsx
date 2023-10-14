@@ -51,7 +51,7 @@ import BarChart from 'components/Charts/BarChart';
 import LineChart from 'components/Charts/LineChart';
 import IconBox from 'components/Icons/IconBox';
 
-import { Col, Form, Row } from "reactstrap";
+import { Col, Form} from "reactstrap";
 
 // Icons
 import { CartIcon, DocumentIcon, GlobeIcon, RocketIcon, StatsIcon, WalletIcon } from 'components/Icons/Icons.js';
@@ -74,12 +74,15 @@ import { CardMain } from './SharedComponents/CardMain';
 import { ManageRequest } from './SharedComponents/ManageRequest';
 
 //Ruta para crear nuevo dato maestro
-import { getOptions } from 'actions/masterdata';
+import { getOptions} from 'actions/masterdata';
+
+
 
 //Import de componente contexto, para establecer variables globales
 import { UserContext } from 'helpers/UserContext';
 import StockCard from './SharedComponents/StockCard';
 
+import { Br, Cut, Line, Printer,  render , Row} from 'react-thermal-printer';
 
 export default function MainBilling() {
     const [fields, setFields] = useState([
@@ -387,15 +390,20 @@ export default function MainBilling() {
 //Para refrescar las facturas
     const [refreshBilling, setRefreshBilling] = useState(false);
 
+  
+ 
+
     return (
 
         <UserContext.Provider value={
             { options, setOptions, refreshOptions, setRefreshOptions , refreshBilling, setRefreshBilling}
         }>
+   
 
             <Flex flexDirection='column' pt={{ base: '120px', md: '55px' }}>
                 <Grid templateColumns={{ sm: '1fr', md: '1fr 1fr', lg: '3fr 1fr' }} gap='14px'>
                     {/* Cards Master Data */}
+         
 
 
                     <Card p='16px' overflowX={{ sm: 'scroll', xl: 'hidden' }}>
@@ -413,7 +421,7 @@ export default function MainBilling() {
                                 {/* return ( */}
                                 <SimpleGrid columns={{ sm: 1, md: 3, xl: 3 }} spacing='44px'>
                                     {/* <Flex direction='column' w='25%' alignItems='baseline'> */}
-
+                               
                                     {fields.map((field) => {
                                         return (
 
