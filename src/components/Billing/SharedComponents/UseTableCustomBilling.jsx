@@ -39,7 +39,7 @@ import { useEffect } from "react";
 
 
 import { RiSave3Fill } from "react-icons/ri";
-import { HiArrowUturnLeft } from "react-icons/hi2";
+import { HiArrowUturnLeft,HiPrinter } from "react-icons/hi2";
 
 //Import de componente contexto, para establecer variables globales
 import { UserContext } from 'helpers/UserContext';
@@ -72,7 +72,7 @@ import { UseForm } from "./UseForm";
 
 export const UseTableCustomBilling = React.memo(
     ({
-        edit, columns, newInfo, setNewInfo, validateFormNow, setModalVisible, setRefreshOptions
+        edit, columns, newInfo, setNewInfo, validateFormNow, setModalVisible, setRefreshOptions,setBillingToPrint
     }) => {
 
         const [rowsG, setRowsG] = useState([])
@@ -483,7 +483,7 @@ export const UseTableCustomBilling = React.memo(
                     if (stat.typeSearch == "number") {
                         result += parseInt(row[stat.keyToSearch])
                     } else if (stat.typeSearch == "quantity") {
-                        debugger;
+                        // debugger;
                         if (row[stat.keyToSearch /*wayPayment */] == stat.valueToSearch/*Credito */) {
                             result++;
                         }
@@ -509,6 +509,11 @@ export const UseTableCustomBilling = React.memo(
             // ))
         }, [filters])
 
+
+        useEffect(() => {
+          console.log("Rows", rows)
+        }, [rows])
+        
 
 
 
@@ -738,8 +743,10 @@ export const UseTableCustomBilling = React.memo(
                                                                     <Td borderBottomColor='#56577A' border={true ? "none" : null}>
 
                                                                         {col.type == 'button' ?
+//  <Flex direction="row">
+<>
 
-                                                                            edit
+                                                                            {edit
                                                                             && row.wayPayment == "Credito"
                                                                             && row.balance > 0
                                                                             &&
@@ -749,9 +756,15 @@ export const UseTableCustomBilling = React.memo(
                                                                                 onClick={() => handleModalVisible(row)}
                                                                             >
 
+                                                                            </Button>}
+                                                                            <Button size="sm" leftIcon={<HiPrinter />} colorScheme='purple' variant='solid' ml={4}
+                                                                                onClick={() => setBillingToPrint({id:row.idBilling})}
+                                                                            >
+
                                                                             </Button>
+                                                                            </>
 
-
+// </Flex>
                                                                             : col.type == 'badge' ?
 
                                                                                 <Badge colorScheme=

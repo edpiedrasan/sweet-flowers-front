@@ -247,14 +247,14 @@ export default function MainBilling() {
 
         },
         {
-            title: "Orden de Eliminar",
-            subtitle: "Crear orden para eliminar productos",
+            title: "Orden de Desecho",
+            subtitle: "Crear orden para desechar productos",
             id: "deleteOrder",
             image: "delete.png",
             colorCardSelected: "#d6d4fa",
-            buttonName: "Crear orden de eliminación",
-            iconName: "Crear orden de eliminación",
-            textTotalTable: "Total a eliminar:",
+            buttonName: "Crear orden de desecho",
+            iconName: "Crear orden de desecho",
+            textTotalTable: "Total a desechar:",
 
             form: [
 

@@ -92,7 +92,7 @@ export default function MainMasterData() {
 
                 {
                     colWidth: "6",
-                    label: "Nombre Empresa*",
+                    label: "Nombre cliente*",
                     placeholder: "Ingrese el nombre",
                     id: "enterpriseName",
                     options: "",
@@ -132,7 +132,7 @@ export default function MainMasterData() {
 
             ],
             modal: {
-                title: "Crear cliente",
+                title: "Crear contacto",
                 fields: [
 
                     {
@@ -190,20 +190,6 @@ export default function MainMasterData() {
             image: "variety.png",
             colorCardSelected: "#d6d4fa",
             form: [
-
-                {
-                    colWidth: "6",
-                    label: "Nombre de la variedad*",
-                    placeholder: "Ingrese el nombre",
-                    id: "varietyName",
-                    options: "",
-                    type: "input",
-                    dependsAnotherDropdown: false,
-                    idDropdownDepends: "",
-                    valueThatDepends: "",
-                    disabled: false,
-                    required: true
-                },
                 {
                     colWidth: "6",
                     label: "Planta*",
@@ -217,6 +203,20 @@ export default function MainMasterData() {
                     disabled: false,
                     required: true
                 },
+                {
+                    colWidth: "6",
+                    label: "Nombre de la variedad*",
+                    placeholder: "Ingrese el nombre",
+                    id: "varietyName",
+                    options: "",
+                    type: "input",
+                    dependsAnotherDropdown: false,
+                    idDropdownDepends: "",
+                    valueThatDepends: "",
+                    disabled: false,
+                    required: true
+                },
+
                 {
                     colWidth: "6",
                     label: "País de orígen",
@@ -463,20 +463,20 @@ export default function MainMasterData() {
         })
     }, [])
 
-        //Efecto para cargar las opciiones cuando arranque
-        useEffect(() => {
-            getOptions().then((res) => {
-                // console.log(res.isAxiosError)
-                if (res.isAxiosError) {
-                    console.log("Fallo de cargar las opciones", res)
-    
-    
-                } else {
-                    setOptions(res.data.payload.masterData)
-                }
-    
-            })
-        }, [formActive])
+    //Efecto para cargar las opciiones cuando arranque
+    useEffect(() => {
+        getOptions().then((res) => {
+            // console.log(res.isAxiosError)
+            if (res.isAxiosError) {
+                console.log("Fallo de cargar las opciones", res)
+
+
+            } else {
+                setOptions(res.data.payload.masterData)
+            }
+
+        })
+    }, [formActive])
 
 
     useEffect(() => {
@@ -491,7 +491,7 @@ export default function MainMasterData() {
     return (
 
         <UserContext.Provider value={
-            {options}
+            { options }
         }>
 
             <Flex flexDirection='column' pt={{ base: '120px', md: '75px' }}>

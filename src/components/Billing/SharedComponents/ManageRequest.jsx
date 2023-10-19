@@ -77,7 +77,7 @@ import {
 
 
 
-import { FaEllipsisV } from "react-icons/fa";
+import { FaEllipsisV, FaTrafficLight } from "react-icons/fa";
 
 
 import IconBox from 'components/Icons/IconBox';
@@ -109,6 +109,7 @@ const { createCanvas, loadImage } = require('canvas');
 
 
 import { Br, Cut, Line, Printer, render, Row } from 'react-thermal-printer';
+import { ModalPrintBilling } from "./ModalPrintBilling";
 export const ManageRequest = React.memo(
     ({
         formActive,
@@ -272,6 +273,7 @@ export const ManageRequest = React.memo(
 
                     })
                 } else if (formActive.id == 'billing') {
+
                     newBilling({ newInfo: newInfo, form: formActive.id, total: getTotal(), user: getUserPerson() }).then((res) => {
                         // console.log(res)
                         // console.log(res.isAxiosError)
@@ -286,13 +288,15 @@ export const ManageRequest = React.memo(
                             })
 
                         } else {
+                            console.log("res",res)
                             toast({
                                 title: 'Atención',
-                                description: `Creado con éxito!`,
+                                description: `Factura #${res.data.payload.billing.insertId} creada con éxito!`,
                                 status: 'success',
                                 duration: 4000,
                                 isClosable: true,
                             })
+                            setBillingToPrint({id: res.data.payload.billing.insertId});
 
                             handleCleanForm()
                             setRefreshOptions(true);
@@ -403,8 +407,24 @@ export const ManageRequest = React.memo(
 
         console.log(formActive)
 
+        const [billingToPrint, setBillingToPrint] = useState(null)
+
+        useEffect(() => {
+            console.log("billingToPrint", billingToPrint)
+        }, [billingToPrint])
+
+
+
         return (
             <>
+                {<ModalPrintBilling
+                    title={"Impresión de Factura"}
+                    visible={true}
+                    setVisible={null}
+                    newInfo={{}}
+                    billingToPrint={billingToPrint}
+                    setBillingToPrint={setBillingToPrint}
+                />}
 
                 {formActive.modal != null &&
                     <UseModal
@@ -465,7 +485,7 @@ export const ManageRequest = React.memo(
 
                 </Flex> */}
 
-<Flex justify='space-between' w='100%' align='center' h='13%'>
+                <Flex justify='space-between' w='100%' align='center' h='13%'>
                     <Flex direction='column' maxW='60%' align='center'>
 
                         <Text color='#fff' fontSize='lg' fontWeight='bold'>
@@ -473,29 +493,9 @@ export const ManageRequest = React.memo(
                         </Text>
                     </Flex>
 
-                    <Flex direction='column' maxW='20%' align='center'>
-                   
-                        <a
-                            href={urls.BILLING.printbilling}
-                            style={{
-                                display: "inline-block",
-                                padding: "10px 20px",
-                                backgroundColor: "#007bff",
-                                color: "#fff",
-                                textDecoration: "none",
-                                border: "1px solid #007bff",
-                                borderRadius: "5px",
-                                cursor: "pointer",
-                                transition: "background-color 0.3s, color 0.3s"
-                            }}
-                        >
-                            <i className="fas fa-download"></i>
-                            {" "}Imprimir
-                        </a>
-                    </Flex>
 
                     <Flex direction='column' maxW='20%' align='center'>
-               
+
 
                         <Button leftIcon={<HiArrowUturnLeft />}
                             variant='brand'
@@ -552,6 +552,7 @@ export const ManageRequest = React.memo(
                                             validateFormNow={validateFormNow}
                                             setModalVisible={setModalVisible}
                                             setRefreshOptions={setRefreshOptions}
+                                            setBillingToPrint={setBillingToPrint}
                                         />
                                     </>
                                     :
