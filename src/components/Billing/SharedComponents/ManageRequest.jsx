@@ -494,7 +494,7 @@ export const ManageRequest = React.memo(
                     </Flex>
 
 
-                    <Flex direction='column' maxW='20%' align='center'>
+                    <Flex direction='column' maxW='40%' align='center'>
 
 
                         <Button leftIcon={<HiArrowUturnLeft />}

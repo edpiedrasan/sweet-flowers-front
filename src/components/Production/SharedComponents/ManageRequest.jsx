@@ -298,7 +298,7 @@ export const ManageRequest = React.memo(
                         </Text>
                     </Flex>
 
-                    <Flex direction='column' maxW='20%' align='center'>
+                    <Flex direction='column' maxW='40%' align='center'>
 
                         <Button leftIcon={<HiArrowUturnLeft />}
                             variant='brand'
@@ -319,10 +319,12 @@ export const ManageRequest = React.memo(
                 </Flex>
 
                 <Box
-                    p='20px'
+                    p={['10px', '10px']} // Ajustar el padding para pantallas más pequeñas
                     bg='linear-gradient(127.09deg, rgba(24, 29, 60, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%)'
                     my='12px'
                     borderRadius='25px'
+                    mt='0px' // Aplica el mismo margen superior en todas las pantallas
+
                 >
 
                     <Flex justify='space-between' w='100%' align='center'>
@@ -455,25 +457,23 @@ export const ManageRequest = React.memo(
 
 
                             }
-                            <Flex justify='space-between' w='100%' align='center' h='13%'>
-
-                                <Flex direction='column' maxW='50%' align='center'>
-
-                                    <Button colorScheme='green' ml={600}
-                                        leftIcon={<BsFillSendFill />}
-
-                                        isLoading={chargingButton}
-                                        // onClick={onClose}
-                                        // onClick={setModalVisible(false)}
-                                        onClick={() => {
-                                            handleSendForm();
-                                        }}
-
-                                    >
-                                        Enviar
-                                    </Button>
-                                </Flex>
-                            </Flex>
+                                        <Flex
+                                            justify={['center', 'center', 'space-between']} // Alinear al centro en dispositivos móviles
+                                            w='100%'
+                                            align={['center', 'center', 'center']} // Alinear al centro en dispositivos móviles
+                                            h={['13%', '13%', '13%']}
+                                        >
+                                            <Flex direction='column' maxW={['100%', '100%', '50%']} align='center'>
+                                                <Button
+                                                    colorScheme='green'
+                                                    ml={[0, 0, 600]} // Ajustar margen izquierdo en dispositivos móviles
+                                                    leftIcon={<BsFillSendFill />}
+                                                    onClick={handleSendForm}
+                                                >
+                                                    Crear 
+                                                </Button>
+                                            </Flex>
+                                        </Flex>
 
                         </Flex>
                     </Flex>

@@ -213,22 +213,23 @@ export default function MainMasterData() {
                     dependsAnotherDropdown: false,
                     idDropdownDepends: "",
                     valueThatDepends: "",
+                    validateDuplicate: true,
                     disabled: false,
                     required: true
                 },
 
                 {
                     colWidth: "6",
-                    label: "País de orígen",
+                    label: "País de orígen*",
                     placeholder: "Ingrese el país",
                     id: "originCountry",
-                    options: "",
-                    type: "input",
+                    options: "country",
+                    type: "select",
                     dependsAnotherDropdown: false,
                     idDropdownDepends: "",
                     valueThatDepends: "",
                     disabled: false,
-                    required: false
+                    required: true
                 },
 
             ],
@@ -242,15 +243,42 @@ export default function MainMasterData() {
             id: "product",
             image: "rose3.png",
             colorCardSelected: "#d6d4fa",
+            validateByOptions: "product",
             form: [
 
+                // {
+                //     colWidth: "6",
+                //     label: "Nombre del producto*",
+                //     placeholder: "Ingrese el nombre",
+                //     id: "nameProduct",
+                //     options: "",
+                //     type: "input",
+                //     dependsAnotherDropdown: false,
+                //     idDropdownDepends: "",
+                //     valueThatDepends: "",
+                //     disabled: false,
+                //     required: true
+                // },
                 {
                     colWidth: "6",
-                    label: "Nombre del producto*",
-                    placeholder: "Ingrese el nombre",
-                    id: "nameProduct",
-                    options: "",
-                    type: "input",
+                    label: "Variedad de Planta*",
+                    placeholder: "Ingrese la variedad planta",
+                    id: "idVarietyPlant",
+                    options: "varietyplant",
+                    type: "select",
+                    dependsAnotherDropdown: false,
+                    idDropdownDepends: "",
+                    valueThatDepends: "",
+                    disabled: false,
+                    required: true
+                },
+                {
+                    colWidth: "6",
+                    label: "Tamaño*",
+                    placeholder: "Ingrese el tamaño del producto",
+                    id: "idProductQuality",
+                    options: "productQuality",
+                    type: "select",
                     dependsAnotherDropdown: false,
                     idDropdownDepends: "",
                     valueThatDepends: "",
@@ -262,8 +290,8 @@ export default function MainMasterData() {
                     label: "Cantidad de tallos*",
                     placeholder: "Ingrese las unidades",
                     id: "quantityStems",
-                    options: "",
-                    type: "input",
+                    options: "quantityStems",
+                    type: "select",
                     dependsAnotherDropdown: false,
                     idDropdownDepends: "",
                     valueThatDepends: "",
@@ -283,19 +311,7 @@ export default function MainMasterData() {
                     disabled: false,
                     required: true
                 },
-                {
-                    colWidth: "6",
-                    label: "Variedad de Planta*",
-                    placeholder: "Ingrese la variedad planta",
-                    id: "idVarietyPlant",
-                    options: "varietyplant",
-                    type: "select",
-                    dependsAnotherDropdown: false,
-                    idDropdownDepends: "",
-                    valueThatDepends: "",
-                    disabled: false,
-                    required: true
-                },
+
 
             ],
             modal: null,

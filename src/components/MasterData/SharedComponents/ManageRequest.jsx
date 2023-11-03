@@ -66,9 +66,10 @@ import { useState } from "react";
 
 import { BsClipboardPlusFill, BsFillSendPlusFill, BsFillSendFill } from "react-icons/bs";
 import { UseModal } from "./UseModal";
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 
-
+//Import de componente contexto, para establecer variables globales
+import { UserContext } from 'helpers/UserContext';
 
 
 export const ManageRequest = React.memo(
@@ -76,6 +77,9 @@ export const ManageRequest = React.memo(
         formActive,
         id,
         setFormActive }) => {
+
+        //states globales
+        const { options } = useContext(UserContext);
 
 
 
@@ -175,8 +179,10 @@ export const ManageRequest = React.memo(
 
 
         const validateForm = () => {
+            console.log("formActive", formActive);
             // debugger;
             setValidateFormNow(true)
+
             let fieldsVoids = formActive.form
                 // .filter(field => !Array.isArray(field)) //Eliminar el modalItems
                 .filter(field => field.required == true)
@@ -185,6 +191,7 @@ export const ManageRequest = React.memo(
                         return field
                     }
                 })
+
 
             if (fieldsVoids.length > 0) {
                 toast({
@@ -197,7 +204,7 @@ export const ManageRequest = React.memo(
                 return false;
             }
 
-            if ((newInfo.modalItems.length == 0 || newInfo.modalItems.length == undefined) && formActive.modal != null ) {
+            if ((newInfo.modalItems.length == 0 || newInfo.modalItems.length == undefined) && formActive.modal != null) {
                 toast({
                     title: 'Atención',
                     description: `Debe agregar al menos un contacto al cliente!`,
@@ -230,15 +237,19 @@ export const ManageRequest = React.memo(
                         setPreChargeInfoModal={setPreChargeInfoModal}
                     />
                 }
-                <Flex justify='space-between' w='100%' align='center' h='13%'>
-                    <Flex direction='column' maxW='80%' align='center'>
+
+
+                    <Flex justify='space-between' w='100%' align='center' h='13%'>
+                    <Flex direction='column' maxW='60%' align='center'>
 
                         <Text color='#fff' fontSize='lg' fontWeight='bold'>
                             Gestión de {formActive.title}
                         </Text>
                     </Flex>
 
-                    <Flex direction='column' maxW='20%' align='center'>
+
+                    <Flex direction='column' maxW='40%' align='center'>
+
 
                         <Button leftIcon={<HiArrowUturnLeft />}
                             variant='brand'
@@ -250,7 +261,7 @@ export const ManageRequest = React.memo(
                             mb='20px'
                             mt='20px'
                             //   colorScheme='red'
-                            onClick={() => setFormActive("")}
+                            onClick={() => setFormActive('')}
                         >
                             Volver
                         </Button>
@@ -259,17 +270,27 @@ export const ManageRequest = React.memo(
                 </Flex>
 
                 <Box
-                    p='20px'
+                    p={['10px', '10px']} // Ajustar el padding para pantallas más pequeñas
                     bg='linear-gradient(127.09deg, rgba(24, 29, 60, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%)'
                     my='12px'
                     borderRadius='25px'
+                    mt='0px' // Aplica el mismo margen superior en todas las pantallas
+
                 >
+     
 
-                    <Flex justify='space-between' w='100%' align='center'>
-                        <Flex direction='column' maxW='100%' align='flex-center'>
-                            <Tabs variant='soft-rounded' colorScheme='green' onChange={(index) => setTabActive(index)} >
+
+
+
+
+
+                    <Flex justify={['center', 'center', 'space-between']} // Alinear al centro en dispositivos móviles
+                        w='100%'
+                        align={['center', 'center', 'center']} // Alinear al centro en dispositivos móviles
+                    >
+                        <Flex direction='column' maxW={['100%', '100%', '100%']} align='center'>
+                            <Tabs variant='soft-rounded' colorScheme='green' onChange={(index) => setTabActive(index)}>
                                 <TabList mb='0em'>
-
                                     <Tab color='#fff'>Crear</Tab>
                                     <Tab color='#fff'>Modificar</Tab>
                                 </TabList>
@@ -282,140 +303,86 @@ export const ManageRequest = React.memo(
                                             setNewInfo={setNewInfo}
                                             validateFormNow={validateFormNow}
                                         />
-                                        {formActive.modal != null && //En caso que no haya modal que no cree el apartado
+                                        {formActive.modal != null && (
                                             <>
                                                 <Text className=""> Contactos</Text>
-
                                                 <Text fontSize='sm' color='gray.400' fontWeight='normal'>
                                                     <Text fontWeight='bold' as='span' color='gray.400'>
                                                         Agregar contactos del cliente
-                                                    </Text>{" "}
+                                                    </Text>
                                                 </Text>
-
-
-                                                <Box
-
-
-                                                    p='30px'
-                                                    bg='linear-gradient(127.09deg, rgba(24, 29, 60, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%)'
-                                                    my='12px'
-                                                    borderRadius='25px'>
-
-
-
-                                                    <Button leftIcon={<BsClipboardPlusFill />} colorScheme='blue' variant='solid'
-                                                        onClick={() => setModalVisible(true)}
-                                                    >
-                                                        Agregar contacto</Button>
-
-
-
-
-
-
-
-
-
-
-
-
-
-                                                    <Flex direction='column' pt={{ base: "120px", md: "25px" }}>
-                                                        {/* Projects Table */}
-
+                                                <Box p={['10px', '20px']} bg='linear-gradient(127.09deg, rgba(24, 29, 60, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%)' my='12px' borderRadius='25px'>
+                                                    <Button leftIcon={<BsClipboardPlusFill />} colorScheme='blue' variant='solid' onClick={() => setModalVisible(true)}>
+                                                        Agregar contacto
+                                                    </Button>
+                                                    <Flex direction='column' pt={['80px', '25px']}>
                                                         <Table variant='simple' color='#fff'>
                                                             <Thead>
                                                                 <Tr my='.8rem' ps='0px'>
-
-                                                                    {
-
-                                                                        formActive.columnsTable.map((col, colIndex) => (
-
-                                                                            <Th
-                                                                                ps='0px'
-                                                                                color='gray.400'
-                                                                                fontFamily='Plus Jakarta Display'
-                                                                                borderBottomColor='#56577A'>
-                                                                                {col.label}
-                                                                            </Th>
-
-                                                                        ))}
-                                                                    {/*                                                
-                                                            <Th
-                                                                color='gray.400'
-                                                                fontFamily='Plus Jakarta Display'
-                                                                borderBottomColor='#56577A'>
-                                                                Acciones
-                                                            </Th>
-                                                            <Th borderBottomColor='#56577A'></Th> */}
+                                                                    {formActive.columnsTable.map((col, colIndex) => (
+                                                                        <Th ps='0px' color='gray.400' fontFamily='Plus Jakarta Display' borderBottomColor='#56577A'>
+                                                                            {col.label}
+                                                                        </Th>
+                                                                    ))}
                                                                 </Tr>
                                                             </Thead>
                                                             <Tbody>
-
-
                                                                 {newInfo.modalItems.map((row, rowIndex) => (
                                                                     <Tr>
-                                                                        {
-
-                                                                            formActive.columnsTable.map((col, colIndex) => (
-                                                                                <Td borderBottomColor='#56577A' border={true ? "none" : null}>
-
-                                                                                    {col.type == "text" ?
-                                                                                        <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
-                                                                                            {row[col.value]}
-                                                                                        </Text>
-                                                                                        :
-                                                                                        <>
-
-                                                                                            <Button size="sm" leftIcon={<BsClipboardPlusFill />} colorScheme='blue' variant='solid'
-                                                                                                onClick={() => { setPreChargeInfoModal(row); setModalVisible(true); }}
-                                                                                            >
-                                                                                                Editar
-                                                                                            </Button>
-
-                                                                                            <Button size="sm" leftIcon={<BsClipboardPlusFill />} colorScheme='red' variant='solid' ml={4}
-                                                                                                onClick={() => handleOnDeleteModalItem(row)}
-                                                                                            >
-                                                                                                Eliminar
-                                                                                            </Button> </>
-                                                                                    }
-
-                                                                                </Td>
-                                                                            ))
-                                                                        }
-
-
+                                                                        {formActive.columnsTable.map((col, colIndex) => (
+                                                                            <Td borderBottomColor='#56577A' border={true ? 'none' : null}>
+                                                                                {col.type == 'text' ? (
+                                                                                    <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
+                                                                                        {row[col.value]}
+                                                                                    </Text>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <Button
+                                                                                            size='sm'
+                                                                                            leftIcon={<BsClipboardPlusFill />}
+                                                                                            colorScheme='blue'
+                                                                                            variant='solid'
+                                                                                            onClick={() => {
+                                                                                                setPreChargeInfoModal(row);
+                                                                                                setModalVisible(true);
+                                                                                            }}
+                                                                                        >
+                                                                                            Editar
+                                                                                        </Button>
+                                                                                        <Button
+                                                                                            size='sm'
+                                                                                            leftIcon={<BsClipboardPlusFill />}
+                                                                                            colorScheme='red'
+                                                                                            variant='solid'
+                                                                                            ml={4}
+                                                                                            onClick={() => handleOnDeleteModalItem(row)}
+                                                                                        >
+                                                                                            Eliminar
+                                                                                        </Button>
+                                                                                    </>
+                                                                                )}
+                                                                            </Td>
+                                                                        ))}
                                                                     </Tr>
                                                                 ))}
-
-
-
                                                             </Tbody>
                                                         </Table>
-
                                                     </Flex>
-
-
-
-
                                                 </Box>
                                             </>
-
-
-                                        }
-                                        <Flex justify='space-between' w='100%' align='center' h='13%'>
-
-                                            <Flex direction='column' maxW='50%' align='center'>
-
-                                                <Button colorScheme='green' ml={600}
+                                        )}
+                                        <Flex
+                                            justify={['center', 'center', 'space-between']} // Alinear al centro en dispositivos móviles
+                                            w='100%'
+                                            align={['center', 'center', 'center']} // Alinear al centro en dispositivos móviles
+                                            h={['13%', '13%', '13%']}
+                                        >
+                                            <Flex direction='column' maxW={['100%', '100%', '50%']} align='center'>
+                                                <Button
+                                                    colorScheme='green'
+                                                    ml={[0, 0, 600]} // Ajustar margen izquierdo en dispositivos móviles
                                                     leftIcon={<BsFillSendFill />}
-
-                                                    // onClick={onClose}
-                                                    // onClick={setModalVisible(false)}
-                                                    onClick={() => {
-                                                        handleSendForm();
-                                                    }}
-
+                                                    onClick={handleSendForm}
                                                 >
                                                     Crear Dato Maestro
                                                 </Button>
@@ -428,10 +395,10 @@ export const ManageRequest = React.memo(
                                     </TabPanel>
                                 </TabPanels>
                             </Tabs>
-
                         </Flex>
                     </Flex>
                 </Box>
+
             </>
         );
     }

@@ -91,7 +91,7 @@ function SignIn() {
   const textColor = "gray.400";
 
   const [text, setText] = useState({
-    title: "Bienvenido a Sweet Flowers Costa Rica",
+    title: "Bienvenido a Floral Flow Costa Rica",
     subtitle: "Ingrese sus credenciales",
     titleMain: "LAS MEJORES ROSAS DE COSTA RICA:",
     subtitleMain: "DIA A DIA"
@@ -182,7 +182,7 @@ function SignIn() {
           let name= getNamePerson().split(' ')[0];
           Toast.fire({
             title: "Atención",
-            html: `¡Bienvenido ${name} a Sweet Flowers!`,
+            html: `¡Bienvenido ${name} a Floral Flow!`,
             type: 'success'
           });
 
