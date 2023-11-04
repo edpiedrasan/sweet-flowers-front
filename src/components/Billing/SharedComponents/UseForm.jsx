@@ -73,7 +73,19 @@ export const UseForm = React.memo(
 
     const handleNewInfo = (e, type) => {
 
-      if (type == 'select') {
+
+      /*Esta es una exception para que no haga un adelanto de pago mayor */
+      if (e.target.id == "advancePayment") {
+        let totalBilling = 0;
+        newInfo.modalItems.map(e => { totalBilling += parseInt(e.totaly); })
+
+        if (totalBilling != 0 && e.target.value <= totalBilling) {
+          setNewInfo({
+            ...newInfo, [e.target.id]:  e.target.value 
+          })
+        }
+
+      } else if (type == 'select') {
         setNewInfo({
           ...newInfo, [e.target.id]: { value: e.target.children[e.target.selectedIndex].value, label: e.target.children[e.target.selectedIndex].label }
         })
@@ -127,11 +139,10 @@ export const UseForm = React.memo(
 
       if (field.dependsAnotherDropdown == true &&
         newInfo[field.idDropdownDepends]?.label == field.valueThatDepends) {
-          toReturn=true
+        toReturn = true
       } else {
         //Si no se habilita que se limpie el campo
-        if(newInfo[field.id] != undefined && newInfo[field.id] != '')
-        {
+        if (newInfo[field.id] != undefined && newInfo[field.id] != '') {
           setNewInfo({
             ...newInfo, [field.id]: ''
           })
@@ -242,6 +253,8 @@ export const UseForm = React.memo(
                               border='transparent'
                               fontSize='sm'
                               size='lg'
+                              value={newInfo[field.id] ? newInfo[field.id] : ''}
+
 
                             >
 
