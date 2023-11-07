@@ -311,14 +311,14 @@ export default function MainBilling() {
                 ]
             },
             columnsTable: [
-                { value: "actions", label: "", type: "button", editable: false },
-                { value: "idBilling", label: "# Factura", type: "number", editable: false },
-                { value: "enterpriseName", label: "Cliente", type: "input", editable: false },
-                { value: "quantity", label: "Total", type: "input", editable: false, formatNumber:true },
-                { value: "balance", label: "Saldo pendiente", type: "input", editable: false,  formatNumber:true},
-                { value: "wayPayment", label: "Tipo de pago", type: "badge", editable: false, applyBadge:true,  formatNumber:true},
-                { value: "expirationState", label: "Estado", type: "badge", editable: false, applyBadge: true },
-                { value: "createdAt", label: "Fecha", type: "date", editable: false },
+                { value: "actions", label: "", type: "button", typeInFilter: "button", editable: false },
+                { value: "idBilling", label: "# Factura", type: "number", typeInFilter: "number", editable: false },
+                { value: "enterpriseName", label: "Cliente", type: "select", typeInFilter: "select", options:"enterpriseclient",/*type: "input",*/ editable: false },
+                { value: "quantity", label: "Total", type: "input", typeInFilter: "input", editable: false, formatNumber:true },
+                { value: "balance", label: "Saldo pendiente", type: "input", typeInFilter: "input", editable: false,  formatNumber:true},
+                { value: "wayPayment", label: "Tipo de pago", type: "badge", typeInFilter: "select", options:"paymentclientway",editable: false, applyBadge:true,  formatNumber:true},
+                { value: "expirationState", label: "Estado", type: "badge", typeInFilter: "select", options:"statusBilling", editable: false, applyBadge: true },
+                { value: "createdAt", label: "Fecha", type: "date", typeInFilter: "date", editable: false },
 
 
 

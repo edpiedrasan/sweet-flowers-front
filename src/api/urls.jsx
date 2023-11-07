@@ -1,4 +1,4 @@
-export const urlBase = "http://192.168.0.12:43888";
+export const urlBase = "http://localhost:43888";
 export const urlLogin = "https://vault-qa.gbm.net";
 
 export default {
@@ -29,6 +29,8 @@ export default {
     getpaymenthistory: `${urlBase}/billing/get-payment-history`,
     paybilling: `${urlBase}/billing/pay-billing`,
     printbilling: `${urlBase}/billing/print-billing`,
+    getbillingdetails: `${urlBase}/billing/get-billing-details`,
+
     
 
 

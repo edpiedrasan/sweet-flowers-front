@@ -21,7 +21,7 @@ import IconBox from 'components/Icons/IconBox';
 import { BsClipboardPlusFill, BsFillSendPlusFill, BsFillSendFill, BsFillBrushFill, BsFillPencilFill, BsFillPenFill } from "react-icons/bs";
 
 
-import { FaEdit, FaUserEdit, FaRegEdit, FaMoneyBill, FaMoneyBillAlt, FaMoneyBillWaveAlt, FaMoneyBillWave, FaMoneyCheckAlt, FaMoneyCheck } from "react-icons/fa";
+import { FaEdit, FaUserEdit, FaRegEdit, FaMoneyBill, FaMoneyBillAlt, FaEraser, FaRedo, FaTimes, FaUndo, FaRegEye, FaTrash, FaEllipsisH, FaTrashRestore, FaMoneyBillWaveAlt, FaMoneyBillWave, FaMoneyCheckAlt, FaMoneyCheck } from "react-icons/fa";
 import { DeleteIcon, EditIco, ViewIcon } from '@chakra-ui/icons';
 
 
@@ -39,7 +39,7 @@ import { useEffect } from "react";
 
 
 import { RiSave3Fill } from "react-icons/ri";
-import { HiArrowUturnLeft,HiPrinter } from "react-icons/hi2";
+import { HiArrowUturnLeft, HiPrinter } from "react-icons/hi2";
 
 //Import de componente contexto, para establecer variables globales
 import { UserContext } from 'helpers/UserContext';
@@ -72,7 +72,7 @@ import { UseForm } from "./UseForm";
 
 export const UseTableCustomBilling = React.memo(
     ({
-        edit, columns, newInfo, setNewInfo, validateFormNow, setModalVisible, setRefreshOptions,setBillingToPrint
+        edit, columns, newInfo, setNewInfo, validateFormNow, setModalVisible, setRefreshOptions, setBillingToPrint, setBillingDetail
     }) => {
 
         const [rowsG, setRowsG] = useState([])
@@ -115,7 +115,7 @@ export const UseTableCustomBilling = React.memo(
 
         //states globales
         const { options, refreshBilling, setRefreshBilling } = useContext(UserContext);
-
+        let optionsG = { statusBilling: [{ label: "Al Día", value: "1" }, { label: "Vencida", value: "2" }], ...options }
         useEffect(() => {
 
             // console.log(columns)
@@ -470,7 +470,7 @@ export const UseTableCustomBilling = React.memo(
 
         useEffect(() => {
 
-            // debugger;
+
 
             let data = {};
 
@@ -497,30 +497,51 @@ export const UseTableCustomBilling = React.memo(
 
             });
 
-            console.log(data)
+            // console.log("Stats!!",data)
             setDataQuickStats(data)
 
+            
+        }, [filters, rows])
+     
 
 
 
-
-            // rows.map((row, rowIndex) => (
-            //     console.log(row)
-            // ))
-        }, [filters])
 
 
         useEffect(() => {
-          console.log("Rows", rows)
+            console.log("Rows", rows)
         }, [rows])
-        
 
 
+        //Establece las opciones de dropdowns de los filtros.
+        const buildFilterOptions = (columnOptions) => {
+
+
+            let toReturn = [];
+
+            toReturn = optionsG[columnOptions]?.map(option => (
+                <option key={option.value} value={option.label} label={option.label}>{option.label}</option>
+            ))
+
+            return toReturn;
+        }
+
+        const handleRefresh = () => {
+            setFilters([])
+            setSelectedDates({ startDate: null, endDate: null });
+            setRefreshBilling(true);
+
+        }
+
+        //State para desplegar la lista de botones de acciones.
+        const [displayListButtons, setDisplayListButtons] = useState("");
 
         return (
 
             <>
-                {/* Estadística */}
+                {/* Estadística 
+                FaEraser,FaRedo, FaTimes, FaUndo, FaTrash, FaTrashRestore,
+                */}
 
 
                 <Flex flexDirection='column' pt={{ base: '0px', md: '0px' }}>
@@ -529,17 +550,6 @@ export const UseTableCustomBilling = React.memo(
                     <Card p='16px'>
                         <CardBody>
                             <Flex direction='column' w='100%'>
-                                {/* <Flex direction='column' mt='24px' mb='36px' alignSelf='flex-start'>
-                <Text fontSize='lg' color='#fff' fontWeight='bold' mb='6px'>
-                    Reporte rápido
-                </Text>
-                {/* <Text fontSize='md' fontWeight='medium' color='gray.400'>
-                    <Text as='span' color='green.400' fontWeight='bold'>
-                        (+23%)
-                    </Text>{' '}
-                    than last week
-                </Text> 
-            </Flex> */}
                                 <SimpleGrid gap={{ sm: '12px' }} columns={statsItems.length}>
                                     {
                                         statsItems.map((stat, i) => {
@@ -574,11 +584,13 @@ export const UseTableCustomBilling = React.memo(
                     </Card>
                 </Flex>
 
-                <Flex direction='column' maxW='90%' align='start' marginTop='20px'>
-
+                <Flex direction='row' maxW='90%' align='start' marginTop='20px'>
                     <Text color='#fff' fontSize='xl' fontWeight='bold'>
                         Filtros
                     </Text>
+                    <Button size="sm" colorScheme='purple' variant='solid' ml={4} onClick={() => { handleRefresh() }} style={{ display: 'flex', alignItems: 'center' }}>
+                        <FaTrash style={{ verticalAlign: 'middle' }} />
+                    </Button>
                 </Flex>
                 <Flex flexDirection='column' pt={{ base: '0px', md: '0px' }}>
                     <Grid templateColumns={{ sm: "1fr", lg: "100% 90%" }}>
@@ -593,13 +605,12 @@ export const UseTableCustomBilling = React.memo(
                                 {columns.map((col, colIndex) => {
                                     return (
 
-
-                                        col.type != "button" && col.type != "date" ?
+                                        col.typeInFilter == "select" ?
 
                                             <Box>
 
                                                 <FormControl
-                                                // isInvalid={field.required && (newInfo[field.id] == '' || newInfo[field.id] == undefined) && validateFormNow}
+                                                // isInvalid={field.required && ((newInfo[field.id] == '' || newInfo[field.id] == undefined) || (field.type == 'select' && newInfo[field.id].label == '')) && validateFormNow}
                                                 // onSubmit={handleSubmit}
                                                 >
                                                     <FormLabel
@@ -610,14 +621,18 @@ export const UseTableCustomBilling = React.memo(
 
                                                     >
                                                         {col.label}
-
                                                     </FormLabel>
                                                     <GradientBorder
                                                         mb='24px'
                                                         w='150px'
                                                         borderRadius='20px'>
-                                                        <Input
-                                                            color='white'
+
+                                                        <Select
+                                                            placeholder={`Buscar...`}
+                                                            id={col.value}
+
+                                                            color='gray'
+                                                            colorOptions='Black'
                                                             bg='rgb(19,21,54)'
                                                             border='transparent'
                                                             borderRadius='20px'
@@ -626,59 +641,122 @@ export const UseTableCustomBilling = React.memo(
                                                             w={{ base: "100%", md: "346px" }}
                                                             maxW='100%'
                                                             h='46px'
-                                                            placeholder={`Buscar...`}
                                                             onChange={(e) => handleOnfilterDynamic(col.value, e.target.value)}
-                                                        // value={newInfo[field.id] ? newInfo[field.id] : ''}
-                                                        // id={field.id}
-                                                        // type={field.typeField}
-                                                        // placeholder={field.placeholder}
-                                                        // onChange={e => handleNewInfo(e, field.type)}
-                                                        />
+
+                                                            // onChange={e => handleNewInfo(e, field.type)}
+                                                            // value={newInfo[field.id]?.value ? newInfo[field.id]?.value : ''}
+
+
+                                                            _focus={{ bg: 'black' }} // Establecer el color de fondo cuando el componente está enfocado
+
+                                                        >
+                                                            {
+                                                                buildFilterOptions(col.options)
+                                                            /* {field.optionsDependsAnotherDropdown == '' ? options[field.options]?.map(option => (
+                                                                <option key={option.value} value={option.value} label={option.label}>{option.label}</option>
+                                                            ))
+
+                                                                :
+
+
+
+                                                                buildOptions(field)
+
+                                                            } */}
+
+                                                        </Select>
+
                                                     </GradientBorder>
-                                                    {/* <FormErrorMessage>Campo vacío</FormErrorMessage> */}
 
                                                 </FormControl>
 
-                                            </Box> :
-                                            col.type != "button" &&
-                                            <>
-                                                {datesFields.map((date, i) => (
-                                                    <Box key={i}>
-                                                        <FormControl>
-                                                            <FormLabel ms='4px' fontSize='sm' fontWeight='normal' color='white'>
-                                                                {date.label}
-                                                            </FormLabel>
-                                                            <GradientBorder mb='24px' w='150px' borderRadius='20px'>
-                                                                {/* <DatePicker
+                                            </Box>
+
+                                            : col.typeInFilter != "button" && col.typeInFilter != "date" ?
+
+                                                <Box>
+
+                                                    <FormControl
+                                                    // isInvalid={field.required && (newInfo[field.id] == '' || newInfo[field.id] == undefined) && validateFormNow}
+                                                    // onSubmit={handleSubmit}
+                                                    >
+                                                        <FormLabel
+                                                            ms='0px'
+                                                            fontSize='sm'
+                                                            fontWeight='normal'
+                                                            color='white'
+
+                                                        >
+                                                            {col.label}
+
+                                                        </FormLabel>
+                                                        <GradientBorder
+                                                            mb='24px'
+                                                            w='150px'
+                                                            borderRadius='20px'>
+                                                            <Input
+                                                                color='white'
+                                                                bg='rgb(19,21,54)'
+                                                                border='transparent'
+                                                                borderRadius='20px'
+                                                                fontSize='sm'
+                                                                size='lg'
+                                                                w={{ base: "100%", md: "346px" }}
+                                                                maxW='100%'
+                                                                h='46px'
+                                                                placeholder={`Buscar...`}
+                                                                onChange={(e) => handleOnfilterDynamic(col.value, e.target.value)}
+                                                            // value={newInfo[field.id] ? newInfo[field.id] : ''}
+                                                            // id={field.id}
+                                                            // type={field.typeField}
+                                                            // placeholder={field.placeholder}
+                                                            // onChange={e => handleNewInfo(e, field.type)}
+                                                            />
+                                                        </GradientBorder>
+                                                        {/* <FormErrorMessage>Campo vacío</FormErrorMessage> */}
+
+                                                    </FormControl>
+
+                                                </Box> :
+                                                col.typeInFilter != "button" &&
+                                                <>
+                                                    {datesFields.map((date, i) => (
+                                                        <Box key={i}>
+                                                            <FormControl>
+                                                                <FormLabel ms='4px' fontSize='sm' fontWeight='normal' color='white'>
+                                                                    {date.label}
+                                                                </FormLabel>
+                                                                <GradientBorder mb='24px' w='150px' borderRadius='20px'>
+                                                                    {/* <DatePicker
                                                                     selected={selectedDates[date.id]}
                                                                     onChange={(dateAux) => handleDateChange(date.id, dateAux)}
                                                                     dateFormat="yyyy-MM-dd"
                                                                     placeholderText={date.placeholder}
                                                                 /> */}
-                                                                <Input
-                                                                    as={DatePicker} // Use the DatePicker component as an input
-                                                                    selected={selectedDates[date.id]}
-                                                                    onChange={(dateAux) => handleDateChange(date.id, dateAux)}
-                                                                    dateFormat="yyyy-MM-dd"
-                                                                    // placeholder={date.placeholder}   
-                                                                    color='white'
-                                                                    bg='rgb(19,21,54)'
-                                                                    border='transparent'
-                                                                    borderRadius='20px'
-                                                                    fontSize='sm'
-                                                                    size='lg'
-                                                                    w={{ base: "100%", md: "145px" }}
-                                                                    maxW='100%'
-                                                                    h='46px'
-                                                                    placeholder={`Buscar...`}
-                                                                />
-                                                            </GradientBorder>
-                                                        </FormControl>
-                                                    </Box>
-                                                ))}
+                                                                    <Input
+                                                                        as={DatePicker} // Use the DatePicker component as an input
+                                                                        selected={selectedDates[date.id]}
+                                                                        onChange={(dateAux) => handleDateChange(date.id, dateAux)}
+                                                                        dateFormat="yyyy-MM-dd"
+                                                                        // placeholder={date.placeholder}   
+                                                                        color='white'
+                                                                        bg='rgb(19,21,54)'
+                                                                        border='transparent'
+                                                                        borderRadius='20px'
+                                                                        fontSize='sm'
+                                                                        size='lg'
+                                                                        w={{ base: "100%", md: "145px" }}
+                                                                        maxW='100%'
+                                                                        h='46px'
+                                                                        placeholder={`Buscar...`}
+                                                                    />
+                                                                </GradientBorder>
+                                                            </FormControl>
+                                                        </Box>
+                                                    ))}
 
 
-                                            </>
+                                                </>
 
 
 
@@ -706,7 +784,7 @@ export const UseTableCustomBilling = React.memo(
                                 <Flex direction='column' pt={{ base: "12px", md: "0px" }}>
                                     {/* Tabla */}
 
-                                    <Card overflowX={{ sm: 'scroll', xl: 'hidden' }}> 
+                                    <Card overflowX={{ sm: 'scroll', xl: 'hidden' }}>
                                         <CardBody>
 
 
@@ -743,28 +821,69 @@ export const UseTableCustomBilling = React.memo(
                                                                     <Td borderBottomColor='#56577A' border={true ? "none" : null}>
 
                                                                         {col.type == 'button' ?
-//  <Flex direction="row">
-<>
+                                                                            //  <Flex direction="row">
+                                                                            <>
 
-                                                                            {edit
-                                                                            && row.wayPayment == "Credito"
-                                                                            && row.balance > 0
-                                                                            &&
+                                                                                {
+                                                                                    displayListButtons == row.idBilling ?
+                                                                                        <>
+                                                                                            {/* Botones de acciones */}
+                                                                                            {/* {edit
+                                                                                                // && row.wayPayment == "Credito"
+                                                                                                // && row.balance > 0
+                                                                                                && */}
 
 
-                                                                            <Button size="sm" leftIcon={<FaMoneyBillAlt />} colorScheme='blue' variant='solid' ml={4}
-                                                                                onClick={() => handleModalVisible(row)}
-                                                                            >
 
-                                                                            </Button>}
-                                                                            <Button size="sm" leftIcon={<HiPrinter />} colorScheme='purple' variant='solid' ml={4}
-                                                                                onClick={() => setBillingToPrint({id:row.idBilling})}
-                                                                            >
 
-                                                                            </Button>
+                                                                                            <Button size="sm" colorScheme='blue' variant='solid' ml={4} onClick={() => handleModalVisible(row)} style={{ display: 'flex', alignItems: 'center' }}>
+                                                                                                <FaMoneyBillAlt style={{ verticalAlign: 'middle' }} />
+                                                                                            </Button>
+
+
+
+
+                                                                                            <Button size="sm" colorScheme='purple' variant='solid' ml={4} onClick={() => { setBillingToPrint({ id: row.idBilling }) }} style={{ display: 'flex', alignItems: 'center' }}>
+                                                                                                <HiPrinter style={{ verticalAlign: 'middle' }} />
+                                                                                            </Button>
+
+                                                                                            <Button size="sm" colorScheme='green' variant='solid' ml={4} onClick={() => { setBillingDetail({ id: row.idBilling }) }} style={{ display: 'flex', alignItems: 'center' }}>
+                                                                                                <FaRegEye style={{ verticalAlign: 'middle' }} />
+                                                                                            </Button>
+
+                                                                                        </>
+                                                                                        :
+                                                                                        //Botón para desplegar los botones de acciones.
+                                                                                        <Button size="sm" colorScheme='green' variant='solid' ml={4} onClick={() => { setDisplayListButtons(row.idBilling) }} style={{ display: 'flex', alignItems: 'center' }}>
+                                                                                            <FaEllipsisH style={{ verticalAlign: 'middle' }} />
+                                                                                        </Button>
+
+
+                                                                                }
+                                                                                {/* { edit
+                                                                                    && row.wayPayment == "Credito"
+                                                                                    && row.balance > 0
+                                                                                    &&
+
+
+                                                                                    <Button size="sm" leftIcon={<FaMoneyBillAlt />} colorScheme='blue' variant='solid' ml={4}
+                                                                                        onClick={() => handleModalVisible(row)}
+                                                                                    >
+
+                                                                                    </Button>
+                                                                                
+                                                                               }
+                                                                                    
+                                                                                <Button size="sm" leftIcon={<HiPrinter />} colorScheme='purple' variant='solid' ml={4}
+                                                                                    onClick={() => setBillingToPrint({ id: row.idBilling })}
+                                                                                >
+
+                                                                                </Button> */}
+
+
                                                                             </>
 
-// </Flex>
+                                                                            // </Flex>
                                                                             : col.type == 'badge' ?
 
                                                                                 <Badge colorScheme=

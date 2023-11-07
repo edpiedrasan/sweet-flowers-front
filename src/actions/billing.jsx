@@ -26,4 +26,7 @@ export const payBilling =  (props) => method.post(urls.BILLING.paybilling, props
 //Este es para descargar una factura
 export const printBilling =  (props) => method.post(urls.BILLING.printbilling, props)();
 
+//Desplegar los datos de una factura.
+export const getBillingDetails =  (props) => method.post(urls.BILLING.getbillingdetails, props)();
+
 

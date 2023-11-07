@@ -1,5 +1,5 @@
 // react library
-import React, { useEffect , useContext} from "react";
+import React, { useEffect, useContext } from "react";
 // reactstrap components
 import { Card, CardBody, CardTitle, Col, Row } from "reactstrap";
 import GradientBorder from "components/GradientBorder/GradientBorder";
@@ -110,8 +110,8 @@ export const UseModal = React.memo(
 
         }, [preChargeInfoModal])
 
-                //states globales
-                const { options, setOptions, refreshOptions,refreshBilling, setRefreshBilling } = useContext(UserContext);
+        //states globales
+        const { options, setOptions, refreshOptions, refreshBilling, setRefreshBilling } = useContext(UserContext);
 
 
 
@@ -132,7 +132,7 @@ export const UseModal = React.memo(
         const handlePayBilling = () => {
             // debugger;
 
-            payBilling({ idBilling: newInfo.rowBilling.idBilling, payAmount: payAmount, user: getUserPerson()}).then((res) => {
+            payBilling({ idBilling: newInfo.rowBilling.idBilling, payAmount: payAmount, user: getUserPerson() }).then((res) => {
                 // console.log(res)
                 // console.log(res.isAxiosError)
                 if (res.isAxiosError) {
@@ -160,7 +160,7 @@ export const UseModal = React.memo(
 
                     handleOnClose();
                     // handleCleanForm()
-                     setRefreshBilling(true)
+                    setRefreshBilling(true)
 
 
 
@@ -426,94 +426,97 @@ export const UseModal = React.memo(
                                 </Grid>
                             </Flex>
 
-                            <Flex flexDirection='column' pt={{ base: '0px', md: '0px' }}>
-                                <Grid templateColumns={{ sm: "1fr", lg: "100% 90%" }}>
-                                    {/* Cards Master Data */}
+                            {payAmount > 0
+                                &&
+                                <Flex flexDirection='column' pt={{ base: '0px', md: '0px' }}>
+                                    <Grid templateColumns={{ sm: "1fr", lg: "100% 90%" }}>
+                                        {/* Cards Master Data */}
 
 
-                                    <>
+                                        <>
 
-                                        {/* {billingData.map((row) => { */}
-                                        {/* return ( */}
-                                        <SimpleGrid columns={{ sm: 1, md: 1, xl: 1 }} spacingX='40px' spacingY='0px'>
-
-
+                                            {/* {billingData.map((row) => { */}
+                                            {/* return ( */}
+                                            <SimpleGrid columns={{ sm: 1, md: 1, xl: 1 }} spacingX='40px' spacingY='0px'>
 
 
 
-                                            <Box>
 
-                                                <FormControl
-                                                    isInvalid={validateFormNow == true && payAmount == ""}
-                                                // onSubmit={handleSubmit}
-                                                >
-                                                    <FormLabel
-                                                        ms='4px'
-                                                        fontSize='sm'
-                                                        fontWeight='normal'
-                                                        color='white'
 
+                                                <Box>
+
+                                                    <FormControl
+                                                        isInvalid={validateFormNow == true && payAmount == ""}
+                                                    // onSubmit={handleSubmit}
                                                     >
-                                                        Cliente va a pagar:
-                                                    </FormLabel>
-                                                    <GradientBorder
-                                                        mb='2px'
-                                                        w='300px'
-                                                        borderRadius='20px'>
-                                                        <NumberInput
-                                                            w={{ base: "100%", md: "346px" }}
-                                                            maxW='100%'
-                                                            h='46px'
-                                                            borderRadius='20px'
-                                                            color='white'
-                                                            bg='rgb(19,21,54)'
-                                                            border='transparent'
+                                                        <FormLabel
+                                                            ms='4px'
                                                             fontSize='sm'
-                                                            size='lg'
-                                                            value={payAmount}
-                                                            onChange={e => handleAmount(e)}
-                                                            placeholder={"Ingrese el monto a pagar del cliente..."}
+                                                            fontWeight='normal'
+                                                            color='white'
 
                                                         >
-
-                                                            <NumberInputField
+                                                            Cliente va a pagar:
+                                                        </FormLabel>
+                                                        <GradientBorder
+                                                            mb='2px'
+                                                            w='300px'
+                                                            borderRadius='20px'>
+                                                            <NumberInput
                                                                 w={{ base: "100%", md: "346px" }}
                                                                 maxW='100%'
                                                                 h='46px'
+                                                                borderRadius='20px'
                                                                 color='white'
+                                                                bg='rgb(19,21,54)'
                                                                 border='transparent'
                                                                 fontSize='sm'
                                                                 size='lg'
-                                                                borderRadius='20px'
-                                                                value={2000}
+                                                                value={payAmount}
+                                                                onChange={e => handleAmount(e)}
+                                                                placeholder={"Ingrese el monto a pagar del cliente..."}
 
-                                                            // value={newInfo[field.id] ? newInfo[field.id] : ''}
-                                                            // id={field.id}
-                                                            // type={field.typeField}
-                                                            // placeholder={field.placeholder}
-                                                            // onChange={e => handleNewInfo(e, field.type)}
-                                                            />
+                                                            >
 
-                                                        </NumberInput>
-                                                    </GradientBorder>
-                                                    <FormErrorMessage>Campo vacío</FormErrorMessage>
+                                                                <NumberInputField
+                                                                    w={{ base: "100%", md: "346px" }}
+                                                                    maxW='100%'
+                                                                    h='46px'
+                                                                    color='white'
+                                                                    border='transparent'
+                                                                    fontSize='sm'
+                                                                    size='lg'
+                                                                    borderRadius='20px'
+                                                                    value={2000}
 
-                                                </FormControl>
+                                                                // value={newInfo[field.id] ? newInfo[field.id] : ''}
+                                                                // id={field.id}
+                                                                // type={field.typeField}
+                                                                // placeholder={field.placeholder}
+                                                                // onChange={e => handleNewInfo(e, field.type)}
+                                                                />
 
-                                            </Box>
+                                                            </NumberInput>
+                                                        </GradientBorder>
+                                                        <FormErrorMessage>Campo vacío</FormErrorMessage>
+
+                                                    </FormControl>
+
+                                                </Box>
 
 
 
 
 
 
-                                        </SimpleGrid>
-                                    </>
+                                            </SimpleGrid>
+                                        </>
 
 
 
-                                </Grid>
-                            </Flex>
+                                    </Grid>
+                                </Flex>
+                            }
 
                         </ModalBody>
 
@@ -521,21 +524,22 @@ export const UseModal = React.memo(
 
                             <Flex justify='space-between' w='100%' align='center' h='13%'>
 
-                                <Flex direction='column' maxW='50%' align='center'>
+                                {payAmount > 0 &&
+                                    <Flex direction='column' maxW='50%' align='center'>
 
-                                    <Button colorScheme='blue' ml={21}
-                                        leftIcon={<RiSave3Fill />}
+                                        <Button colorScheme='blue' ml={21}
+                                            leftIcon={<RiSave3Fill />}
 
-                                        // onClick={onClose}
-                                        // onClick={setModalVisible(false)}
-                                        onClick={() => handlePayBilling()}
+                                            // onClick={onClose}
+                                            // onClick={setModalVisible(false)}
+                                            onClick={() => handlePayBilling()}
 
-                                    >
-                                        Pagar
-                                    </Button>
-                                </Flex>
-
-                                <Flex direction='column' maxW='50%' align='center'>
+                                        >
+                                            Pagar
+                                        </Button>
+                                    </Flex>
+                                }
+                                <Flex direction='column' maxW={payAmount > 0?'50%':'100%'} align='center'>
 
                                     <Button colorScheme='red' mr={140}
                                         leftIcon={<HiArrowUturnLeft />}

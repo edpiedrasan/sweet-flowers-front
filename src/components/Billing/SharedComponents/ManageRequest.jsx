@@ -110,6 +110,7 @@ const { createCanvas, loadImage } = require('canvas');
 
 import { Br, Cut, Line, Printer, render, Row } from 'react-thermal-printer';
 import { ModalPrintBilling } from "./ModalPrintBilling";
+import { ModalBillingDetail } from "./ModalBillingDetail";
 export const ManageRequest = React.memo(
     ({
         formActive,
@@ -288,7 +289,7 @@ export const ManageRequest = React.memo(
                             })
 
                         } else {
-                            console.log("res",res)
+                            console.log("res", res)
                             toast({
                                 title: 'Atención',
                                 description: `Factura #${res.data.payload.billing.insertId} creada con éxito!`,
@@ -296,7 +297,7 @@ export const ManageRequest = React.memo(
                                 duration: 4000,
                                 isClosable: true,
                             })
-                            setBillingToPrint({id: res.data.payload.billing.insertId});
+                            setBillingToPrint({ id: res.data.payload.billing.insertId });
 
                             handleCleanForm()
                             setRefreshOptions(true);
@@ -413,6 +414,7 @@ export const ManageRequest = React.memo(
             console.log("billingToPrint", billingToPrint)
         }, [billingToPrint])
 
+        const [billingDetail, setBillingDetail] = useState(null)
 
 
         return (
@@ -424,6 +426,15 @@ export const ManageRequest = React.memo(
                     newInfo={{}}
                     billingToPrint={billingToPrint}
                     setBillingToPrint={setBillingToPrint}
+                />}
+
+                {<ModalBillingDetail
+                    title={"Detalle de Factura"}
+                    visible={true}
+                    setVisible={null}
+                    newInfo={{}}
+                    billingDetail={billingDetail}
+                    setBillingDetail={setBillingDetail}
                 />}
 
                 {formActive.modal != null &&
@@ -439,52 +450,6 @@ export const ManageRequest = React.memo(
                         setRefreshOptions={setRefreshOptions}
                     />
                 }
-                {/* <Flex justify='space-between' w='100%' align='center' h='13%'>
-                    <Flex direction='column' maxW='80%' align='center'>
-
-                        <Text color='#fff' fontSize='lg' fontWeight='bold'>
-                            Gestión de {formActive.title}
-                        </Text>
-                    </Flex>
-
-                    <Flex direction='column' maxW='20%' align='center'>
-                   s
-                        <a
-                            href={urls.BILLING.printbilling}
-                            style={{
-                                display: "inline-block",
-                                padding: "10px 20px",
-                                backgroundColor: "#007bff",
-                                color: "#fff",
-                                textDecoration: "none",
-                                border: "1px solid #007bff",
-                                borderRadius: "5px",
-                                cursor: "pointer",
-                                transition: "background-color 0.3s, color 0.3s"
-                            }}
-                        >
-                            <i className="fas fa-download"></i>
-                            {" "}Imprimir
-                        </a>
-
-                        <Button leftIcon={<HiArrowUturnLeft />}
-                            variant='brand'
-                            fontSize='15px'
-                            type='submit'
-                            w='100%'
-                            maxW='350px'
-                            h='45'
-                            mb='20px'
-                            mt='20px'
-                            //   colorScheme='red'
-                            onClick={() => setFormActive("")}
-                        >
-                            Volver
-                        </Button>
-                    </Flex>
-
-                </Flex> */}
-
                 <Flex justify='space-between' w='100%' align='center' h='13%'>
                     <Flex direction='column' maxW='60%' align='center'>
 
@@ -553,6 +518,8 @@ export const ManageRequest = React.memo(
                                             setModalVisible={setModalVisible}
                                             setRefreshOptions={setRefreshOptions}
                                             setBillingToPrint={setBillingToPrint}
+                                            setBillingDetail={setBillingDetail}
+
                                         />
                                     </>
                                     :
