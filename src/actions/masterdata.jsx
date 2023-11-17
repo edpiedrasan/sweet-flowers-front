@@ -7,5 +7,5 @@ import * as method from "api/index.jsx";
 
 export const newMasterData =  (props) => method.post(urls.MASTERDATA.newmasterdata, props)();
 
-export const getOptions =  () => method.get(urls.MASTERDATA.options)();
+export const getOptions =  (props) => method.post(urls.MASTERDATA.options, props)();
 

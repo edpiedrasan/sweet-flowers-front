@@ -96,7 +96,7 @@ export const UseTableCustomBilling = React.memo(
         //Aplicar los filtros a la data de la tabla
         const renderRowsByFilters = (rows) => {
 
-            if (Object.keys(filters).length === 0) {
+            if (Object.keys(filters)?.length === 0) {
                 return rows
             } else {
                 const filterKeys = Object.keys(filters);
@@ -355,10 +355,10 @@ export const UseTableCustomBilling = React.memo(
 
 
 
-        const paginations = rows.length > sizePerPage ?
+        const paginations = rows?.length > sizePerPage ?
             rows.length / sizePerPage > Math.round(rows.length / sizePerPage) ?
-                Math.round(rows.length / sizePerPage) + 1
-                : Math.round(rows.length / sizePerPage)
+                Math.round(rows?.length / sizePerPage) + 1
+                : Math.round(rows?.length / sizePerPage)
             : 1
 
         const [page, setPage] = useState(1);
@@ -936,11 +936,11 @@ export const UseTableCustomBilling = React.memo(
                                         {<Stack p={1}>
                                             <chakra.div>
                                                 <Text fontSize='md' color='#fff' fontWeight='' pb='.5rem'>
-                                                    Mostrando del {((page - 1) * sizePerPage) + 1} al {page * sizePerPage > rows.length ? rows.length : page * sizePerPage} de {rows.length} resultados.
+                                                    Mostrando del {((page - 1) * sizePerPage) + 1} al {page * sizePerPage > rows?.length ? rows?.length : page * sizePerPage} de {rows?.length} resultados.
                                                 </Text>
                                             </chakra.div>
                                             <Paginate
-                                                count={rows.length}
+                                                count={rows?.length}
                                                 paginations={paginations}
                                                 pageSize={sizePerPage}
                                                 page={page}
