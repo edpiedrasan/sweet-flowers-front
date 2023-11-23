@@ -426,7 +426,7 @@ export const UseModal = React.memo(
                                 </Grid>
                             </Flex>
 
-                            {payAmount > 0
+                            {(newInfo.rowBilling?.balance) > 0
                                 &&
                                 <Flex flexDirection='column' pt={{ base: '0px', md: '0px' }}>
                                     <Grid templateColumns={{ sm: "1fr", lg: "100% 90%" }}>

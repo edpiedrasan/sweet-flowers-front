@@ -185,6 +185,36 @@ export default function StockCard() {
     }
 
 
+    //Función para ordenar productos por letra.
+    const orderProductsByLetter = (data) => {
+
+        let result= data.sort((a, b) => {
+            // Extraer la letra antes del '/' de los labels
+            const getLabelType = label => {
+                const match = label.match(/([A-Z])\//);
+                return match ? match[1] : '';
+            };
+        
+            // Asignar un valor numérico a cada tipo (A, M, P)
+            const getTypeValue = type => {
+                switch (type) {
+                    case 'A': return 1;
+                    case 'M': return 2;
+                    case 'P': return 3;
+                    default: return 4; // Manejar otros casos si es necesario
+                }
+            };
+        
+            const typeA = getTypeValue(getLabelType(a.label));
+            const typeB = getTypeValue(getLabelType(b.label));
+        
+            // Comparar los valores asignados y ordenar en consecuencia
+            return typeA - typeB;
+        });
+
+        return result;
+    }
+
     return (
 
         <>
@@ -233,7 +263,7 @@ export default function StockCard() {
                         Hola mundo
                     </Text>{' '} */}
 
-                        {options?.product?.map(product => (
+                        {options?.product && orderProductsByLetter(options?.product).map(product => (
                             < Flex alignItems='center' minH='48px' justifyContent='start' mb='2px'>
                                 <Flex direction='column' h='100%' align='center'>
                                     <Icon
@@ -275,7 +305,7 @@ export default function StockCard() {
                             <Icon as={AiFillCheckCircle} color='green.500' w='15px' h='15px' me='5px' />
                             <Text fontSize='sm' color='gray.400' fontWeight='normal'>
                                 <Text fontWeight='bold' as='span' color='gray.400'>
-                                    {numberWithCommas (getQuantity("purchaseOrder"))}
+                                    {numberWithCommas(getQuantity("purchaseOrder"))}
                                 </Text>{' '}
                                 a facturar
                             </Text>
