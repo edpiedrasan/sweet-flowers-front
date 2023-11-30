@@ -225,7 +225,7 @@ export const UseTable = React.memo(
 
 
 <>
-usetable
+usetabl
 
             <Flex flexDirection='column' pt={{ base: '10px', md: '0px' }}>
                 <Grid templateColumns={{ sm: "1fr", lg: "100% 100%" }}>
