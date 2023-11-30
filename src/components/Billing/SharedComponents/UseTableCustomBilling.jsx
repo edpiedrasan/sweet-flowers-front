@@ -7,6 +7,11 @@ import {
     Td, Tbody, Tr, Table, Thead, Th, NumberDecrementStepper, useColorModeValue,
     Stack, chakra, HStack, Badge, Progress,
 
+    Stat,
+	StatHelpText,
+	StatLabel,
+	StatNumber,
+
 
 } from "@chakra-ui/react";
 
@@ -450,6 +455,13 @@ export const UseTableCustomBilling = React.memo(
                 typeSearch: "number"
             },
             {
+                id: "paymenthistoryAmount",
+                text: "Total cancelado",
+                keyToSearch: "paymenthistory",
+                typeSearch: "number"
+
+            },
+            {
                 id: "pendingAmount",
                 text: "Saldo pendiente",
                 keyToSearch: "balance",
@@ -500,9 +512,9 @@ export const UseTableCustomBilling = React.memo(
             // console.log("Stats!!",data)
             setDataQuickStats(data)
 
-            
+
         }, [filters, rows])
-     
+
 
 
 
@@ -544,45 +556,51 @@ export const UseTableCustomBilling = React.memo(
                 */}
 
 
-                <Flex flexDirection='column' pt={{ base: '0px', md: '0px' }}>
+     <Grid
+    templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }}
+    gap={{ base: '16px', md: '0px' }}
+    pt={{ base: '0px', md: '0px' }}
+>
+    {statsItems.map((stat, i) => (
+  <Card minH='83px'>
+  <CardBody>
+      <Flex flexDirection='row' align='center' justify='center' w='100%'>
+          <Stat me='auto'>
+              <StatLabel fontSize='sm' color='gray.400' fontWeight='bold' pb='2px'>
+              {stat.text}
+              </StatLabel>
+              <Flex>
+                  <StatNumber fontSize='lg' color='#fff'>
+                  {dataQuickStats[stat.id]}
+                  </StatNumber>
+                  {/* <StatHelpText
+                      alignSelf='flex-end'
+                      justifySelf='flex-end'
+                      m='0px'
+                      color='green.400'
+                      fontWeight='bold'
+                      ps='3px'
+                      fontSize='md'>
+                      +5%
+                  </StatHelpText> */}
+              </Flex>
+          </Stat>
+          <IconBox as='box' h={'45px'} w={'45px'} bg='brand.200'>
+              <GlobeIcon h={'24px'} w={'24px'} color='#fff' />
+          </IconBox>
+      </Flex>
+  </CardBody>
+</Card>
+
+    
+    
+    ))}
+</Grid>
 
 
-                    <Card p='16px'>
-                        <CardBody>
-                            <Flex direction='column' w='100%'>
-                                <SimpleGrid gap={{ sm: '12px' }} columns={statsItems.length}>
-                                    {
-                                        statsItems.map((stat, i) => {
-                                            return (
 
-                                                <Flex direction='column'>
-                                                    <Flex alignItems='center'>
-                                                        <IconBox as='box' h={'30px'} w={'30px'} bg='brand.200' me='6px'>
-                                                            <WalletIcon h={'15px'} w={'15px'} color='#fff' />
-                                                        </IconBox>
-                                                        <Text fontSize='sm' color='gray.400'>
-                                                            {stat.text}
-                                                        </Text>
-                                                    </Flex>
-                                                    <Text
-                                                        fontSize={{ sm: 'md', lg: 'lg' }}
-                                                        color='#fff'
-                                                        fontWeight='bold'
-                                                        mb='6px'
-                                                        my='6px'>
-                                                        {dataQuickStats[stat.id]}
-                                                    </Text>
-                                                    {/* <Progress colorScheme='brand' bg='#2D2E5F' borderRadius='30px' h='5px' value={20} /> */}
-                                                </Flex>
 
-                                            )
-                                        })
-                                    }
-                                </SimpleGrid>
-                            </Flex>
-                        </CardBody>
-                    </Card>
-                </Flex>
+
 
                 <Flex direction='row' maxW='90%' align='start' marginTop='20px'>
                     <Text color='#fff' fontSize='xl' fontWeight='bold'>
@@ -779,7 +797,7 @@ export const UseTableCustomBilling = React.memo(
 
 
                         <>
-                            <SimpleGrid columns={{ sm: 1, md: columns, xl: columns }} spacingX='2px' spacingY='20px'>
+                            <SimpleGrid columns={{ sm: 1, md: columns, xl: columns }} spacingX='2px' spacingY='15px'>
 
                                 <Flex direction='column' pt={{ base: "12px", md: "0px" }}>
                                     {/* Tabla */}

@@ -315,6 +315,7 @@ export default function MainBilling() {
                 { value: "idBilling", label: "# Factura", type: "number", typeInFilter: "number", editable: false },
                 { value: "enterpriseName", label: "Cliente", type: "select", typeInFilter: "select", options:"enterpriseclient",/*type: "input",*/ editable: false },
                 { value: "quantity", label: "Total", type: "input", typeInFilter: "input", editable: false, formatNumber:true },
+                { value: "paymenthistory", label: "Cancelado", type: "input", typeInFilter: "input", editable: false, formatNumber:true },
                 { value: "balance", label: "Saldo pendiente", type: "input", typeInFilter: "input", editable: false,  formatNumber:true},
                 { value: "wayPayment", label: "Tipo de pago", type: "badge", typeInFilter: "select", options:"paymentclientway",editable: false, applyBadge:true,  formatNumber:true},
                 { value: "expirationState", label: "Estado", type: "badge", typeInFilter: "select", options:"statusBilling", editable: false, applyBadge: true },
