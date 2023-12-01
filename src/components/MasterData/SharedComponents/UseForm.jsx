@@ -267,7 +267,12 @@ export const UseForm = React.memo(
                               _focus={{ bg: 'black' }} // Establecer el color de fondo cuando el componente está enfocado
 
                             >
-                              {options[field.options]?.map(option => (
+                              {Array.isArray(field.options)?
+                              field.options?.map(option => (
+                                <option key={option.value} value={option.value} label={option.label}>{option.label}</option>
+                              ))
+                              :
+                              options[field.options]?.map(option => (
                                 <option key={option.value} value={option.value} label={option.label}>{option.label}</option>
                               ))}
 

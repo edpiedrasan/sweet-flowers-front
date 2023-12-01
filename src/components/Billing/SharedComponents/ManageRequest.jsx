@@ -238,6 +238,7 @@ export const ManageRequest = React.memo(
         //Handle para enviar la gestión
         const handleSendForm = () => {
             if (validateForm()) {
+                setIsLoading(true);
 
 
                 if (formActive.id == 'purchaseOrder') {
@@ -246,6 +247,8 @@ export const ManageRequest = React.memo(
                     newPurchaseOrder({ newInfo: newInfo, form: formActive.id, total: getTotal(), user: getUserPerson() }).then((res) => {
                         // console.log(res)
                         // console.log(res.isAxiosError)
+                        setIsLoading(false);
+
                         if (res.isAxiosError) {
                             // console.log("login failed")
                             toast({
@@ -278,6 +281,8 @@ export const ManageRequest = React.memo(
                     newBilling({ newInfo: newInfo, form: formActive.id, total: getTotal(), user: getUserPerson() }).then((res) => {
                         // console.log(res)
                         // console.log(res.isAxiosError)
+                        setIsLoading(false);
+
                         if (res.isAxiosError) {
                             // console.log("login failed")
                             toast({
@@ -312,6 +317,8 @@ export const ManageRequest = React.memo(
                     newDeleteOrder({ newInfo: newInfo, form: formActive.id, total: getTotal(), user: getUserPerson() }).then((res) => {
                         // console.log(res)
                         // console.log(res.isAxiosError)
+                        setIsLoading(false);
+
                         if (res.isAxiosError) {
                             // console.log("login failed")
                             toast({
@@ -416,7 +423,7 @@ export const ManageRequest = React.memo(
 
         const [billingDetail, setBillingDetail] = useState(null)
 
-
+        const [isLoading, setIsLoading] = useState(false)
         return (
             <>
                 {<ModalPrintBilling
@@ -551,6 +558,7 @@ export const ManageRequest = React.memo(
 
                                             // onClick={onClose}
                                             // onClick={setModalVisible(false)}
+                                            isLoading={isLoading}
                                             onClick={() => {
                                                 handleSendForm();
                                             }}

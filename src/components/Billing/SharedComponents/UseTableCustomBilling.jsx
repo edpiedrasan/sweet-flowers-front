@@ -120,7 +120,7 @@ export const UseTableCustomBilling = React.memo(
 
         //states globales
         const { options, refreshBilling, setRefreshBilling } = useContext(UserContext);
-        let optionsG = { statusBilling: [{ label: "Al Día", value: "1" }, { label: "Vencida", value: "2" }], ...options }
+        let optionsG = { statusBilling: [{ label: "Al Día", value: "1" }, { label: "Vencida", value: "2" },  { label: "Cancelada", value: "3" }], ...options }
         useEffect(() => {
 
             // console.log(columns)

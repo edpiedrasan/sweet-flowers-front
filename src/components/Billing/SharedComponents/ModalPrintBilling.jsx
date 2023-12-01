@@ -179,7 +179,24 @@ export const ModalPrintBilling = React.memo(
                         <ModalBody mt={6}>
                             <Flex justify='space-between' w='100%' align='center' h='13%'>
                                 <Flex maxW='100%' align='start' justify="space-between">
-                                    <a
+                                <a
+                                        href={`${urls.BILLING.printbilling}/${window.btoa(billingToPrint?.id)}/${window.btoa("original")}`}
+                                        style={{
+                                            display: "inline-block",
+                                            padding: "10px 20px",
+                                            backgroundColor: "#007bff",
+                                            color: "#fff",
+                                            textDecoration: "none",
+                                            border: "1px solid #007bff",
+                                            borderRadius: "5px",
+                                            cursor: "pointer",
+                                            transition: "background-color 0.3s, color 0.3s",
+                                        }}
+                                    >
+                                        <i className="fas fa-print"></i>
+                                        {" "}Imprimir
+                                    </a>
+                                    {/* <a
                                         href={`${urls.BILLING.printbilling}/${window.btoa(billingToPrint?.id)}/${window.btoa("original")}`}
                                         style={{
                                             display: "inline-block",
@@ -214,7 +231,7 @@ export const ModalPrintBilling = React.memo(
                                     >
                                         <i className="fas fa-print"></i>
                                         {" "}Copia
-                                    </a>
+                                    </a> */}
                                 </Flex>
                             </Flex>
 

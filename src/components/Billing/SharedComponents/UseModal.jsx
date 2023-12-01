@@ -131,10 +131,13 @@ export const UseModal = React.memo(
         //Handle para pagar factura
         const handlePayBilling = () => {
             // debugger;
-
+            setIsLoading(true);
+            
             payBilling({ idBilling: newInfo.rowBilling.idBilling, payAmount: payAmount, user: getUserPerson() }).then((res) => {
                 // console.log(res)
-                // console.log(res.isAxiosError)
+                // console.log(res.isAxiosError
+                setIsLoading(false);
+
                 if (res.isAxiosError) {
                     // console.log("login failed")
                     toast({
@@ -298,6 +301,7 @@ export const UseModal = React.memo(
             console.log("payAmount", payAmount)
         }, [payAmount])
 
+        const [isLoading, setIsLoading] = useState(false)
 
         return (
             <>
@@ -532,6 +536,7 @@ export const UseModal = React.memo(
 
                                             // onClick={onClose}
                                             // onClick={setModalVisible(false)}
+                                            isLoading={isLoading}
                                             onClick={() => handlePayBilling()}
 
                                         >
@@ -539,7 +544,7 @@ export const UseModal = React.memo(
                                         </Button>
                                     </Flex>
                                 }
-                                <Flex direction='column' maxW={payAmount > 0?'50%':'100%'} align='center'>
+                                <Flex direction='column' maxW={payAmount > 0 ? '50%' : '100%'} align='center'>
 
                                     <Button colorScheme='red' mr={140}
                                         leftIcon={<HiArrowUturnLeft />}

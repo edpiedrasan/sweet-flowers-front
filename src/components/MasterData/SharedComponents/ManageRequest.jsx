@@ -139,9 +139,12 @@ export const ManageRequest = React.memo(
         //Handle para enviar la gestión
         const handleSendForm = () => {
             if (validateForm()) {
+                setIsLoading(true)
 
                 newMasterData({ type: tabActive, newInfo: newInfo, form: formActive.id, user: getUserPerson() }).then((res) => {
                     console.log(res)
+
+                    setIsLoading(false);
                     // console.log(res.isAxiosError)
                     if (res.isAxiosError) {
                         // console.log("login failed")
@@ -221,6 +224,8 @@ export const ManageRequest = React.memo(
 
 
         }
+
+        const [isLoading, setIsLoading] = useState(false)
 
         return (
             <>
@@ -383,6 +388,7 @@ export const ManageRequest = React.memo(
                                                     ml={[0, 0, 600]} // Ajustar margen izquierdo en dispositivos móviles
                                                     leftIcon={<BsFillSendFill />}
                                                     onClick={handleSendForm}
+                                                    isLoading={isLoading}
                                                 >
                                                     Crear Dato Maestro
                                                 </Button>

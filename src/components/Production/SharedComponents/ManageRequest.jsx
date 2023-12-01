@@ -46,7 +46,8 @@ import {
 
     Progress,
 
-    useToast
+    useToast,
+    FormLabel
 
 
 
@@ -145,11 +146,15 @@ export const ManageRequest = React.memo(
         const handleSendForm = () => {
             if (validateForm()) {
                 setChargingButton(true);
+                setIsLoading(true);
+
                 registerProductionProducts({ newInfo: newInfo, user: getUserPerson(), land: 1 }).then((res) => {
                     setChargingButton(false);
 
                     console.log(res)
                     // console.log(res.isAxiosError)
+
+                    setIsLoading(false);
                     if (res.isAxiosError) {
                         // console.log("login failed")
                         toast({
@@ -226,36 +231,36 @@ export const ManageRequest = React.memo(
 
         }
 
-            //Función para ordenar productos por letra.
-    const orderProductsByLetter = (data) => {
+        //Función para ordenar productos por letra.
+        const orderProductsByLetter = (data) => {
 
-        let result= data.sort((a, b) => {
-            // Extraer la letra antes del '/' de los labels
-            const getLabelType = label => {
-                const match = label.match(/([A-Z])\//);
-                return match ? match[1] : '';
-            };
-        
-            // Asignar un valor numérico a cada tipo (A, M, P)
-            const getTypeValue = type => {
-                switch (type) {
-                    case 'A': return 1;
-                    case 'M': return 2;
-                    case 'P': return 3;
-                    default: return 4; // Manejar otros casos si es necesario
-                }
-            };
-        
-            const typeA = getTypeValue(getLabelType(a.label));
-            const typeB = getTypeValue(getLabelType(b.label));
-        
-            // Comparar los valores asignados y ordenar en consecuencia
-            return typeA - typeB;
-        });
+            let result = data.sort((a, b) => {
+                // Extraer la letra antes del '/' de los labels
+                const getLabelType = label => {
+                    const match = label.match(/([A-Z])\//);
+                    return match ? match[1] : '';
+                };
+
+                // Asignar un valor numérico a cada tipo (A, M, P)
+                const getTypeValue = type => {
+                    switch (type) {
+                        case 'A': return 1;
+                        case 'M': return 2;
+                        case 'P': return 3;
+                        default: return 4; // Manejar otros casos si es necesario
+                    }
+                };
+
+                const typeA = getTypeValue(getLabelType(a.label));
+                const typeB = getTypeValue(getLabelType(b.label));
+
+                // Comparar los valores asignados y ordenar en consecuencia
+                return typeA - typeB;
+            });
 
 
-        return result;
-    }
+            return result;
+        }
 
         const generateFields = (formActive) => {
 
@@ -283,7 +288,7 @@ export const ManageRequest = React.memo(
                     temp = [...temp,
                     {
                         colWidth: "6",
-                        label: `${product.label}*`,
+                        label: `${product.label}`,
                         placeholder: "Cantidad",
                         id: `${product.label}`,
                         options: "",
@@ -292,7 +297,7 @@ export const ManageRequest = React.memo(
                         idDropdownDepends: "",
                         valueThatDepends: "",
                         disabled: false,
-                        required: true
+                        required: false
                     },
                     ]
                 })
@@ -303,8 +308,29 @@ export const ManageRequest = React.memo(
 
             return temp.length > 0 ? temp : formActive.form
 
+
         }
 
+        const [productsTotal, setProductsTotal] = useState(0)
+
+        //Para indicar cual es el total de productos.
+        useEffect(() => {
+
+
+            console.log("newInfo", newInfo)
+            let productsTotalAux = 0;
+
+            Object.values(newInfo).map(productQuantity => {
+                const convertNum = parseInt(productQuantity);
+                if (!isNaN(convertNum)) {
+                    productsTotalAux = productsTotalAux + convertNum
+                }
+            })
+
+            setProductsTotal(productsTotalAux);
+        }, [newInfo])
+
+        const [isLoading, setIsLoading] = useState(false)
         return (
             <>
 
@@ -487,23 +513,34 @@ export const ManageRequest = React.memo(
 
 
                             }
-                                        <Flex
-                                            justify={['center', 'center', 'space-between']} // Alinear al centro en dispositivos móviles
-                                            w='100%'
-                                            align={['center', 'center', 'center']} // Alinear al centro en dispositivos móviles
-                                            h={['13%', '13%', '13%']}
-                                        >
-                                            <Flex direction='column' maxW={['100%', '100%', '50%']} align='center'>
-                                                <Button
-                                                    colorScheme='green'
-                                                    ml={[0, 0, 600]} // Ajustar margen izquierdo en dispositivos móviles
-                                                    leftIcon={<BsFillSendFill />}
-                                                    onClick={handleSendForm}
-                                                >
-                                                    Crear 
-                                                </Button>
-                                            </Flex>
-                                        </Flex>
+                            <FormLabel
+                                ms='4px'
+                                fontSize='sm'
+                                fontWeight='normal'
+                                color='white'
+
+                            >
+                                Total: {productsTotal} paquetes.
+                            </FormLabel>
+
+                            <Flex
+                                justify={['center', 'center', 'space-between']} // Alinear al centro en dispositivos móviles
+                                w='100%'
+                                align={['center', 'center', 'center']} // Alinear al centro en dispositivos móviles
+                                h={['13%', '13%', '13%']}
+                            >
+                                <Flex direction='column' maxW={['100%', '100%', '50%']} align='center'>
+                                    <Button
+                                        colorScheme='green'
+                                        ml={[0, 0, 600]} // Ajustar margen izquierdo en dispositivos móviles
+                                        leftIcon={<BsFillSendFill />}
+                                        onClick={handleSendForm}
+                                        isLoading={isLoading}
+                                    >
+                                        Crear
+                                    </Button>
+                                </Flex>
+                            </Flex>
 
                         </Flex>
                     </Flex>
