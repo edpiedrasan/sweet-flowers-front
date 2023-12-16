@@ -99,11 +99,17 @@ import {
 import { CreditIcon } from 'components/Icons/Icons';
 import { DeleteIcon, EditIco, ViewIcon } from '@chakra-ui/icons';
 
+import withReactContent from 'sweetalert2-react-content';
+
+import Swal from "sweetalert2";
+
+
 
 export default function StockCard() {
 
 
-
+    //Notificaciones
+    const MySwal = withReactContent(Swal);
 
 
 
@@ -150,37 +156,63 @@ export default function StockCard() {
     }
 
     const handleDeletePO = (po) => {
-        console.log("Eliminar ", po)
+        MySwal.fire({
 
-        toDeleteOrder({ poId: po.value }).then((res) => {
-            // console.log(res)
-            // console.log(res.isAxiosError)
-            if (res.isAxiosError) {
-                // console.log("login failed")
-                toast({
-                    title: 'Atención',
-                    description: `Ocurrió un error en la eliminación!`,
-                    status: 'warning',
-                    duration: 3000,
-                    isClosable: true,
+            type: 'warning',
+            title: `Eliminar orden de compra`,
+            html:
+
+                `<h2>¿Está seguro que desea eliminar la orden de compra de ${po.label}?</h2>`,
+
+            confirmButtonText: 'Si, eliminar',
+            confirmButtonColor: '#f5365c',
+            cancelButtonText: 'No, cancelar',
+            showCancelButton: true,
+
+            preConfirm: () => {
+
+                console.log("Eliminar ", po)
+
+                toDeleteOrder({ poId: po.value }).then((res) => {
+                    // console.log(res)
+                    // console.log(res.isAxiosError)
+                    if (res.isAxiosError) {
+                        // console.log("login failed")
+                        toast({
+                            title: 'Atención',
+                            description: `Ocurrió un error en la eliminación!`,
+                            status: 'warning',
+                            duration: 3000,
+                            isClosable: true,
+                        })
+
+                    } else {
+                        toast({
+                            title: 'Atención',
+                            description: `Eliminado con éxito!`,
+                            status: 'success',
+                            duration: 3000,
+                            isClosable: true,
+                        })
+
+                        setRefreshOptions(true);
+
+
+
+                    }
+
                 })
-
-            } else {
-                toast({
-                    title: 'Atención',
-                    description: `Eliminado con éxito!`,
-                    status: 'success',
-                    duration: 3000,
-                    isClosable: true,
-                })
-
-                setRefreshOptions(true);
-
-
-
-            }
+            },
 
         })
+
+
+
+
+
+
+
+
 
     }
 
@@ -188,13 +220,13 @@ export default function StockCard() {
     //Función para ordenar productos por letra.
     const orderProductsByLetter = (data) => {
 
-        let result= data.sort((a, b) => {
+        let result = data.sort((a, b) => {
             // Extraer la letra antes del '/' de los labels
             const getLabelType = label => {
                 const match = label.match(/([A-Z])\//);
                 return match ? match[1] : '';
             };
-        
+
             // Asignar un valor numérico a cada tipo (A, M, P)
             const getTypeValue = type => {
                 switch (type) {
@@ -204,10 +236,10 @@ export default function StockCard() {
                     default: return 4; // Manejar otros casos si es necesario
                 }
             };
-        
+
             const typeA = getTypeValue(getLabelType(a.label));
             const typeB = getTypeValue(getLabelType(b.label));
-        
+
             // Comparar los valores asignados y ordenar en consecuencia
             return typeA - typeB;
         });

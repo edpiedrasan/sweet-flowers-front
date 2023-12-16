@@ -47,3 +47,19 @@ export const getUserPerson = () => {
         return "";
     }
 };
+
+export const getOcupationPerson = () => {
+    const decoded = localStorage.getItem('token');
+    try {
+        // debugger;
+        let {user} = jwt(decoded)
+        // const { token } = jwt(decoded);
+        if (Object.keys(user).length) {
+            // const { routes } = decoded;
+            return user.idOcupation;
+        }
+        return "";
+    } catch (err) {
+        return "";
+    }
+};

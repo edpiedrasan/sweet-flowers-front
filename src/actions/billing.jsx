@@ -29,4 +29,7 @@ export const printBilling =  (props) => method.post(urls.BILLING.printbilling, p
 //Desplegar los datos de una factura.
 export const getBillingDetails =  (props) => method.post(urls.BILLING.getbillingdetails, props)();
 
+//Este es para eliminar una factura.
+export const deleteBilling =  (props) => method.post(urls.BILLING.deletebilling, props)();
+
 

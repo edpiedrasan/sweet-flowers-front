@@ -12,6 +12,15 @@ import {
     StatLabel,
     StatNumber,
 
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogContent,
+    AlertDialogOverlay,
+    useToast
+
+
 
 } from "@chakra-ui/react";
 
@@ -41,6 +50,7 @@ import { FaUser } from "react-icons/fa";
 
 import theme from "theme/themeAuth.js";
 import { useEffect } from "react";
+import withReactContent from 'sweetalert2-react-content';
 
 
 import { RiSave3Fill } from "react-icons/ri";
@@ -50,7 +60,11 @@ import { HiArrowUturnLeft, HiPrinter } from "react-icons/hi2";
 import { UserContext } from 'helpers/UserContext';
 
 //Ruta para crear nuevo dato maestro
-import { getBillings, getPaymentHistory } from 'actions/billing';
+import { getBillings, getPaymentHistory, deleteBilling } from 'actions/billing';
+
+import Swal from "sweetalert2";
+
+
 
 
 import {
@@ -72,6 +86,8 @@ import CardFooter from 'reactstrap/lib/CardFooter';
 import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import { Paginate } from "./Paginate";
 import { UseForm } from "./UseForm";
+import { getOcupationPerson, getUserPerson } from "helpers/decodeToken";
+
 
 
 
@@ -80,8 +96,27 @@ export const UseTableCustomBilling = React.memo(
         edit, columns, newInfo, setNewInfo, validateFormNow, setModalVisible, setRefreshOptions, setBillingToPrint, setBillingDetail
     }) => {
 
+        //#region Mensajes de notificaciones
+        const MySwal = withReactContent(Swal);
+
+        // const Toast = MySwal.mixin({
+        //     toast: true,
+        //     position: 'bottom-right',
+        //     showConfirmButton: true,
+        //     timer: 8000,
+        //     didOpen: toast => {
+        //         toast.addEventListener('mouseenter', Swal.stopTimer)
+        //         toast.addEventListener('mouseleave', Swal.resumeTimer)
+        //     }
+        // });
+
+        //Declarar el Toast de notificaciones
+        const toast = useToast()
+        //#endregion
+
         const [rowsG, setRowsG] = useState([])
 
+        let ocupation = getOcupationPerson();
 
         //#region
 
@@ -555,9 +590,59 @@ export const UseTableCustomBilling = React.memo(
 
         }
 
+
         //State para desplegar la lista de botones de acciones.
         const [displayListButtons, setDisplayListButtons] = useState("");
+        const [alert, setAlert] = useState("")
 
+
+        //Método para eliminar una factura si es administrador.
+        const handleDeleteBilling = (id) => {
+            MySwal.fire({
+
+                type: 'warning',
+                title: `Eliminar Factura`,
+                html:
+
+                    `<h2>¿Está seguro que desea eliminar la factura #${id}?</h2>`,
+
+                confirmButtonText: 'Si, eliminar',
+                confirmButtonColor: '#f5365c',
+                cancelButtonText: 'No, cancelar',
+                showCancelButton: true,
+
+                preConfirm: () => {
+
+                    deleteBilling({ idBilling: id, user: getUserPerson() }).then((res) => {
+                        // console.log(res.isAxiosError)
+                        if (res.isAxiosError) {
+                            toast({
+                                title: 'Atención',
+                                description: `Ocurrió un error al eliminar la factura`,
+                                status: 'warning',
+                                duration: 4000,
+                                isClosable: true,
+                            })
+        
+        
+                        } else {
+                            toast({
+                                title: 'Atención',
+                                description: `Factura eliminada con éxito!`,
+                                status: 'success',
+                                duration: 4000,
+                                isClosable: true,
+                            })
+                            handleRefresh();
+                            setRefreshOptions(true);
+                            setRenderStatsFirstTime(false);
+                        }
+        
+                    })
+                },
+
+            })
+        }
         return (
 
             <>
@@ -878,6 +963,13 @@ export const UseTableCustomBilling = React.memo(
                                                                                             <Button size="sm" colorScheme='green' variant='solid' ml={4} onClick={() => { setBillingDetail({ id: row.idBilling }) }} style={{ display: 'flex', alignItems: 'center' }}>
                                                                                                 <FaRegEye style={{ verticalAlign: 'middle' }} />
                                                                                             </Button>
+
+                                                                                            {//Sólo los administradores pueden usar el botón de eliminar.
+                                                                                                [1, 3].includes(ocupation) &&
+                                                                                                <Button size="sm" colorScheme='red' variant='solid' ml={4} onClick={() => { handleDeleteBilling(row.idBilling) }} style={{ display: 'flex', alignItems: 'center' }}>
+                                                                                                    <FaTrash style={{ verticalAlign: 'middle' }} />
+                                                                                                </Button>
+                                                                                            }
 
                                                                                         </>
                                                                                         :

@@ -111,11 +111,19 @@ const { createCanvas, loadImage } = require('canvas');
 import { Br, Cut, Line, Printer, render, Row } from 'react-thermal-printer';
 import { ModalPrintBilling } from "./ModalPrintBilling";
 import { ModalBillingDetail } from "./ModalBillingDetail";
+
+import withReactContent from 'sweetalert2-react-content';
+import Swal from "sweetalert2";
+
 export const ManageRequest = React.memo(
     ({
+
         formActive,
         id,
         setFormActive, setRefreshOptions }) => {
+
+        //Notificaciones
+        const MySwal = withReactContent(Swal);
 
         //states globales
         const { options, setOptions, refreshOptions } = useContext(UserContext);
@@ -238,115 +246,135 @@ export const ManageRequest = React.memo(
         //Handle para enviar la gestión
         const handleSendForm = () => {
             if (validateForm()) {
-                setIsLoading(true);
+
+                MySwal.fire({
+
+                    type: 'warning',
+                    title: `Crear`,
+                    html:
+
+                        `<h2>¿Está seguro que desea crearlo?</h2>`,
+
+                    confirmButtonText: 'Si, crear',
+                    confirmButtonColor: '#0ABF67',
+                    cancelButtonText: 'No, cancelar',
+                    showCancelButton: true,
+
+                    preConfirm: () => {
+
+                        setIsLoading(true);
 
 
-                if (formActive.id == 'purchaseOrder') {
+                        if (formActive.id == 'purchaseOrder') {
 
 
-                    newPurchaseOrder({ newInfo: newInfo, form: formActive.id, total: getTotal(), user: getUserPerson() }).then((res) => {
-                        // console.log(res)
-                        // console.log(res.isAxiosError)
-                        setIsLoading(false);
+                            newPurchaseOrder({ newInfo: newInfo, form: formActive.id, total: getTotal(), user: getUserPerson() }).then((res) => {
+                                // console.log(res)
+                                // console.log(res.isAxiosError)
+                                setIsLoading(false);
 
-                        if (res.isAxiosError) {
-                            // console.log("login failed")
-                            toast({
-                                title: 'Atención',
-                                description: `Ocurrió un error en la solicitud!`,
-                                status: 'warning',
-                                duration: 4000,
-                                isClosable: true,
+                                if (res.isAxiosError) {
+                                    // console.log("login failed")
+                                    toast({
+                                        title: 'Atención',
+                                        description: `Ocurrió un error en la solicitud!`,
+                                        status: 'warning',
+                                        duration: 4000,
+                                        isClosable: true,
+                                    })
+
+                                } else {
+                                    toast({
+                                        title: 'Atención',
+                                        description: `Creado con éxito!`,
+                                        status: 'success',
+                                        duration: 4000,
+                                        isClosable: true,
+                                    })
+
+                                    handleCleanForm()
+                                    setRefreshOptions(true);
+
+
+
+                                }
+
                             })
+                        } else if (formActive.id == 'billing') {
 
-                        } else {
-                            toast({
-                                title: 'Atención',
-                                description: `Creado con éxito!`,
-                                status: 'success',
-                                duration: 4000,
-                                isClosable: true,
+                            newBilling({ newInfo: newInfo, form: formActive.id, total: getTotal(), user: getUserPerson() }).then((res) => {
+                                // console.log(res)
+                                // console.log(res.isAxiosError)
+                                setIsLoading(false);
+
+                                if (res.isAxiosError) {
+                                    // console.log("login failed")
+                                    toast({
+                                        title: 'Atención',
+                                        description: `Ocurrió un error en la solicitud!`,
+                                        status: 'warning',
+                                        duration: 4000,
+                                        isClosable: true,
+                                    })
+
+                                } else {
+                                    console.log("res", res)
+                                    toast({
+                                        title: 'Atención',
+                                        description: `Factura #${res.data.payload.billing.insertId} creada con éxito!`,
+                                        status: 'success',
+                                        duration: 4000,
+                                        isClosable: true,
+                                    })
+                                    setBillingToPrint({ id: res.data.payload.billing.insertId });
+
+                                    handleCleanForm()
+                                    setRefreshOptions(true);
+
+
+
+                                }
+
                             })
+                        } else if (formActive.id == 'deleteOrder') {
 
-                            handleCleanForm()
-                            setRefreshOptions(true);
+                            newDeleteOrder({ newInfo: newInfo, form: formActive.id, total: getTotal(), user: getUserPerson() }).then((res) => {
+                                // console.log(res)
+                                // console.log(res.isAxiosError)
+                                setIsLoading(false);
+
+                                if (res.isAxiosError) {
+                                    // console.log("login failed")
+                                    toast({
+                                        title: 'Atención',
+                                        description: `Ocurrió un error en la solicitud!`,
+                                        status: 'warning',
+                                        duration: 4000,
+                                        isClosable: true,
+                                    })
+
+                                } else {
+                                    toast({
+                                        title: 'Atención',
+                                        description: `Creado con éxito!`,
+                                        status: 'success',
+                                        duration: 4000,
+                                        isClosable: true,
+                                    })
+
+                                    handleCleanForm()
+                                    setRefreshOptions(true);
 
 
 
+                                }
+
+                            })
                         }
+                    },
 
-                    })
-                } else if (formActive.id == 'billing') {
+                })
 
-                    newBilling({ newInfo: newInfo, form: formActive.id, total: getTotal(), user: getUserPerson() }).then((res) => {
-                        // console.log(res)
-                        // console.log(res.isAxiosError)
-                        setIsLoading(false);
-
-                        if (res.isAxiosError) {
-                            // console.log("login failed")
-                            toast({
-                                title: 'Atención',
-                                description: `Ocurrió un error en la solicitud!`,
-                                status: 'warning',
-                                duration: 4000,
-                                isClosable: true,
-                            })
-
-                        } else {
-                            console.log("res", res)
-                            toast({
-                                title: 'Atención',
-                                description: `Factura #${res.data.payload.billing.insertId} creada con éxito!`,
-                                status: 'success',
-                                duration: 4000,
-                                isClosable: true,
-                            })
-                            setBillingToPrint({ id: res.data.payload.billing.insertId });
-
-                            handleCleanForm()
-                            setRefreshOptions(true);
-
-
-
-                        }
-
-                    })
-                } else if (formActive.id == 'deleteOrder') {
-
-                    newDeleteOrder({ newInfo: newInfo, form: formActive.id, total: getTotal(), user: getUserPerson() }).then((res) => {
-                        // console.log(res)
-                        // console.log(res.isAxiosError)
-                        setIsLoading(false);
-
-                        if (res.isAxiosError) {
-                            // console.log("login failed")
-                            toast({
-                                title: 'Atención',
-                                description: `Ocurrió un error en la solicitud!`,
-                                status: 'warning',
-                                duration: 4000,
-                                isClosable: true,
-                            })
-
-                        } else {
-                            toast({
-                                title: 'Atención',
-                                description: `Creado con éxito!`,
-                                status: 'success',
-                                duration: 4000,
-                                isClosable: true,
-                            })
-
-                            handleCleanForm()
-                            setRefreshOptions(true);
-
-
-
-                        }
-
-                    })
-                }
             }
 
 

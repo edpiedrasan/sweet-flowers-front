@@ -71,12 +71,18 @@ import { useEffect, useContext } from "react";
 //Import de componente contexto, para establecer variables globales
 import { UserContext } from 'helpers/UserContext';
 
+import withReactContent from 'sweetalert2-react-content';
+
+import Swal from "sweetalert2";
+
 
 export const ManageRequest = React.memo(
     ({
         formActive,
         id,
         setFormActive }) => {
+        //Notificaciones
+        const MySwal = withReactContent(Swal);
 
         //states globales
         const { options } = useContext(UserContext);
@@ -139,39 +145,65 @@ export const ManageRequest = React.memo(
         //Handle para enviar la gestión
         const handleSendForm = () => {
             if (validateForm()) {
-                setIsLoading(true)
+                MySwal.fire({
 
-                newMasterData({ type: tabActive, newInfo: newInfo, form: formActive.id, user: getUserPerson() }).then((res) => {
-                    console.log(res)
+                    type: 'warning',
+                    title: `Crear Dato Maestro`,
+                    html:
 
-                    setIsLoading(false);
-                    // console.log(res.isAxiosError)
-                    if (res.isAxiosError) {
-                        // console.log("login failed")
-                        toast({
-                            title: 'Atención',
-                            description: `Ocurrió un error al crear el dato maestro!`,
-                            status: 'warning',
-                            duration: 4000,
-                            isClosable: true,
+                        `<h2>¿Está seguro que desea crear el dato maestro</h2>`,
+
+                    confirmButtonText: 'Si, crear',
+                    confirmButtonColor: '#0ABF67',
+                    cancelButtonText: 'No, cancelar',
+                    showCancelButton: true,
+
+                    preConfirm: () => {
+
+                        setIsLoading(true)
+
+                        newMasterData({ type: tabActive, newInfo: newInfo, form: formActive.id, user: getUserPerson() }).then((res) => {
+                            console.log(res)
+
+                            setIsLoading(false);
+                            // console.log(res.isAxiosError)
+                            if (res.isAxiosError) {
+                                // console.log("login failed")
+                                toast({
+                                    title: 'Atención',
+                                    description: `Ocurrió un error al crear el dato maestro!`,
+                                    status: 'warning',
+                                    duration: 4000,
+                                    isClosable: true,
+                                })
+
+                            } else {
+                                toast({
+                                    title: 'Atención',
+                                    description: `Creado con éxito!`,
+                                    status: 'success',
+                                    duration: 4000,
+                                    isClosable: true,
+                                })
+
+                                handleCleanForm()
+
+
+
+                            }
+
                         })
-
-                    } else {
-                        toast({
-                            title: 'Atención',
-                            description: `Creado con éxito!`,
-                            status: 'success',
-                            duration: 4000,
-                            isClosable: true,
-                        })
-
-                        handleCleanForm()
-
-
-
-                    }
+                    },
 
                 })
+
+
+
+
+
+
+
+
 
 
 
@@ -244,7 +276,7 @@ export const ManageRequest = React.memo(
                 }
 
 
-                    <Flex justify='space-between' w='100%' align='center' h='13%'>
+                <Flex justify='space-between' w='100%' align='center' h='13%'>
                     <Flex direction='column' maxW='60%' align='center'>
 
                         <Text color='#fff' fontSize='lg' fontWeight='bold'>
@@ -282,7 +314,7 @@ export const ManageRequest = React.memo(
                     mt='0px' // Aplica el mismo margen superior en todas las pantallas
 
                 >
-     
+
 
 
 

@@ -74,6 +74,9 @@ import { UseModal } from "./UseModal";
 import { useEffect } from "react";
 
 
+import withReactContent from 'sweetalert2-react-content';
+
+import Swal from "sweetalert2";
 
 
 export const ManageRequest = React.memo(
@@ -81,6 +84,8 @@ export const ManageRequest = React.memo(
         formActive,
         id,
         setFormActive }) => {
+        //Notificaciones
+        const MySwal = withReactContent(Swal);
 
         //states globales
         const { options } = useContext(UserContext);
@@ -145,42 +150,70 @@ export const ManageRequest = React.memo(
         //Handle para enviar la gestión
         const handleSendForm = () => {
             if (validateForm()) {
-                setChargingButton(true);
-                setIsLoading(true);
 
-                registerProductionProducts({ newInfo: newInfo, user: getUserPerson(), land: 1 }).then((res) => {
-                    setChargingButton(false);
+                MySwal.fire({
 
-                    console.log(res)
-                    // console.log(res.isAxiosError)
+                    type: 'warning',
+                    title: `Registrar producción`,
+                    html:
 
-                    setIsLoading(false);
-                    if (res.isAxiosError) {
-                        // console.log("login failed")
-                        toast({
-                            title: 'Atención',
-                            description: `Ocurrió un error al crear el dato maestro!`,
-                            status: 'warning',
-                            duration: 4000,
-                            isClosable: true,
+                        `<h2>¿Está seguro que realizar el registro de ${productsTotal} paquetes?</h2>`,
+
+                    confirmButtonText: 'Si, registrar',
+                    confirmButtonColor: '#0ABF67',
+                    cancelButtonText: 'No, cancelar',
+                    showCancelButton: true,
+
+                    preConfirm: () => {
+
+                        setChargingButton(true);
+                        setIsLoading(true);
+
+                        registerProductionProducts({ newInfo: newInfo, user: getUserPerson(), land: 1 }).then((res) => {
+                            setChargingButton(false);
+
+                            console.log(res)
+                            // console.log(res.isAxiosError)
+
+                            setIsLoading(false);
+                            if (res.isAxiosError) {
+                                // console.log("login failed")
+                                toast({
+                                    title: 'Atención',
+                                    description: `Ocurrió un error al crear el dato maestro!`,
+                                    status: 'warning',
+                                    duration: 4000,
+                                    isClosable: true,
+                                })
+
+                            } else {
+                                toast({
+                                    title: 'Atención',
+                                    description: `Registrado con éxito!`,
+                                    status: 'success',
+                                    duration: 4000,
+                                    isClosable: true,
+                                })
+
+                                handleCleanForm()
+
+
+
+                            }
+
                         })
-
-                    } else {
-                        toast({
-                            title: 'Atención',
-                            description: `Creado con éxito!`,
-                            status: 'success',
-                            duration: 4000,
-                            isClosable: true,
-                        })
-
-                        handleCleanForm()
-
-
-
-                    }
+                    },
 
                 })
+
+
+
+
+
+
+
+
+
 
 
 

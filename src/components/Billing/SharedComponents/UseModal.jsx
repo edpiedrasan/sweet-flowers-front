@@ -69,6 +69,10 @@ import { RiSave3Fill } from "react-icons/ri";
 import { getPaymentHistory, payBilling } from 'actions/billing';
 import { UseTable } from "./UseTable";
 
+import withReactContent from 'sweetalert2-react-content';
+
+import Swal from "sweetalert2";
+
 
 
 //Import de componente contexto, para establecer variables globales
@@ -86,6 +90,9 @@ export const UseModal = React.memo(
         setPreChargeInfoModal,
         setRefreshOptions
     }) => {
+
+        //Notificaciones
+        const MySwal = withReactContent(Swal);
 
         useEffect(() => {
             console.log("newInfo", newInfo);
@@ -130,65 +137,91 @@ export const UseModal = React.memo(
 
         //Handle para pagar factura
         const handlePayBilling = () => {
-            // debugger;
-            setIsLoading(true);
-            
-            payBilling({ idBilling: newInfo.rowBilling.idBilling, payAmount: payAmount, user: getUserPerson() }).then((res) => {
-                // console.log(res)
-                // console.log(res.isAxiosError
-                setIsLoading(false);
+            MySwal.fire({
+                customClass: {
+                    container: 'your-swal-container-class', // Clase CSS para el contenedor del SweetAlert
+                },
+                onOpen: () => {
+                    const swalContainer = document.querySelector('.your-swal-container-class');
+                    swalContainer.style.zIndex = '9999'; // Ajusta el índice Z para que esté encima del modal de Chakra
+                },
 
-                if (res.isAxiosError) {
-                    // console.log("login failed")
-                    toast({
-                        title: 'Atención',
-                        description: `Ocurrió un error al realizar el pago!`,
-                        status: 'warning',
-                        duration: 4000,
-                        isClosable: true,
+                type: 'warning',
+                title: `Pagos de cliente`,
+                html:
+
+                    `<h2>¿Está seguro que desea realizar el pago de ₡${payAmount}?</h2>`,
+
+                confirmButtonText: 'Si, pagar',
+                confirmButtonColor: '#0ABF67',
+                cancelButtonText: 'No, cancelar',
+                showCancelButton: true,
+
+                preConfirm: () => {
+
+
+                    setIsLoading(true);
+
+                    payBilling({ idBilling: newInfo.rowBilling.idBilling, payAmount: payAmount, user: getUserPerson() }).then((res) => {
+                        // console.log(res)
+                        // console.log(res.isAxiosError
+                        setIsLoading(false);
+
+                        if (res.isAxiosError) {
+                            // console.log("login failed")
+                            toast({
+                                title: 'Atención',
+                                description: `Ocurrió un error al realizar el pago!`,
+                                status: 'warning',
+                                duration: 4000,
+                                isClosable: true,
+                            })
+
+                        } else {
+
+                            console.log(res.data.payload)
+
+                            toast({
+                                title: 'Atención',
+                                description: `¡Pago realizado con éxito!`,
+                                status: 'success',
+                                duration: 4000,
+                                isClosable: true,
+                            })
+
+
+                            handleOnClose();
+                            // handleCleanForm()
+                            setRefreshBilling(true)
+
+
+
+                        }
                     })
 
-                } else {
 
-                    console.log(res.data.payload)
-
-                    toast({
-                        title: 'Atención',
-                        description: `¡Pago realizado con éxito!`,
-                        status: 'success',
-                        duration: 4000,
-                        isClosable: true,
-                    })
-
-
-                    handleOnClose();
-                    // handleCleanForm()
-                    setRefreshBilling(true)
+                    if (payAmount != "") {
 
 
 
-                }
+
+                    } else {
+
+                        setValidateFormNow(true);
+
+                        toast({
+                            title: 'Atención',
+                            description: `Debe ingresar el monto a pagar en el campo inferior.`,
+                            status: 'warning',
+                            duration: 4000,
+                            isClosable: true,
+                        })
+
+                    }
+                },
+
             })
 
-
-            if (payAmount != "") {
-
-
-
-
-            } else {
-
-                setValidateFormNow(true);
-
-                toast({
-                    title: 'Atención',
-                    description: `Debe ingresar el monto a pagar en el campo inferior.`,
-                    status: 'warning',
-                    duration: 4000,
-                    isClosable: true,
-                })
-
-            }
 
         }
 

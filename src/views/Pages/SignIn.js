@@ -17,6 +17,7 @@
 */
 
 import React, { useEffect, useState } from "react";
+import jwt from 'jwt-decode' // import dependency
 // Chakra imports
 import {
   FormControl,
@@ -130,8 +131,8 @@ function SignIn() {
   const [fields, setFields] = useState([
     {
       id: "email",
-      label: "Correo",
-      placeholder: "Ingrese su correo",
+      label: "Usuario",
+      placeholder: "Ingrese su usuario",
       type: "text",
       typeField: "",
       required: false
@@ -175,11 +176,21 @@ function SignIn() {
 
           console.log(res.data.payload)
           const { token } = res.data.payload
-          // console.log(token)
+          console.log(token)
 
           // console.log("login success")
 
-          let name= getNamePerson().split(' ')[0];
+          //Se realiza decode acá debido a que es la v más actualizada.
+          let name = "";
+          try {
+            let { user } = jwt(token)
+            if (Object.keys(user).length) {
+              name = user.nameEmployee;
+            }
+          } catch (err) {
+          }
+
+          name = name.split(' ')[0];
           Toast.fire({
             title: "Atención",
             html: `¡Bienvenido ${name} a Floral Flow!`,

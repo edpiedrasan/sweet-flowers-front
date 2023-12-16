@@ -36,6 +36,7 @@ export default {
     paybilling: `${urlBase}/billing/pay-billing`,
     printbilling: `${urlBase}/billing/print-billing`,
     getbillingdetails: `${urlBase}/billing/get-billing-details`,
+    deletebilling: `${urlBase}/billing/delete-billing`,
 
     
 
