@@ -8,9 +8,9 @@ import {
     Stack, chakra, HStack, Badge, Progress,
 
     Stat,
-	StatHelpText,
-	StatLabel,
-	StatNumber,
+    StatHelpText,
+    StatLabel,
+    StatNumber,
 
 
 } from "@chakra-ui/react";
@@ -120,7 +120,7 @@ export const UseTableCustomBilling = React.memo(
 
         //states globales
         const { options, refreshBilling, setRefreshBilling } = useContext(UserContext);
-        let optionsG = { statusBilling: [{ label: "Al Día", value: "1" }, { label: "Vencida", value: "2" },  { label: "Cancelada", value: "3" }], ...options }
+        let optionsG = { statusBilling: [{ label: "Al Día", value: "1" }, { label: "Vencida", value: "2" }, { label: "Cancelada", value: "3" }], ...options }
         useEffect(() => {
 
             // console.log(columns)
@@ -479,11 +479,23 @@ export const UseTableCustomBilling = React.memo(
         ])
 
         const [dataQuickStats, setDataQuickStats] = useState({})
+        const [renderStatsFirstTime, setRenderStatsFirstTime] = useState(false);
 
+        //Cuando cambie los filtros.
         useEffect(() => {
+            asignStats();
+        }, [filters])
 
+        //Cuando cambie las rows renderizar por primera vez.
+        useEffect(() => {
+            if (renderStatsFirstTime == false && rows.length > 0) {
+                asignStats();
+                setRenderStatsFirstTime(true);
+            }
+        }, [rows])
 
-
+        //Método para asignar las estadísticas rápidas según las rows.
+        const asignStats = () => {
             let data = {};
 
             statsItems.map((stat, i) => {
@@ -511,9 +523,7 @@ export const UseTableCustomBilling = React.memo(
 
             // console.log("Stats!!",data)
             setDataQuickStats(data)
-
-
-        }, [filters, rows])
+        }
 
 
 
@@ -556,24 +566,24 @@ export const UseTableCustomBilling = React.memo(
                 */}
 
 
-     <Grid
-    templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }}
-    gap={{ base: '16px', md: '0px' }}
-    pt={{ base: '0px', md: '0px' }}
->
-    {statsItems.map((stat, i) => (
-  <Card minH='83px'>
-  <CardBody>
-      <Flex flexDirection='row' align='center' justify='center' w='100%'>
-          <Stat me='auto'>
-              <StatLabel fontSize='sm' color='gray.400' fontWeight='bold' pb='2px'>
-              {stat.text}
-              </StatLabel>
-              <Flex>
-                  <StatNumber fontSize='lg' color='#fff'>
-                  {dataQuickStats[stat.id]}
-                  </StatNumber>
-                  {/* <StatHelpText
+                <Grid
+                    templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }}
+                    gap={{ base: '16px', md: '0px' }}
+                    pt={{ base: '0px', md: '0px' }}
+                >
+                    {statsItems.map((stat, i) => (
+                        <Card minH='83px'>
+                            <CardBody>
+                                <Flex flexDirection='row' align='center' justify='center' w='100%'>
+                                    <Stat me='auto'>
+                                        <StatLabel fontSize='sm' color='gray.400' fontWeight='bold' pb='2px'>
+                                            {stat.text}
+                                        </StatLabel>
+                                        <Flex>
+                                            <StatNumber fontSize='lg' color='#fff'>
+                                                {dataQuickStats[stat.id]}
+                                            </StatNumber>
+                                            {/* <StatHelpText
                       alignSelf='flex-end'
                       justifySelf='flex-end'
                       m='0px'
@@ -583,19 +593,19 @@ export const UseTableCustomBilling = React.memo(
                       fontSize='md'>
                       +5%
                   </StatHelpText> */}
-              </Flex>
-          </Stat>
-          <IconBox as='box' h={'45px'} w={'45px'} bg='brand.200'>
-              <GlobeIcon h={'24px'} w={'24px'} color='#fff' />
-          </IconBox>
-      </Flex>
-  </CardBody>
-</Card>
+                                        </Flex>
+                                    </Stat>
+                                    <IconBox as='box' h={'45px'} w={'45px'} bg='brand.200'>
+                                        <GlobeIcon h={'24px'} w={'24px'} color='#fff' />
+                                    </IconBox>
+                                </Flex>
+                            </CardBody>
+                        </Card>
 
-    
-    
-    ))}
-</Grid>
+
+
+                    ))}
+                </Grid>
 
 
 
