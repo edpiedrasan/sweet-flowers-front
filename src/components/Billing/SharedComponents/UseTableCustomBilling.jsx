@@ -475,6 +475,7 @@ export const UseTableCustomBilling = React.memo(
             }));
 
             setRefreshBilling(true);
+            setrenderByDate(true);
         };
 
         useEffect(() => {
@@ -516,15 +517,25 @@ export const UseTableCustomBilling = React.memo(
         const [dataQuickStats, setDataQuickStats] = useState({})
         const [renderStatsFirstTime, setRenderStatsFirstTime] = useState(false);
 
+        const [renderByDate, setrenderByDate] = useState(false);
+
         //Cuando cambie los filtros.
         useEffect(() => {
             asignStats();
+            console.log("cambio filters")
         }, [filters])
 
         //Cuando cambie las rows renderizar por primera vez.
         useEffect(() => {
-            if (renderStatsFirstTime == false && rows.length > 0) {
+            if (
+                (renderStatsFirstTime == false && rows.length > 0)
+                ||
+                ( (selectedDates.startDate !== null || selectedDates.endDate !== null) && renderByDate)
+            ) {
+                console.log("cambio rows")
+                // Alert("cambio rows")
                 asignStats();
+                setrenderByDate(false);
                 setRenderStatsFirstTime(true);
             }
         }, [rows])
@@ -588,6 +599,8 @@ export const UseTableCustomBilling = React.memo(
             setSelectedDates({ startDate: null, endDate: null });
             setRefreshBilling(true);
 
+            setRenderStatsFirstTime(false);
+
         }
 
 
@@ -623,8 +636,8 @@ export const UseTableCustomBilling = React.memo(
                                 duration: 4000,
                                 isClosable: true,
                             })
-        
-        
+
+
                         } else {
                             toast({
                                 title: 'Atención',
@@ -637,12 +650,14 @@ export const UseTableCustomBilling = React.memo(
                             setRefreshOptions(true);
                             setRenderStatsFirstTime(false);
                         }
-        
+
                     })
                 },
 
             })
         }
+
+        
         return (
 
             <>
@@ -733,7 +748,7 @@ export const UseTableCustomBilling = React.memo(
                                                         color='white'
 
                                                     >
-                                                        {col.label}
+                                                        {col.label }
                                                     </FormLabel>
                                                     <GradientBorder
                                                         mb='24px'
@@ -754,6 +769,8 @@ export const UseTableCustomBilling = React.memo(
                                                             w={{ base: "100%", md: "346px" }}
                                                             maxW='100%'
                                                             h='46px'
+
+                                                            value={filters[col.value] ? newInfo[col.value] : ''}
                                                             onChange={(e) => handleOnfilterDynamic(col.value, e.target.value)}
 
                                                             // onChange={e => handleNewInfo(e, field.type)}
@@ -819,7 +836,9 @@ export const UseTableCustomBilling = React.memo(
                                                                 h='46px'
                                                                 placeholder={`Buscar...`}
                                                                 onChange={(e) => handleOnfilterDynamic(col.value, e.target.value)}
-                                                            // value={newInfo[field.id] ? newInfo[field.id] : ''}
+                                                                value={filters[col.value] ? newInfo[col.value] : ''}
+                                                            
+                                                                // value={newInfo[field.id] ? newInfo[field.id] : ''}
                                                             // id={field.id}
                                                             // type={field.typeField}
                                                             // placeholder={field.placeholder}
