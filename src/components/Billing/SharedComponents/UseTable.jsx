@@ -213,11 +213,12 @@ export const UseTable = React.memo(
             // console.log(options)
 
             let productsExisting = newInfo.modalItems.map(product => (parseInt(product.product.value)));
-            // console.log(productsExisting)
+             console.log(productsExisting)
 
+             console.log("OPTIONS", options[col.value])
 
             return options[col.value]?.filter(product => !productsExisting.includes(product.value)).map(option => (
-                <option key={option.value} value={option.value} label={option.label}>{option.label}</option>
+                <option key={option.value} value={option.value} label={option.label + " - " + option.stock + " paquetes."}></option>
             ))
         }
 

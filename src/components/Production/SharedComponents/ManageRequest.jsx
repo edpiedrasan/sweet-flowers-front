@@ -350,10 +350,16 @@ export const ManageRequest = React.memo(
         useEffect(() => {
 
 
-            console.log("newInfo", newInfo)
             let productsTotalAux = 0;
 
-            Object.values(newInfo).map(productQuantity => {
+            let newInfoV= {...newInfo}
+            delete newInfoV.productionDate
+            delete newInfoV.modalItems
+
+            // console.log("newInfoV", newInfoV)
+
+
+            Object.values(newInfoV).map(productQuantity => {
                 const convertNum = parseInt(productQuantity);
                 if (!isNaN(convertNum)) {
                     productsTotalAux = productsTotalAux + convertNum

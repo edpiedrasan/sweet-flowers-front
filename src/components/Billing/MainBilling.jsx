@@ -318,7 +318,8 @@ export default function MainBilling() {
                 { value: "paymenthistory", label: "Cancelado", type: "input", typeInFilter: "input", editable: false, formatNumber:true },
                 { value: "balance", label: "Saldo pendiente", type: "input", typeInFilter: "input", editable: false,  formatNumber:true},
                 { value: "wayPayment", label: "Tipo de pago", type: "badge", typeInFilter: "select", options:"paymentclientway",editable: false, applyBadge:true,  formatNumber:true},
-                { value: "expirationState", label: "Estado", type: "badge", typeInFilter: "select", options:"statusBilling", editable: false, applyBadge: true },
+                { value: "expirationState", label: "Expiración", type: "badge", typeInFilter: "select", options:"statusBilling", editable: false, applyBadge: true },
+                { value: "paymentState", label: "Pago", type: "badge", typeInFilter: "select", options:"paymentBilling", editable: false, applyBadge: true },
                 { value: "createdAt", label: "Fecha", type: "date", typeInFilter: "date", editable: false },
 
 

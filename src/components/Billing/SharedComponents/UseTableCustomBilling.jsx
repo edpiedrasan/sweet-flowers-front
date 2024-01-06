@@ -131,6 +131,8 @@ export const UseTableCustomBilling = React.memo(
                 ...prevState,
                 [constant]: e
             }))
+
+            setPage(1);
         }
 
         //Aplicar los filtros a la data de la tabla
@@ -155,7 +157,14 @@ export const UseTableCustomBilling = React.memo(
 
         //states globales
         const { options, refreshBilling, setRefreshBilling } = useContext(UserContext);
-        let optionsG = { statusBilling: [{ label: "Al Día", value: "1" }, { label: "Vencida", value: "2" }, { label: "Cancelada", value: "3" }], ...options }
+        let optionsG = {
+            statusBilling:
+                [{ label: "Al Día", value: "1" }, { label: "Vencida", value: "2" }],
+            paymentBilling:
+                [{ label: "Pendiente", value: "1" }, { label: "Cancelada", value: "2" }],
+
+            ...options
+        }
         useEffect(() => {
 
             // console.log(columns)
@@ -476,6 +485,8 @@ export const UseTableCustomBilling = React.memo(
 
             setRefreshBilling(true);
             setrenderByDate(true);
+
+            setPage(1);
         };
 
         useEffect(() => {
@@ -522,6 +533,7 @@ export const UseTableCustomBilling = React.memo(
         //Cuando cambie los filtros.
         useEffect(() => {
             asignStats();
+            setPage(1);
             console.log("cambio filters")
         }, [filters])
 
@@ -530,13 +542,15 @@ export const UseTableCustomBilling = React.memo(
             if (
                 (renderStatsFirstTime == false && rows.length > 0)
                 ||
-                ( (selectedDates.startDate !== null || selectedDates.endDate !== null) && renderByDate)
+                ((selectedDates.startDate !== null || selectedDates.endDate !== null) && renderByDate)
             ) {
                 console.log("cambio rows")
                 // Alert("cambio rows")
                 asignStats();
                 setrenderByDate(false);
                 setRenderStatsFirstTime(true);
+
+                setPage(1)
             }
         }, [rows])
 
@@ -657,7 +671,12 @@ export const UseTableCustomBilling = React.memo(
             })
         }
 
-        
+        useEffect(() => {
+            console.log("ROWS", rows)
+        }, [rows])
+
+
+
         return (
 
             <>
@@ -748,7 +767,7 @@ export const UseTableCustomBilling = React.memo(
                                                         color='white'
 
                                                     >
-                                                        {col.label }
+                                                        {col.label}
                                                     </FormLabel>
                                                     <GradientBorder
                                                         mb='24px'
@@ -837,8 +856,8 @@ export const UseTableCustomBilling = React.memo(
                                                                 placeholder={`Buscar...`}
                                                                 onChange={(e) => handleOnfilterDynamic(col.value, e.target.value)}
                                                                 value={filters[col.value] ? newInfo[col.value] : ''}
-                                                            
-                                                                // value={newInfo[field.id] ? newInfo[field.id] : ''}
+
+                                                            // value={newInfo[field.id] ? newInfo[field.id] : ''}
                                                             // id={field.id}
                                                             // type={field.typeField}
                                                             // placeholder={field.placeholder}
@@ -1027,6 +1046,7 @@ export const UseTableCustomBilling = React.memo(
 
                                                                                 <Badge colorScheme=
                                                                                     {(row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Vencida" ? "red" :
+                                                                                    (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Pendiente" ? "orange" :
                                                                                         (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Credito" ? "purple" :
                                                                                             (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Contado" ? "blue" :
                                                                                                 "green"}
