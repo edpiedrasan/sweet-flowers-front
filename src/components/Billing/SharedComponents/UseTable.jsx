@@ -218,7 +218,7 @@ export const UseTable = React.memo(
              console.log("OPTIONS", options[col.value])
 
             return options[col.value]?.filter(product => !productsExisting.includes(product.value)).map(option => (
-                <option key={option.value} value={option.value} label={option.label + " - " + option.stock + " paquetes."}></option>
+                <option key={option.value} value={option.value} label={option.label + " - " + option.stock + " paq"}>{option.label + " - " + option.stock + " paq"}</option>
             ))
         }
 
