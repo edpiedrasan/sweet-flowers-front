@@ -93,8 +93,8 @@ export const UseForm = React.memo(
 
 
 
-      <Flex flexDirection='column' pt={{ base: '10px', md: '20px' }}>
-        <Grid templateColumns={{ sm: "1fr", lg: "100% 100%" }}>
+      <Flex flexDirection='column' pt={{ base: '5px', md: '5px' }}>
+        <Grid templateColumns={{ sm: "2fr", lg: "100% 100%" }}>
           {/* Cards Master Data */}
 
 
@@ -102,7 +102,7 @@ export const UseForm = React.memo(
 
             {/* {billingData.map((row) => { */}
             {/* return ( */}
-            <SimpleGrid columns={{ sm: 1, md: columns, xl: columns }} spacingX='40px' spacingY='20px'>
+            <SimpleGrid columns={{ sm: 1, md: columns, xl: columns }} spacingX='20px' spacingY='0px'>
 
               {fields.map((field, index) => {
                 return (

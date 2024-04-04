@@ -138,12 +138,34 @@ export const ManageRequest = React.memo(
         //Establece cual está activo si crear(0) o modificar (1)
         const [tabActive, setTabActive] = useState(0)
 
+        // Función para convertir todos los valores en comillas dobles
+        function convertirAComillas(objeto) {
+            for (var clave in objeto) {
+                    objeto[clave] = ""; // Convertir el valor a comillas dobles vacías
+            }
+        }
+
         const [chargingButton, setChargingButton] = useState(false)
 
         const handleCleanForm = () => {
-            setNewInfo({ modalItems: [] })
+            // setNewInfo({ modalItems: [] })
             setValidateFormNow(false);
             setPreChargeInfoModal([]);
+
+            // console.log("ANTES DE NIEW", newInfo)
+
+         
+             let tempNewInfo = {...newInfo}
+             convertirAComillas(tempNewInfo)
+
+            tempNewInfo = { ...tempNewInfo, modalItems: [] }
+            // console.log("DEPSUEST DE NIEW", tempNewInfo)
+
+             setNewInfo(tempNewInfo)
+
+
+            // // Llamar a la función para convertir
+            // convertirAComillas(jsonData);
 
         }
 
@@ -168,6 +190,8 @@ export const ManageRequest = React.memo(
 
                         setChargingButton(true);
                         setIsLoading(true);
+
+                        console.log("EL NEWINFO", newInfo)
 
                         registerProductionProducts({ newInfo: newInfo, user: getUserPerson(), land: 1 }).then((res) => {
                             setChargingButton(false);
@@ -195,7 +219,7 @@ export const ManageRequest = React.memo(
                                     isClosable: true,
                                 })
 
-                                handleCleanForm()
+                                 handleCleanForm()
 
 
 
@@ -352,7 +376,7 @@ export const ManageRequest = React.memo(
 
             let productsTotalAux = 0;
 
-            let newInfoV= {...newInfo}
+            let newInfoV = { ...newInfo }
             delete newInfoV.productionDate
             delete newInfoV.modalItems
 
@@ -368,6 +392,11 @@ export const ManageRequest = React.memo(
 
             setProductsTotal(productsTotalAux);
         }, [newInfo])
+
+        useEffect(() => {
+            console.log("NEWINFO", newInfo)
+        }, [newInfo])
+
 
         const [isLoading, setIsLoading] = useState(false)
         return (
@@ -414,7 +443,7 @@ export const ManageRequest = React.memo(
                 </Flex>
 
                 <Box
-                    p={['10px', '10px']} // Ajustar el padding para pantallas más pequeñas
+                    p={['5px', '5px']} // Ajustar el padding para pantallas más pequeñas
                     bg='linear-gradient(127.09deg, rgba(24, 29, 60, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%)'
                     my='12px'
                     borderRadius='25px'
@@ -553,7 +582,7 @@ export const ManageRequest = React.memo(
 
                             }
                             <FormLabel
-                                ms='4px'
+                                ms='4  px'
                                 fontSize='sm'
                                 fontWeight='normal'
                                 color='white'
