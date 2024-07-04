@@ -331,142 +331,46 @@ export default function MainMasterData() {
             columnsTable: []
 
         },
+        {
+            title: "Proveedor",
+            subtitle: " Creación y modificación de proveedores",
+            id: "supplier",
+            image: "supplier2.png",
+            colorCardSelected: "#d6d4fa",
+            form: [
 
-        // {
-        //     title: "Materiales",
-        //     subtitle: "Creación y modificación de Materiales en SAP",
-        //     id: "materiales",
-        //     image: "elearning.png",
-        // },
-        // {
-        //     title: "Contratos - Ordenes de Servicio",
-        //     subtitle: "Creación y modificación de Servicios en SAP",
-        //     id: "servicios",
-        //     image: "exam.png",
-        // },
-        // {
-        //     title: "Repuestos",
-        //     subtitle: "Creación y modificación de repuestos en SAP",
-        //     id: "repuestos",
-        //     image: "tool-box.png",
-        // },
+                {
+                    colWidth: "6",
+                    label: "Nombre proveedor*",
+                    placeholder: "Ingrese el nombre",
+                    id: "enterpriseName",
+                    options: "",
+                    type: "input",
+                    dependsAnotherDropdown: false,
+                    idDropdownDepends: "",
+                    valueThatDepends: "",
+                    disabled: false,
+                    required: true
+                },
+                {
+                    colWidth: "6",
+                    label: "Cédula Jurídica",
+                    placeholder: "Ingrese la cédula",
+                    id: "enterpriseNumber",
+                    options: "",
+                    type: "number",
+                    dependsAnotherDropdown: false,
+                    idDropdownDepends: "",
+                    valueThatDepends: "",
+                    disabled: false,
+                    required: false
+                },
 
-        // {
-        //     title: "Proveedores",
-        //     subtitle: "Creación de Proveedores",
-        //     id: "proveedores",
-        //     image: "teacher.png",
-        //     form: [
+            ],
+            modal: null,
+            columnsTable: []
 
-        //         {
-        //             colWidth: "6",
-        //             label: "Nombre*",
-        //             placeholder: "Seleccione la opción",
-        //             id: "name",
-        //             options: "",
-        //             typeField: "text",
-        //             dependsAnotherDropdown: false,
-        //             idDropdownDepends: "",
-        //             valueThatDepends: "",
-        //             disabled: false,
-        //             required: true
-        //         },
-        //         {
-        //             colWidth: "6",
-        //             label: "Cédula*",
-        //             placeholder: "Seleccione la opción",
-        //             id: "dni",
-        //             options: "dni",
-        //             typeField: "tel",
-        //             dependsAnotherDropdown: false,
-        //             idDropdownDepends: "",
-        //             valueThatDepends: "",
-        //             disabled: false,
-        //             required: true
-        //         },
-        //         {
-        //             colWidth: "6",
-        //             label: "Puesto*",
-        //             placeholder: "Seleccione la opción",
-        //             id: "ocupation",
-        //             options: "ocupation",
-        //             typeField: "text",
-        //             dependsAnotherDropdown: false,
-        //             idDropdownDepends: "",
-        //             valueThatDepends: "",
-        //             disabled: false,
-        //             required: true
-        //         },
-
-        //     ]
-        // },
-        // {
-        //     title: "Contactos",
-        //     subtitle: "Creación de contactos ",
-        //     id: "contactos",
-        //     image: "contacts.png",
-        // },
-        // {
-        //     title: "Materiales de Servicios (PS)",
-        //     subtitle: "Creación y modificación de Materiales de Terceros (LEIS) en SAP",
-        //     id: "materialesservicio",
-        //     image: "solar-panel.png",
-        // },
-        // {
-        //     title: "Productos",
-        //     subtitle: " Creación y modificación de Productos",
-        //     id: "equipos",
-        //     image: "data-storage.png",
-        //     form: [
-
-        //         {
-        //             colWidth: "6",
-        //             label: "Nombre*",
-        //             placeholder: "Seleccione la opción",
-        //             id: "name",
-        //             options: "",
-        //             type: "input",
-        //             dependsAnotherDropdown: false,
-        //             idDropdownDepends: "",
-        //             valueThatDepends: "",
-        //             disabled: false,
-        //             required: true
-        //         },
-        //         {
-        //             colWidth: "6",
-        //             label: "Cédula*",
-        //             placeholder: "Seleccione la opción",
-        //             id: "dni",
-        //             options: "dni",
-        //             type: "number",
-        //             dependsAnotherDropdown: false,
-        //             idDropdownDepends: "",
-        //             valueThatDepends: "",
-        //             disabled: false,
-        //             required: true
-        //         },
-        //         {
-        //             colWidth: "6",
-        //             label: "Puesto*",
-        //             placeholder: "Seleccione la opción",
-        //             id: "ocupation",
-        //             options: "ocupation",
-        //             type: "input",
-        //             dependsAnotherDropdown: false,
-        //             idDropdownDepends: "",
-        //             valueThatDepends: "",
-        //             disabled: false,
-        //             required: true
-        //         },
-
-        //     ]
-        // },
-        // {
-        //     title: "Garantías",
-        //     subtitle: "Modificación de Garantías en SAP",
-        //     id: "garantias",
-        //     image: "warranty.png",
-        // },
+        },
     ]);
 
     const [formActive, setFormActive] = useState("")
