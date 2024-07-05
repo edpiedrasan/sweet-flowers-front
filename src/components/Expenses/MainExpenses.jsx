@@ -74,7 +74,7 @@ import { CardMain } from './SharedComponents/CardMain';
 // import { ManageRequest } from './SharedComponents/ManageRequest';
 
 //Ruta para crear nuevo dato maestro
-// import { getOptions } from 'actions/masterdata';
+import { getOptions } from 'actions/masterdata';
 
 //Import de componente contexto, para establecer variables globales
 import { UserContext } from 'helpers/UserContext';
@@ -98,7 +98,7 @@ export default function MainExpenses() {
                 { value: "provider", label: "Proveedor", type: "select", editable: true },
                 { value: "amount", label: "Monto", type: "number", editable: true },
                 { value: "billingNumber", label: "Número de factura", type: "text", editable: true },
-                { value: "date", label: "Fecha", type: "date", editable: true },
+                { value: "billingDate", label: "Fecha", type: "date", editable: true },
                 { value: "actions", label: "", type: "button", editable: false },
             ]
 
@@ -134,17 +134,17 @@ export default function MainExpenses() {
 
     //Efecto para cargar las opciiones cuando arranque
     useEffect(() => {
-        // getOptions().then((res) => {
-        //     // console.log(res.isAxiosError)
-        //     if (res.isAxiosError) {
-        //         console.log("Fallo de cargar las opciones", res)
+        getOptions().then((res) => {
+            // console.log(res.isAxiosError)
+            if (res.isAxiosError) {
+                console.log("Fallo de cargar las opciones", res)
 
 
-        //     } else {
-        //         setOptions(res.data.payload.masterData)
-        //     }
+            } else {
+                setOptions(res.data.payload.masterData)
+            }
 
-        // })
+        })
     }, [formActive])
 
 

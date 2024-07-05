@@ -12,7 +12,7 @@ import CardBody from "components/Card/CardBody.js";
 import {
     Box, Button, Flex, Text, ChakraProvider, FormControl, Input, FormLabel, FormErrorMessage,
     SimpleGrid, Grid, Select, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper,
-    Td, Tbody, Tr, Table, Thead, Th, NumberDecrementStepper, Icon,
+    Td, Tbody, Tr, Table, Thead, Th, NumberDecrementStepper, Icon, useToast
 } from "@chakra-ui/react";
 // Icons
 import { AiFillCheckCircle } from "react-icons/ai";
@@ -40,7 +40,6 @@ import { UserContext } from 'helpers/UserContext';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-
 export const UseTable = React.memo(
     ({
         edit, columns, newInfo, setNewInfo, validateFormNow, setFormActive
@@ -49,16 +48,16 @@ export const UseTable = React.memo(
         //states globales
         const { options } = useContext(UserContext);
 
+        //Declarar el Toast de notificaciones
+        const toast = useToast()
+
         useEffect(() => {
 
             // console.log(columns)
         }, [columns])
 
 
-        useEffect(() => {
 
-            // console.log(newInfo)
-        }, [newInfo])
 
         useEffect(() => {
             // setNewInfo({
@@ -72,10 +71,23 @@ export const UseTable = React.memo(
 
 
         const handleInfoRow = (e, id, type) => {
-            // console.log(e.target.value, id, type)
 
-            // setTemporalRow(temporalRow => { return { ...temporalRow, [id]: e.target.value } })
 
+            if (type == "select") {
+                console.log(e.target.value, id, type)
+                setTemporalRow({
+                    ...temporalRow, [id]: { value: e.target.children[e.target.selectedIndex].value, label: e.target.children[e.target.selectedIndex].label }
+                })
+            } else if (type == "date") {
+                setTemporalRow(temporalRow => { return { ...temporalRow, [id]: e } })
+            } else {
+                console.log(e, id, type)
+
+                setTemporalRow(temporalRow => { return { ...temporalRow, [id]: e.target.value } })
+            }
+
+
+            return;
 
             if (type == 'select') {
 
@@ -145,9 +157,21 @@ export const UseTable = React.memo(
 
 
         const handleAddNewRow = () => {
-            if (temporalRow.totaly != '') {
+            // Función para verificar campos vacíos
+            const checkForEmptyFields = (formData) => {
+                for (let key of Object.keys(formData)) {
+                    if (formData[key].toString(1).trim() === "" && key !== "actions") {
+                        return true; // Retorna true si encuentra algún campo vacío
+                    }
+                }
+                return false; // Retorna false si no encuentra ningún campo vacío
+            };
 
 
+            console.log("NEWINFO", newInfo)
+            console.log("TEMPORAL", temporalRow)
+
+            if (!checkForEmptyFields(temporalRow)) {
                 setNewInfo({
                     ...newInfo,
                     ['modalItems']: [
@@ -156,12 +180,23 @@ export const UseTable = React.memo(
                     ]
                 })
 
+                console.log("COLUMN", columns)
+
                 columns.map(column => {
 
                     setTemporalRow(temporalRow => { return { ...temporalRow, [column.value]: '' } })
 
                 })
+            } else {
+                toast({
+                    title: 'Atención',
+                    description: `Hay campos vacíos, por favor revisar.`,
+                    status: 'warning',
+                    duration: 4000,
+                    isClosable: true,
+                })
             }
+
         }
 
 
@@ -209,30 +244,74 @@ export const UseTable = React.memo(
             return `₡${total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
         }
 
+        const generateOptions = (col) => {
 
+            let productsExisting = newInfo.modalItems.map(product => (parseInt(product?.product?.value)));
+            console.log(productsExisting)
+
+            return options[col.value]?.filter(product => !productsExisting.includes(product.value)).map(option => (
+                <option key={option.value} value={option.value} label={option.label}>{option.label}</option>
+            ))
+        }
 
         useEffect(() => {
-            // console.log(options)
+            console.log("options", options)
         }, [options])
 
         useEffect(() => {
-            // console.log(newInfo)
+
+            console.log(newInfo)
         }, [newInfo])
 
+        useEffect(() => {
 
-        const methodTest = (col) => {
+            console.log("temporalRow", temporalRow)
+        }, [temporalRow])
 
-            // console.log(newInfo.modalItems)
-            // console.log(options)
 
-            let productsExisting = newInfo.modalItems.map(product => (parseInt(product.product.value)));
-            console.log(productsExisting)
+        const getLabel = (row, col) => {
+            let label = '';
 
-            console.log("OPTIONS", options[col.value])
+            //Es fecha
+            if (isDate(row[col.value])) {
 
-            return options[col.value]?.filter(product => !productsExisting.includes(product.value)).map(option => (
-                <option key={option.value} value={option.value} label={option.label + " - " + option.stock + " paq"}>{option.label + " - " + option.stock + " paq"}</option>
-            ))
+                const dateObject = new Date(row[col.value].toString());
+
+                // Obtener las partes de la fecha
+                const year = dateObject.getFullYear();
+                const month = ("0" + (dateObject.getMonth() + 1)).slice(-2); // Los meses van de 0 a 11
+                const day = ("0" + dateObject.getDate()).slice(-2);
+                const hours = ("0" + dateObject.getHours()).slice(-2);
+                const minutes = ("0" + dateObject.getMinutes()).slice(-2);
+                const seconds = ("0" + dateObject.getSeconds()).slice(-2);
+
+                // Construir la cadena en el formato deseado
+                // const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                const formattedDate = `${year}-${month}-${day} `;
+
+                label = formattedDate;
+
+            } else if (row[col.value]?.value != undefined) {
+                label = row[col.value].label
+            } else {
+                label = row[col.value].toString()
+            }
+            return label
+
+        }
+
+        function isDate(valor) {
+            const string = valor.toString();
+            return string.startsWith("Mon") || string.startsWith("Tue") || string.startsWith("Wed") || string.startsWith("Thu") || string.startsWith("Fri") || string.startsWith("Sat") || string.startsWith("Sun")
+        }
+
+        const getTotalInfo = () => {
+            let total = 0;
+            newInfo.modalItems.map(item => {
+                console.log(item)
+                total = total + parseInt(item.amount)
+            })
+            return total;
         }
 
         return (
@@ -262,9 +341,9 @@ export const UseTable = React.memo(
                                         />
                                         <Text fontSize='sm' color='gray.400' fontWeight='normal'>
                                             <Text fontWeight='bold' as='span' color='gray.400'>
-                                                +30%
+                                                ₡ {getTotalInfo()}
                                             </Text>{" "}
-                                            this month
+                                            colones
                                         </Text>
                                     </Flex>
                                 </Flex>
@@ -316,16 +395,65 @@ export const UseTable = React.memo(
                                     </Tr>
                                 </Thead>
                                 <Tbody>
+
                                     {/* Despliegue de información */}
-                                    <Tr my='.8rem' ps='0px'>
+                                    {
+                                        newInfo?.modalItems?.map((row, rowIndex) => (
+                                            <Tr >
+                                                {
+
+                                                    columns.map((col, colIndex) => (
+                                                        <Td
+                                                            border={false ? "none" : null}
+                                                            borderBottomColor='#56577A'
+                                                            minW='150px'>
+
+                                                            {col.type != 'button' ?
+                                                                <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
+                                                                    {/* {row[col.value]?.value != undefined ? row[col.value].label : row[col.value]} */}
+                                                                    {/* { row[col.value]} */}
+                                                                    {getLabel(row, col)}
+
+                                                                </Text>
+                                                                :
+                                                                <>
+
+                                                                    {/* <Button size="sm" leftIcon={<BsClipboardPlusFill />} colorScheme='blue' variant='solid'
+                                                                        onClick={() => { setPreChargeInfoModal(row); setModalVisible(true); }}
+                                                                    >
+                                                                        Editar
+                                                                    </Button> */}
+                                                                    {
+                                                                        edit &&
+
+
+                                                                        <Button size="sm" leftIcon={<BsClipboardPlusFill />} colorScheme='red' variant='solid' ml={4}
+                                                                            onClick={() => handleOnDeleteItem(rowIndex)}
+                                                                        >
+                                                                            Eliminar
+                                                                        </Button>
+                                                                    }
+                                                                </>
+                                                            }
+
+                                                        </Td>
+                                                    ))
+                                                }
+
+
+                                            </Tr>
+                                        ))}
+
+                                    {/* Despliegue de información */}
+                                    {/* <Tr my='.8rem' ps='0px'>
                                         <Td
                                             border={true ? "none" : null}
                                             borderBottomColor='#56577A'
                                             minW='150px'>
                                             <Flex direction='column'>
-                                                {/* <Text fontSize='sm' color='#fff' fontWeight='normal'>
+                                                <Text fontSize='sm' color='#fff' fontWeight='normal'>
                                                     {domain}
-                                                </Text> */}
+                                                </Text> 
                                                 <Text fontSize='sm' color='gray.400' fontWeight='normal'>
                                                     "hola"
                                                 </Text>
@@ -336,18 +464,18 @@ export const UseTable = React.memo(
                                             borderBottomColor='#56577A'
                                             minW='150px'>
                                             <Flex direction='column'>
-                                                {/* <Text fontSize='sm' color='#fff' fontWeight='normal'>
+                                                <Text fontSize='sm' color='#fff' fontWeight='normal'>
                                                     {domain}
-                                                </Text> */}
+                                                </Text> 
                                                 <Text fontSize='sm' color='gray.400' fontWeight='normal'>
                                                     "hola"
                                                 </Text>
                                             </Flex>
                                         </Td>
-                                    </Tr>
+                                    </Tr> */}
 
                                     {/* Para agregar filas */}
-                                    {/* AQUIIIIIIIII */}
+
                                     {edit == true &&
 
 
@@ -417,7 +545,7 @@ export const UseTable = React.memo(
 
 
 
-                                                                                            methodTest(col)
+                                                                                            generateOptions(col)
 
                                                                                         }
 
@@ -497,7 +625,8 @@ export const UseTable = React.memo(
                                                                                             <Input
                                                                                                 as={DatePicker} // Use the DatePicker component as an input
                                                                                                 // selected={selectedDates[date.id]}
-                                                                                                // onChange={(dateAux) => handleDateChange(date.id, dateAux)}
+                                                                                                selected={temporalRow[col.value] ? temporalRow[col.value] : ''}
+                                                                                                onChange={e => handleInfoRow(e, col.value, col.type)}
                                                                                                 dateFormat="yyyy-MM-dd"
                                                                                                 // placeholder={date.placeholder}   
                                                                                                 color='white'
