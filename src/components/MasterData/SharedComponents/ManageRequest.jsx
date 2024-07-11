@@ -151,7 +151,7 @@ export const ManageRequest = React.memo(
                     title: `Crear Dato Maestro`,
                     html:
 
-                        `<h2>¿Está seguro que desea crear el dato maestro</h2>`,
+                        `<h2>¿Está seguro que desea crear el dato maestro?</h2>`,
 
                     confirmButtonText: 'Si, crear',
                     confirmButtonColor: '#0ABF67',

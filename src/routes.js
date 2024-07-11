@@ -21,6 +21,8 @@ import Dashboard from "views/Dashboard/Dashboard.js";
 import MasterData from "views/MasterData/MasterData.js";
 import Production from "views/Production/Production.js";
 import Billing from "views/Billing/Billing.js";
+import Expenses from "views/Expenses/Expenses";
+
 
 
 import Tables from "views/Dashboard/Tables.js";
@@ -63,6 +65,14 @@ var dashRoutes = [
     rtlName: "لوحة القيادة",
     icon: <CreditIcon color='inherit' />,
     component: Billing,
+    layout: "/admin",
+  },
+  {
+    path: "/expenses",
+    name: "Gastos",
+    rtlName: "لوحة القيادة",
+    icon: <CreditIcon color='inherit' />,
+    component: Expenses,
     layout: "/admin",
   },
   // {

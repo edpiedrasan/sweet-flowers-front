@@ -1,8 +1,8 @@
 import config from './config.json';
 
-const { urlBase } = config;
+//const { urlBase } = config;
 
-// export const urlBase = "http://localhost:43888";
+export const urlBase = "http://localhost:43888";
 // export const urlBase = "https://ada6-186-64-168-61.ngrok-free.app";
 export const urlLogin = "https://vault-qa.gbm.net";
 

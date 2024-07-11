@@ -594,6 +594,10 @@ export const UseTableCustomBilling = React.memo(
             console.log("Rows", rows)
         }, [rows])
 
+        useEffect(() => {
+            console.log("SELECTED DATES", selectedDates)
+        }, [selectedDates])
+
 
         //Establece las opciones de dropdowns de los filtros.
         const buildFilterOptions = (columnOptions) => {
@@ -1046,10 +1050,10 @@ export const UseTableCustomBilling = React.memo(
 
                                                                                 <Badge colorScheme=
                                                                                     {(row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Vencida" ? "red" :
-                                                                                    (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Pendiente" ? "orange" :
-                                                                                        (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Credito" ? "purple" :
-                                                                                            (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Contado" ? "blue" :
-                                                                                                "green"}
+                                                                                        (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Pendiente" ? "orange" :
+                                                                                            (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Credito" ? "purple" :
+                                                                                                (row[col.value]?.value != undefined ? row[col.value].label : row[col.value]) == "Contado" ? "blue" :
+                                                                                                    "green"}
 
                                                                                 > {row[col.value]?.value != undefined ? row[col.value].label : row[col.value]}</Badge>
 
