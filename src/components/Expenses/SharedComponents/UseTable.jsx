@@ -17,9 +17,14 @@ import {
 // Icons
 import { AiFillCheckCircle } from "react-icons/ai";
 
+
 import IconBox from 'components/Icons/IconBox';
 
-import { BsClipboardPlusFill, BsFillSendPlusFill, BsFillSendFill } from "react-icons/bs";
+import { BsClipboardPlusFill, BsFillSendPlusFill, BsFillSendFill, BsBrushFill } from "react-icons/bs";
+import { FaCopy } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+
+
 
 
 import { CartIcon, DocumentIcon, GlobeIcon, RocketIcon, StatsIcon, WalletIcon, FulgerIcon, CreditIcon, IconEdit } from 'components/Icons/Icons.js';
@@ -70,134 +75,87 @@ export const UseTable = React.memo(
         }, [])
 
 
-        const handleInfoRow = (e, id, type) => {
+        const handleInfoRow = (e, id, type, index) => {
+
+            const items = newInfo.modalItems.map((item, indexItem) => {
+                if (index == indexItem) {
 
 
-            if (type == "select") {
-                console.log(e.target.value, id, type)
-                setTemporalRow({
-                    ...temporalRow, [id]: { value: e.target.children[e.target.selectedIndex].value, label: e.target.children[e.target.selectedIndex].label }
-                })
-            } else if (type == "date") {
-                setTemporalRow(temporalRow => { return { ...temporalRow, [id]: e } })
-            } else {
-                console.log(e, id, type)
+                    if (type == "select") {
 
-                setTemporalRow(temporalRow => { return { ...temporalRow, [id]: e.target.value } })
-            }
+                        console.log(e.target.value, id, type)
+                        return {
+                            ...item, [id]: { value: e.target.children[e.target.selectedIndex].value, label: e.target.children[e.target.selectedIndex].label }
+                        }
+                    } else if (type == "date") {
+                        return { ...item, [id]: e }
+                    } else {
+                        console.log(e, id, type)
 
+                        return { ...item, [id]: e.target.value }
+                    }
 
-            return;
-
-            if (type == 'select') {
-
-
-                /*Excepciones */
-
-                if (id == 'product') {
-                    // debugger;
-                    let unitaryPriceA = options[id].filter(option => option.value === parseInt(e.target.value))[0]?.unitaryPrice
-
-                    let totalyA = unitaryPriceA * temporalRow.quantity
-
-                    // setTemporalRow({
-                    //     ...temporalRow, ['unitaryPrice']: unitaryPrice
-                    // })
-
-                    setTemporalRow({
-                        ...temporalRow,
-                        [e.target.id]: { value: e.target.children[e.target.selectedIndex].value, label: e.target.children[e.target.selectedIndex].label },
-                        ['unitaryPrice']: unitaryPriceA,
-                        ['totaly']: totalyA
-
-                    })
                 } else {
-                    setTemporalRow({
-                        ...temporalRow, [e.target.id]: { value: e.target.children[e.target.selectedIndex].value, label: e.target.children[e.target.selectedIndex].label }
-                    })
-                }
-            } else if (type == 'number') {
-
-                let stockExistQuantity = 0
-
-                if (temporalRow.product != '') {
-                    //Extrae la cantidad de productos en stock
-                    stockExistQuantity = options?.product?.filter(product => product.value == parseInt(temporalRow.product.value))[0]?.stock
-
+                    return item
                 }
 
-                //Valida si la cantidad es mayor o menor 
-                if (stockExistQuantity >= e.target.value && temporalRow.product != '') {
+            });
+
+            // console.log("ITEMS", items)
 
 
-                    let totalyA = temporalRow.unitaryPrice * e.target.value
+            setNewInfo({
+                ...newInfo,
+                ['modalItems']: [...items
+                ]
+            })
 
-
-                    setTemporalRow({
-                        ...temporalRow, [id]:
-                            e.target.value,
-                        ['totaly']: totalyA
-                    })
-
-                }
-
-            } else { //No es select
-
-                let totalyA = temporalRow.unitaryPrice * e.target.value
-
-
-                setTemporalRow({
-                    ...temporalRow, [e.target.id]:
-                        e.target.value,
-                    ['totaly']: totalyA
-                })
-            }
 
         };
 
 
-        const handleAddNewRow = () => {
-            // Función para verificar campos vacíos
-            const checkForEmptyFields = (formData) => {
-                for (let key of Object.keys(formData)) {
-                    if (formData[key].toString(1).trim() === "" && key !== "actions") {
-                        return true; // Retorna true si encuentra algún campo vacío
-                    }
-                }
-                return false; // Retorna false si no encuentra ningún campo vacío
-            };
+        // const handleAddNewRow = () => {
+        //     // Función para verificar campos vacíos
+        //     const checkForEmptyFields = (formData) => {
+        //         for (let key of Object.keys(formData)) {
+        //             if (formData[key].toString(1).trim() === "" && key !== "actions") {
+        //                 return true; // Retorna true si encuentra algún campo vacío
+        //             }
+        //         }
+        //         return false; // Retorna false si no encuentra ningún campo vacío
+        //     };
 
 
-            console.log("NEWINFO", newInfo)
-            console.log("TEMPORAL", temporalRow)
+        //     console.log("NEWINFO", newInfo)
+        //     console.log("TEMPORAL", temporalRow)
 
-            if (!checkForEmptyFields(temporalRow)) {
-                setNewInfo({
-                    ...newInfo,
-                    ['modalItems']: [
-                        ...newInfo.modalItems,
-                        temporalRow
-                    ]
-                })
+        //     if (!checkForEmptyFields(temporalRow)) {
+        //         setNewInfo({
+        //             ...newInfo,
+        //             ['modalItems']: [
+        //                 ...newInfo.modalItems,
+        //                 temporalRow
+        //             ]
+        //         })
 
-                console.log("COLUMN", columns)
+        //         console.log("COLUMN", columns)
 
-                columns.map(column => {
+        //         columns.map(column => {
 
-                    setTemporalRow(temporalRow => { return { ...temporalRow, [column.value]: '' } })
+        //             setTemporalRow(temporalRow => { return { ...temporalRow, [column.value]: '' } })
 
-                })
-            } else {
-                toast({
-                    title: 'Atención',
-                    description: `Hay campos vacíos, por favor revisar.`,
-                    status: 'warning',
-                    duration: 4000,
-                    isClosable: true,
-                })
-            }
+        //         })
+        //     } else {
+        //         toast({
+        //             title: 'Atención',
+        //             description: `Hay campos vacíos, por favor revisar.`,
+        //             status: 'warning',
+        //             duration: 4000,
+        //             isClosable: true,
+        //         })
+        //     }
 
-        }
+        // }
 
 
 
@@ -241,13 +199,13 @@ export const UseTable = React.memo(
                 total += parseInt(e.totaly);
             })
 
-            return `₡${total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+            return `₡${total?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
         }
 
         const generateOptions = (col) => {
 
             let productsExisting = newInfo.modalItems.map(product => (parseInt(product?.product?.value)));
-            console.log(productsExisting)
+            // console.log(productsExisting)
 
             return options[col.value]?.filter(product => !productsExisting.includes(product.value)).map(option => (
                 <option key={option.value} value={option.value} label={option.label}>{option.label}</option>
@@ -268,6 +226,21 @@ export const UseTable = React.memo(
             console.log("temporalRow", temporalRow)
         }, [temporalRow])
 
+        const formatDateLabel = (date) => {
+            const dateObject = new Date(date?.toString());
+
+            console.log("DATE", dateObject)
+
+            // Obtener las partes de la fecha
+            const year = dateObject.getFullYear();
+            const month = ("0" + (dateObject.getMonth() + 1)).slice(-2); // Los meses van de 0 a 11
+            const day = ("0" + dateObject.getDate()).slice(-2);
+
+            console.log("YEAR", dateObject)
+
+            return !year? '': `${year}-${month}-${day} `;
+        }
+
 
         const getLabel = (row, col) => {
             let label = '';
@@ -275,7 +248,7 @@ export const UseTable = React.memo(
             //Es fecha
             if (isDate(row[col.value])) {
 
-                const dateObject = new Date(row[col.value].toString());
+                const dateObject = new Date(row[col.value]?.toString());
 
                 // Obtener las partes de la fecha
                 const year = dateObject.getFullYear();
@@ -294,14 +267,14 @@ export const UseTable = React.memo(
             } else if (row[col.value]?.value != undefined) {
                 label = row[col.value].label
             } else {
-                label = row[col.value].toString()
+                label = row[col.value]?.toString()
             }
             return label
 
         }
 
         function isDate(valor) {
-            const string = valor.toString();
+            const string = valor?.toString();
             return string.startsWith("Mon") || string.startsWith("Tue") || string.startsWith("Wed") || string.startsWith("Thu") || string.startsWith("Fri") || string.startsWith("Sat") || string.startsWith("Sun")
         }
 
@@ -314,19 +287,81 @@ export const UseTable = React.memo(
             return total;
         }
 
+        const getLastIndexRow = () => {
+            return newInfo.modalItems.length
+        }
+
+        //Función para agregar una nueva fila en blanco 
+        const addNewRow = () => {
+            let newRow = {}
+            columns.map(column => {
+                newRow = { ...newRow, [column.value]: '' }
+            })
+
+            setNewInfo({
+                ...newInfo,
+                ['modalItems']: [...newInfo.modalItems, newRow]
+            })
+
+            setrowIndexEdit(getLastIndexRow)
+
+
+        }
+
+
+        const handleCopyRow = (indexRow) => {
+            const row = newInfo.modalItems.filter((rowT, index) => (index == indexRow))[0]
+
+            setNewInfo({
+                ...newInfo,
+                ['modalItems']: [...newInfo.modalItems, row]
+            })
+
+        }
+
+
+        const [rowIndexEdit, setrowIndexEdit] = useState(0);
+
+        // Function to format number with commas and points
+        const formatNumber = (num) => {
+            // Convert number to string
+            const numStr = num?.toString();
+
+            // Split the number into integer and decimal parts (if any)
+            const parts = numStr.split('.');
+            let integerPart = parts[0];
+            const decimalPart = parts.length > 1 ? parts[1] : '';
+
+            // Insert commas as thousand separators
+            integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+            // Combine integer part and decimal part (if any)
+            let formattedNumber = integerPart;
+            if (decimalPart !== '') {
+                formattedNumber += ',' + decimalPart;
+            }
+
+            return formattedNumber;
+        };
+
+        useEffect(() => {
+            console.log("newInfo", newInfo)
+        }, [newInfo])
+
+
         return (
 
 
             <>
                 <Flex direction='column' pt={{ base: "120px", md: "75px" }}>
-                    <Card my='22px' overflowX={{ sm: "scroll", xl: "hidden" }} pb='0px'>
+                    <Card my='22px' overflowX={{ sm: "scroll", xl: "hidden" }} pb='200px'>
                         {/* Cards Master Data */}
 
-                        <CardHeader p='0px 0px 15px 0px'>
+                        <CardHeader p='0px 0px 0px 0px'>
 
 
-                            <Flex justify='space-between' w='100%' align='center' h='13%'>
-                                <Flex direction='column' maxW='60%' align='center'>
+                            <Flex justify='space-between' w='100%' align='center' h='3%'>
+                                <Flex direction='column' maxW='30%' align='center'>
 
                                     <Text color='#fff' fontSize='lg' fontWeight='bold'>
                                         Gestión de Gastos
@@ -341,7 +376,7 @@ export const UseTable = React.memo(
                                         />
                                         <Text fontSize='sm' color='gray.400' fontWeight='normal'>
                                             <Text fontWeight='bold' as='span' color='gray.400'>
-                                                ₡ {getTotalInfo()}
+                                                ₡ {getTotalInfo() ? formatNumber(getTotalInfo()) : 0}
                                             </Text>{" "}
                                             colones
                                         </Text>
@@ -377,7 +412,7 @@ export const UseTable = React.memo(
 
                             <Table variant='simple' color='#fff'>
                                 <Thead>
-                                    <Tr my='.8rem' ps='0px'>
+                                    <Tr my='.8rem' ps='100px'>
                                         {
 
                                             columns.map((col, colIndex) => (
@@ -403,35 +438,260 @@ export const UseTable = React.memo(
                                                 {
 
                                                     columns.map((col, colIndex) => (
-                                                        <Td
-                                                            border={false ? "none" : null}
-                                                            borderBottomColor='#56577A'
-                                                            minW='150px'>
 
-                                                            {col.type != 'button' ?
-                                                                <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
-                                                                    {/* {row[col.value]?.value != undefined ? row[col.value].label : row[col.value]} */}
-                                                                    {/* { row[col.value]} */}
-                                                                    {getLabel(row, col)}
 
-                                                                </Text>
-                                                                :
+                                                        <Td borderBottomColor='#56577A' border={false ? "none" : null} onClick={() => rowIndex != rowIndexEdit && setrowIndexEdit(rowIndex)}>
+
+                                                            {rowIndex !== rowIndexEdit ?
                                                                 <>
 
-                                                                    {/* <Button size="sm" leftIcon={<BsClipboardPlusFill />} colorScheme='blue' variant='solid'
-                                                                        onClick={() => { setPreChargeInfoModal(row); setModalVisible(true); }}
+                                                                    {/* <Td
+                                                                        border={false ? "none" : null}
+                                                                        borderBottomColor='#56577A'
+                                                                        minW='100px'
+                                                                        onClick={() => setrowIndexEdit(rowIndex)}
+                                                                    > */}
+                                                                    <Flex direction='column'
+                                                                        
                                                                     >
-                                                                        Editar
-                                                                    </Button> */}
-                                                                    {
-                                                                        edit &&
-
-
-                                                                        <Button size="sm" leftIcon={<BsClipboardPlusFill />} colorScheme='red' variant='solid' ml={4}
-                                                                            onClick={() => handleOnDeleteItem(rowIndex)}
+                                                                        {/* <Text fontSize='sm' color='#fff' fontWeight='normal'>
+                                                                                sss
+                                                                            </Text> */}
+                                                                        <Text fontSize='sm' color='gray.400' fontWeight='normal'
                                                                         >
-                                                                            Eliminar
-                                                                        </Button>
+                                                                            {col.type == "date" ?
+                                                                                formatDateLabel(newInfo.modalItems[rowIndex][col.value])
+
+                                                                                : newInfo.modalItems[rowIndex][col.value]?.value != undefined ? //select
+                                                                                    newInfo.modalItems[rowIndex][col.value]?.label + ""
+
+                                                                                    : newInfo.modalItems[rowIndex][col.value] != undefined ?
+                                                                                        (col.value == "amount" ?
+                                                                                            '₡' + formatNumber(newInfo.modalItems[rowIndex][col.value] + "") :
+                                                                                            newInfo.modalItems[rowIndex][col.value] + ""
+                                                                                        )
+                                                                                        :
+                                                                                        ""
+
+                                                                            }
+                                                                            {/* {getLabel(newInfo.modalItems[rowIndex], col)} */}
+                                                                        </Text>
+                                                                    </Flex>
+
+                                                                </>
+                                                                :
+
+
+
+                                                                <>
+
+                                                                    {
+                                                                        col.type == 'button' ?
+                                                                            <>
+
+                                                                                <Button size="sm"
+                                                                                    // leftIcon={<FaCopy />} 
+                                                                                    colorScheme='green' variant='solid'
+                                                                                    onClick={() => handleCopyRow(rowIndex)}
+                                                                                >
+                                                                                    <FaCopy style={{ marginRight: '0px' }} />
+
+                                                                                </Button>
+
+                                                                                <Button
+                                                                                    size="sm"
+                                                                                    colorScheme='red'
+                                                                                    variant='solid'
+                                                                                    ml={1}
+                                                                                    onClick={() => handleOnDeleteItem(rowIndex)}
+                                                                                // justifyContent="center"  // Center content horizontally
+                                                                                // alignItems="center"      // Center content vertically
+                                                                                // display="flex"           // Ensure it behaves as a flex container
+                                                                                >
+                                                                                    <MdDelete style={{ marginRight: '0px' }} />
+                                                                                </Button>
+                                                                                <Button
+                                                                                    size="sm"
+                                                                                    colorScheme='blue'
+                                                                                    variant='solid'
+                                                                                    ml={1}
+                                                                                    onClick={() => setrowIndexEdit(null)}
+                                                                                // justifyContent="center"  // Center content horizontally
+                                                                                // alignItems="center"      // Center content vertically
+                                                                                // display="flex"           // Ensure it behaves as a flex container
+                                                                                >
+                                                                                    <BsBrushFill style={{ marginRight: '0px' }} />
+                                                                                </Button>
+
+                                                                            </>
+                                                                            : col.type == 'select' ?
+                                                                                <FormControl
+                                                                                    isInvalid={false}
+                                                                                    mb='0px'
+                                                                                // onSubmit={handleSubmit}
+                                                                                >
+                                                                                    <GradientBorder
+                                                                                        mb='24px'
+                                                                                        w='200px'
+                                                                                        borderRadius='20px'>
+
+                                                                                        <Select
+                                                                                            placeholder={"Ingrese el " + col.label}
+                                                                                            id={col.value}
+
+                                                                                            color='gray'
+                                                                                            colorOptions='Black'
+                                                                                            bg='rgb(19,21,54)'
+                                                                                            border='transparent'
+                                                                                            borderRadius='20px'
+                                                                                            fontSize='sm'
+                                                                                            size='lg'
+                                                                                            w={{ base: "100%", md: "200px" }}
+                                                                                            maxW='100%'
+                                                                                            h='46px'
+                                                                                            onChange={e => handleInfoRow(e, col.value, col.type, rowIndex)}
+                                                                                            value={newInfo.modalItems[rowIndex][col.value]?.value ? newInfo.modalItems[rowIndex][col.value]?.value : ''}
+
+
+                                                                                            _focus={{ bg: 'black' }} // Establecer el color de fondo cuando el componente está enfocado
+
+                                                                                        >
+                                                                                            {
+
+
+
+                                                                                                generateOptions(col)
+
+                                                                                            }
+
+                                                                                        </Select>
+
+                                                                                    </GradientBorder>
+                                                                                    <FormErrorMessage>Campo vacío</FormErrorMessage>
+
+                                                                                </FormControl>
+                                                                                : col.type == 'number' ?
+
+                                                                                    <FormControl
+                                                                                        isInvalid={false}
+                                                                                    // onSubmit={handleSubmit}
+                                                                                    >
+
+                                                                                        <GradientBorder
+                                                                                            mb='24px'
+                                                                                            w='150px'
+                                                                                            borderRadius='10px'>
+                                                                                            <NumberInput
+                                                                                                w={{ base: "100%", md: "300px" }}
+                                                                                                maxW='100%'
+                                                                                                h='46px'
+                                                                                                borderRadius='10px'
+                                                                                                color='white'
+                                                                                                bg='rgb(19,21,54)'
+                                                                                                border='transparent'
+                                                                                                fontSize='sm'
+                                                                                                size='lg'
+                                                                                                defaultValue={0}
+                                                                                                min={1}
+                                                                                                max={3}
+                                                                                                // value={'3'}
+                                                                                                value={newInfo.modalItems[rowIndex][col.value] != undefined ? newInfo.modalItems[rowIndex][col.value] : ''}
+
+
+
+                                                                                            >
+
+                                                                                                <NumberInputField
+                                                                                                    w={{ base: "100%", md: "346px" }}
+                                                                                                    maxW='100%'
+                                                                                                    h='46px'
+                                                                                                    color='white'
+                                                                                                    border='transparent'
+                                                                                                    fontSize='sm'
+                                                                                                    size='lg'
+                                                                                                    borderRadius='9px'
+                                                                                                    onChange={e => handleInfoRow(e, col.value, col.type, rowIndex)}
+
+                                                                                                    id={col.value}
+                                                                                                // type={field.typeField}
+                                                                                                // placeholder={field.placeholder}
+                                                                                                // onChange={e => handleNewInfo(e, field.type)}
+                                                                                                />
+                                                                                                {/* <NumberInputStepper
+                                                                                                                                        onChange={e => handleInfoRow(e, col.value, col.type)}
+
+                                        >
+                                            <NumberIncrementStepper />
+                                            <NumberDecrementStepper />
+                                        </NumberInputStepper> */}
+
+                                                                                            </NumberInput>
+                                                                                        </GradientBorder>
+                                                                                        <FormErrorMessage>Campo vacío</FormErrorMessage>
+
+                                                                                    </FormControl>
+
+                                                                                    : col.type == "date" ?
+                                                                                        <FormControl
+                                                                                        >
+                                                                                            {/* <FormLabel ms='4px' fontSize='sm' fontWeight='normal' color='white'>
+                                                {date.label}
+                                            </FormLabel> */}
+                                                                                            <GradientBorder mb='24px' w='150px' borderRadius='20px'>
+                                                                                                <Input
+
+                                                                                                    as={DatePicker} // Use the DatePicker component as an input
+                                                                                                    // selected={selectedDates[date.id]}
+                                                                                                    selected={newInfo.modalItems[rowIndex][col.value] ? newInfo.modalItems[rowIndex][col.value] : ''}
+                                                                                                    onChange={e => handleInfoRow(e, col.value, col.type, rowIndex)}
+                                                                                                    dateFormat="yyyy-MM-dd"
+                                                                                                    // placeholder={date.placeholder}   
+                                                                                                    color='white'
+                                                                                                    bg='rgb(19,21,54)'
+                                                                                                    border='transparent'
+                                                                                                    borderRadius='20px'
+                                                                                                    fontSize='sm'
+                                                                                                    size='lg'
+                                                                                                    w={{ base: "100%", md: "145px" }}
+                                                                                                    maxW='100%'
+                                                                                                    h='46px'
+                                                                                                    placeholder={`Buscar...`}
+
+                                                                                                />
+                                                                                            </GradientBorder>
+                                                                                        </FormControl>
+                                                                                        :
+
+                                                                                        <FormControl
+                                                                                            isInvalid={false}
+                                                                                        // onSubmit={handleSubmit}
+                                                                                        >
+
+                                                                                            <GradientBorder
+                                                                                                mb='24px'
+                                                                                                w='150px'
+                                                                                                borderRadius='5px'>
+                                                                                                <Input
+                                                                                                    color='white'
+                                                                                                    bg='rgb(19,21,54)'
+                                                                                                    border='transparent'
+                                                                                                    borderRadius='5px'
+                                                                                                    fontSize='sm'
+                                                                                                    size='lg'
+                                                                                                    w={{ base: "100%", md: "150px" }}
+                                                                                                    maxW='100%'
+                                                                                                    h='46px'
+                                                                                                    value={newInfo.modalItems[rowIndex][col.value] != undefined ? newInfo.modalItems[rowIndex][col.value] : ''}
+                                                                                                    id={col.value}
+                                                                                                    // type={field.typeField}
+                                                                                                    // placeholder={field.placeholder}
+                                                                                                    onChange={e => handleInfoRow(e, col.value, col.type, rowIndex)}
+                                                                                                />
+                                                                                            </GradientBorder>
+                                                                                            <FormErrorMessage>Campo vacío</FormErrorMessage>
+
+                                                                                        </FormControl>
+
                                                                     }
                                                                 </>
                                                             }
@@ -477,228 +737,243 @@ export const UseTable = React.memo(
                                     {/* Para agregar filas */}
 
                                     {edit == true &&
+                                        <></>
 
+                                        // <Tr>
+                                        //     {
 
-                                        <Tr>
-                                            {
+                                        //         columns.map((col, colIndex) => (
+                                        //             <Td borderBottomColor='#56577A' border={true ? "none" : null}>
 
-                                                columns.map((col, colIndex) => (
-                                                    <Td borderBottomColor='#56577A' border={true ? "none" : null}>
-
-                                                        {col.type == 'button' ?
-                                                            <>
-
-                                                                <Button size="sm" leftIcon={<BsClipboardPlusFill />} colorScheme='green' variant='solid'
-                                                                    onClick={() => handleAddNewRow()}
-                                                                >
-                                                                    Agregar
-                                                                </Button>
-
-                                                                {/* <Button size="sm" leftIcon={<BsClipboardPlusFill />} colorScheme='red' variant='solid' ml={4}
-                onClick={() => handleOnDeleteModalItem(row)}
-            >
-                Eliminar
-            </Button>  */}
-
-                                                            </>
-                                                            :
+                                        //                 {col.type == 'button' ?
+                                        //                     <>
 
 
 
-                                                            <>
+                                        //                         <Button size="sm" leftIcon={<BsClipboardPlusFill />} colorScheme='red' variant='solid' ml={4}
+                                        //                             onClick={() => handleOnDeleteModalItem(row)}
+                                        //                         >
 
-                                                                {col.editable == true ?
+                                        //                         </Button>
 
-                                                                    (
-                                                                        col.type == 'select' ?
-                                                                            <FormControl
-                                                                                isInvalid={false}
-                                                                            // onSubmit={handleSubmit}
-                                                                            >
-                                                                                <GradientBorder
-                                                                                    mb='24px'
-                                                                                    w='200px'
-                                                                                    borderRadius='20px'>
-
-                                                                                    <Select
-                                                                                        placeholder={"Ingrese el " + col.label}
-                                                                                        id={col.value}
-
-                                                                                        color='gray'
-                                                                                        colorOptions='Black'
-                                                                                        bg='rgb(19,21,54)'
-                                                                                        border='transparent'
-                                                                                        borderRadius='20px'
-                                                                                        fontSize='sm'
-                                                                                        size='lg'
-                                                                                        w={{ base: "100%", md: "200px" }}
-                                                                                        maxW='100%'
-                                                                                        h='46px'
-                                                                                        onChange={e => handleInfoRow(e, col.value, col.type)}
-                                                                                        value={temporalRow[col.value]?.value ? temporalRow[col.value]?.value : ''}
-
-
-                                                                                        _focus={{ bg: 'black' }} // Establecer el color de fondo cuando el componente está enfocado
-
-                                                                                    >
-                                                                                        {
+                                        //                     </>
+                                        //                     :
 
 
 
-                                                                                            generateOptions(col)
+                                        //                     <>
+                                        //                         {/* 
+                                        //                         {col.editable == true ?
 
-                                                                                        }
+                                        //                             (
+                                        //                                 col.type == 'select' ?
+                                        //                                     <FormControl
+                                        //                                         isInvalid={false}
+                                        //                                     onSubmit={handleSubmit}
+                                        //                                     >
+                                        //                                         <GradientBorder
+                                        //                                             mb='24px'
+                                        //                                             w='200px'
+                                        //                                             borderRadius='20px'>
 
-                                                                                    </Select>
+                                        //                                             <Select
+                                        //                                                 placeholder={"Ingrese el " + col.label}
+                                        //                                                 id={col.value}
 
-                                                                                </GradientBorder>
-                                                                                <FormErrorMessage>Campo vacío</FormErrorMessage>
-
-                                                                            </FormControl>
-                                                                            : col.type == 'number' ?
-
-                                                                                <FormControl
-                                                                                    isInvalid={false}
-                                                                                // onSubmit={handleSubmit}
-                                                                                >
-
-                                                                                    <GradientBorder
-                                                                                        mb='24px'
-                                                                                        w='150px'
-                                                                                        borderRadius='10px'>
-                                                                                        <NumberInput
-                                                                                            w={{ base: "100%", md: "300px" }}
-                                                                                            maxW='100%'
-                                                                                            h='46px'
-                                                                                            borderRadius='10px'
-                                                                                            color='white'
-                                                                                            bg='rgb(19,21,54)'
-                                                                                            border='transparent'
-                                                                                            fontSize='sm'
-                                                                                            size='lg'
-                                                                                            defaultValue={0}
-                                                                                            min={1}
-                                                                                            max={3}
-                                                                                            // value={'3'}
-                                                                                            value={temporalRow[col.value] != undefined ? temporalRow[col.value] : ''}
+                                        //                                                 color='gray'
+                                        //                                                 colorOptions='Black'
+                                        //                                                 bg='rgb(19,21,54)'
+                                        //                                                 border='transparent'
+                                        //                                                 borderRadius='20px'
+                                        //                                                 fontSize='sm'
+                                        //                                                 size='lg'
+                                        //                                                 w={{ base: "100%", md: "200px" }}
+                                        //                                                 maxW='100%'
+                                        //                                                 h='46px'
+                                        //                                                 onChange={e => handleInfoRow(e, col.value, col.type)}
+                                        //                                                 value={temporalRow[col.value]?.value ? temporalRow[col.value]?.value : ''}
 
 
+                                        //                                                 _focus={{ bg: 'black' }} // Establecer el color de fondo cuando el componente está enfocado
 
-                                                                                        >
-
-                                                                                            <NumberInputField
-                                                                                                w={{ base: "100%", md: "346px" }}
-                                                                                                maxW='100%'
-                                                                                                h='46px'
-                                                                                                color='white'
-                                                                                                border='transparent'
-                                                                                                fontSize='sm'
-                                                                                                size='lg'
-                                                                                                borderRadius='9px'
-                                                                                                onChange={e => handleInfoRow(e, col.value, col.type)}
-
-                                                                                                id={col.value}
-                                                                                            // type={field.typeField}
-                                                                                            // placeholder={field.placeholder}
-                                                                                            // onChange={e => handleNewInfo(e, field.type)}
-                                                                                            />
-                                                                                            {/* <NumberInputStepper
-                                                                                                                                        onChange={e => handleInfoRow(e, col.value, col.type)}
-
-                                        >
-                                            <NumberIncrementStepper />
-                                            <NumberDecrementStepper />
-                                        </NumberInputStepper> */}
-
-                                                                                        </NumberInput>
-                                                                                    </GradientBorder>
-                                                                                    <FormErrorMessage>Campo vacío</FormErrorMessage>
-
-                                                                                </FormControl>
-
-                                                                                : col.type == "date" ?
-                                                                                    <FormControl>
-                                                                                        {/* <FormLabel ms='4px' fontSize='sm' fontWeight='normal' color='white'>
-                                                {date.label}
-                                            </FormLabel> */}
-                                                                                        <GradientBorder mb='24px' w='150px' borderRadius='20px'>
-                                                                                            <Input
-                                                                                                as={DatePicker} // Use the DatePicker component as an input
-                                                                                                // selected={selectedDates[date.id]}
-                                                                                                selected={temporalRow[col.value] ? temporalRow[col.value] : ''}
-                                                                                                onChange={e => handleInfoRow(e, col.value, col.type)}
-                                                                                                dateFormat="yyyy-MM-dd"
-                                                                                                // placeholder={date.placeholder}   
-                                                                                                color='white'
-                                                                                                bg='rgb(19,21,54)'
-                                                                                                border='transparent'
-                                                                                                borderRadius='20px'
-                                                                                                fontSize='sm'
-                                                                                                size='lg'
-                                                                                                w={{ base: "100%", md: "145px" }}
-                                                                                                maxW='100%'
-                                                                                                h='46px'
-                                                                                                placeholder={`Buscar...`}
-                                                                                            />
-                                                                                        </GradientBorder>
-                                                                                    </FormControl>
-                                                                                    :
-
-                                                                                    <FormControl
-                                                                                        isInvalid={false}
-                                                                                    // onSubmit={handleSubmit}
-                                                                                    >
-
-                                                                                        <GradientBorder
-                                                                                            mb='24px'
-                                                                                            w='150px'
-                                                                                            borderRadius='5px'>
-                                                                                            <Input
-                                                                                                color='white'
-                                                                                                bg='rgb(19,21,54)'
-                                                                                                border='transparent'
-                                                                                                borderRadius='5px'
-                                                                                                fontSize='sm'
-                                                                                                size='lg'
-                                                                                                w={{ base: "100%", md: "150px" }}
-                                                                                                maxW='100%'
-                                                                                                h='46px'
-                                                                                                value={temporalRow[col.value] != undefined ? temporalRow[col.value] : ''}
-                                                                                                id={col.value}
-                                                                                                // type={field.typeField}
-                                                                                                // placeholder={field.placeholder}
-                                                                                                onChange={e => handleInfoRow(e, col.value, col.type)}
-                                                                                            />
-                                                                                        </GradientBorder>
-                                                                                        <FormErrorMessage>Campo vacío</FormErrorMessage>
-
-                                                                                    </FormControl>
-                                                                    )
-                                                                    :
-                                                                    <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
-                                                                        {temporalRow[col.value]}
-                                                                    </Text>
-
-                                                                }
-                                                            </>
-                                                        }
-
-                                                    </Td>
-                                                ))
-                                            }
+                                        //                                             >
+                                        //                                                 {
 
 
-                                        </Tr>
+
+                                        //                                                     generateOptions(col)
+
+                                        //                                                 }
+
+                                        //                                             </Select>
+
+                                        //                                         </GradientBorder>
+                                        //                                         <FormErrorMessage>Campo vacío</FormErrorMessage>
+
+                                        //                                     </FormControl>
+                                        //                                     : col.type == 'number' ?
+
+                                        //                                         <FormControl
+                                        //                                             isInvalid={false}
+                                        //                                         onSubmit={handleSubmit}
+                                        //                                         >
+
+                                        //                                             <GradientBorder
+                                        //                                                 mb='24px'
+                                        //                                                 w='150px'
+                                        //                                                 borderRadius='10px'>
+                                        //                                                 <NumberInput
+                                        //                                                     w={{ base: "100%", md: "300px" }}
+                                        //                                                     maxW='100%'
+                                        //                                                     h='46px'
+                                        //                                                     borderRadius='10px'
+                                        //                                                     color='white'
+                                        //                                                     bg='rgb(19,21,54)'
+                                        //                                                     border='transparent'
+                                        //                                                     fontSize='sm'
+                                        //                                                     size='lg'
+                                        //                                                     defaultValue={0}
+                                        //                                                     min={1}
+                                        //                                                     max={3}
+                                        //                                                     value={'3'}
+                                        //                                                     value={temporalRow[col.value] != undefined ? temporalRow[col.value] : ''}
+
+
+
+                                        //                                                 >
+
+                                        //                                                     <NumberInputField
+                                        //                                                         w={{ base: "100%", md: "346px" }}
+                                        //                                                         maxW='100%'
+                                        //                                                         h='46px'
+                                        //                                                         color='white'
+                                        //                                                         border='transparent'
+                                        //                                                         fontSize='sm'
+                                        //                                                         size='lg'
+                                        //                                                         borderRadius='9px'
+                                        //                                                         onChange={e => handleInfoRow(e, col.value, col.type)}
+
+                                        //                                                         id={col.value}
+                                        //                                                     type={field.typeField}
+                                        //                                                     placeholder={field.placeholder}
+                                        //                                                     onChange={e => handleNewInfo(e, field.type)}
+                                        //                                                     />
+
+
+                                        //                                                 </NumberInput>
+                                        //                                             </GradientBorder>
+                                        //                                             <FormErrorMessage>Campo vacío</FormErrorMessage>
+
+                                        //                                         </FormControl>
+
+                                        //                                         : col.type == "date" ?
+                                        //                                             <FormControl>
+
+                                        //                                                 <GradientBorder mb='24px' w='150px' borderRadius='20px'>
+                                        //                                                     <Input
+                                        //                                                         as={DatePicker} // Use the DatePicker component as an input
+                                        //                                                         selected={selectedDates[date.id]}
+                                        //                                                         selected={temporalRow[col.value] ? temporalRow[col.value] : ''}
+                                        //                                                         onChange={e => handleInfoRow(e, col.value, col.type)}
+                                        //                                                         dateFormat="yyyy-MM-dd"
+                                        //                                                         placeholder={date.placeholder}   
+                                        //                                                         color='white'
+                                        //                                                         bg='rgb(19,21,54)'
+                                        //                                                         border='transparent'
+                                        //                                                         borderRadius='20px'
+                                        //                                                         fontSize='sm'
+                                        //                                                         size='lg'
+                                        //                                                         w={{ base: "100%", md: "145px" }}
+                                        //                                                         maxW='100%'
+                                        //                                                         h='46px'
+                                        //                                                         placeholder={`Buscar...`}
+                                        //                                                     />
+                                        //                                                 </GradientBorder>
+                                        //                                             </FormControl>
+                                        //                                             :
+
+                                        //                                             <FormControl
+                                        //                                                 isInvalid={false}
+                                        //                                             onSubmit={handleSubmit}
+                                        //                                             >
+
+                                        //                                                 <GradientBorder
+                                        //                                                     mb='24px'
+                                        //                                                     w='150px'
+                                        //                                                     borderRadius='5px'>
+                                        //                                                     <Input
+                                        //                                                         color='white'
+                                        //                                                         bg='rgb(19,21,54)'
+                                        //                                                         border='transparent'
+                                        //                                                         borderRadius='5px'
+                                        //                                                         fontSize='sm'
+                                        //                                                         size='lg'
+                                        //                                                         w={{ base: "100%", md: "150px" }}
+                                        //                                                         maxW='100%'
+                                        //                                                         h='46px'
+                                        //                                                         value={temporalRow[col.value] != undefined ? temporalRow[col.value] : ''}
+                                        //                                                         id={col.value}
+                                        //                                                         type={field.typeField}
+                                        //                                                         placeholder={field.placeholder}
+                                        //                                                         onChange={e => handleInfoRow(e, col.value, col.type)}
+                                        //                                                     />
+                                        //                                                 </GradientBorder>
+                                        //                                                 <FormErrorMessage>Campo vacío</FormErrorMessage>
+
+                                        //                                             </FormControl>
+                                        //                             )
+                                        //                             :
+                                        //                             <Text fontSize='sm' color='#fff' fontWeight='' pb='.5rem'>
+                                        //                                 {temporalRow[col.value]}
+                                        //                             </Text>
+
+                                        //                         } */}
+                                        //                     </>
+                                        //                 }
+
+                                        //             </Td>
+                                        //         ))
+                                        //     }
+
+
+                                        // </Tr>
 
                                     }
 
                                 </Tbody>
 
 
+
                             </Table>
 
-                        </CardBody>
 
+
+                        </CardBody>
+                        <Flex justify='center' align='center' w='100%' h='13%' mt="20px">
+                            <Flex direction='column' maxW='50%' align='center'>
+                                <Button
+                                    size="sm"
+                                    leftIcon={<BsClipboardPlusFill />}
+                                    colorScheme='blue'
+                                    variant='solid'
+                                    mr="2"
+                                    onClick={() => addNewRow()}
+                                >
+                                    Nueva fila
+                                </Button>
+                            </Flex>
+                            <Flex direction='column' maxW='50%' align='center'>
+                                <Button
+                                    size="sm"
+                                    leftIcon={<BsFillSendFill />}
+                                    colorScheme='green'
+                                    variant='solid'
+                                    onClick={() => addNewRow()}
+                                >
+                                    Enviar
+                                </Button>
+                            </Flex>
+                        </Flex>
 
                     </Card>
                 </Flex>

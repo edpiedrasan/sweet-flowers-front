@@ -94,7 +94,7 @@ export const ManageRequest = React.memo(
 
 
         //Se almacena la nueva información 
-        const [newInfo, setNewInfo] = useState({ modalItems: [] });
+        const [newInfo, setNewInfo] = useState({ modalItems: [{}] });
 
         //Aparezca o no el modal
         const [modalVisible, setModalVisible] = useState(false)

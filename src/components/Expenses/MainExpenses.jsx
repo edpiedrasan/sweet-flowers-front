@@ -93,13 +93,12 @@ export default function MainExpenses() {
 
 
             ],
-            modal: null,
             columnsTable: [
-                { value: "provider", label: "Proveedor", type: "select", editable: true },
-                { value: "amount", label: "Monto", type: "number", editable: true },
-                { value: "billingNumber", label: "Número de factura", type: "text", editable: true },
-                { value: "billingDate", label: "Fecha", type: "date", editable: true },
-                { value: "actions", label: "", type: "button", editable: false },
+                { value: "provider", label: "Proveedor", type: "select" },
+                { value: "amount", label: "Monto", type: "number" },
+                { value: "billingNumber", label: "Número de factura", type: "text" },
+                { value: "billingDate", label: "Fecha", type: "date" },
+                { value: "actions", label: "", type: "button"},
             ]
 
         },
