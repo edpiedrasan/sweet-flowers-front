@@ -29,6 +29,7 @@ import RTLLayout from "layouts/RTL.js";
 import SignIn from "views/Pages/SignIn";
 
 import PrivateRoute from "PrivateRoute.jsx";
+import { IndexSmartAutomation } from "./SmartAutomation/IndexSmartAutomation";
 
   window.location.hash = '';
 
@@ -38,6 +39,7 @@ ReactDOM.render(
   <HashRouter>
     <Switch>
       <PrivateRoute path="/admin" component={AdminLayout} />
+      <PrivateRoute path="/automation" component={IndexSmartAutomation} />
 
       {/* <Route path={`/auth`} component={AuthLayout} />
         <Route path={`/admin`} component={AdminLayout} />

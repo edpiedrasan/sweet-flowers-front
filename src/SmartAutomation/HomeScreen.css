@@ -1,0 +1,180 @@
+/* HomeScreen.css */
+
+/* General Dark Theme */
+body {
+    background-color: #101524; /* Fondo oscuro */
+    color: #E0E0E0; /* Texto claro */
+    font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif; /* Fuentes modernas */
+    margin: 0;
+    padding: 0;
+  }
+  
+  .dark-theme {
+    padding: 1px;
+  }
+  
+  /* Tipografía */
+  h1, h5 {
+    font-weight: 600; /* Encabezados destacados */
+    letter-spacing: 0.4px;
+    color: #FFFFFF;
+  }
+  
+  h1 {
+    font-size: 1.8rem; /* Tamaño ajustado para encabezados principales */
+  }
+  
+  h5 {
+    font-size: 1.3rem; /* Tamaño ajustado para subtítulos */
+  }
+
+  h3 {
+    font-size: 0.8rem; /* Tamaño ajustado para subtítulos */
+  }
+  
+  button, p, span {
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.2px;
+    font-size: 0.95rem; /* Ajustado para un diseño más compacto */
+  }
+  
+  /* Dashboard Styles */
+  .dashboard {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .dashboard .title {
+    font-size: 1.8rem; /* Más compacto que antes */
+    font-weight: bold;
+    background: linear-gradient(90deg, #1DB954, #1E90FF); /* Degradado del verde al azul */
+    -webkit-background-clip: text; /* Hace que el degradado se aplique solo al texto */
+    -webkit-text-fill-color: transparent; /* Elimina el color de fondo del texto */
+    text-align: center; /* Centra el texto */
+  }  
+  
+  .dashboard .subtitle {
+    color: #1DB954;
+    font-size: 1rem; /* Reducción para mayor armonía visual */
+  }
+  
+  /* Botón Volver */
+  .back-button {
+    background-color: #1d2439;
+    color: #E0E0E0;
+    border: none;
+    padding: 8px 16px; /* Tamaño de botón más compacto */
+    font-size: 0.9rem; /* Fuente más pequeña */
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .back-button:hover {
+    background-color: #1d2439;
+    color: #FFFFFF;
+  }
+  
+  /* Grid Layout */
+  .gpio-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px; /* Menor espacio entre tarjetas */
+  }
+  
+  .gpio-col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Card Styles */
+  .gpio-card {
+    padding: 15px;
+    background-color: #1d2439;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .gpio-card.active {
+    border: 2px solid #1DB954;
+  }
+  
+  .gpio-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  .gpio-card h5 {
+    font-size: 1.3rem; /* Tamaño más compacto y moderno */
+  }
+  
+  .gpio-card .status {
+    font-weight: bold;
+    font-size: 0.8rem; /* Ligera reducción del texto */
+  }
+  .gpio-card .label {
+    /* font-weight: bold; */
+    font-size: 0.7rem; /* Ligera reducción del texto */
+  }
+  
+  .gpio-card .status.on {
+    color: #1DB954;
+  }
+  
+  .gpio-card .status.off {
+    color: #E74C3C;
+  }
+  
+  /* Button Styles */
+  .action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 8px;
+    font-size: 0.9rem; /* Fuente ajustada */
+    border-radius: 5px;
+    background-color: #4b5c92;
+    color: #f2ddcc;
+    /* transition: background-color 0.3s; */
+  }
+  
+  .action-button.success {
+    background-color: #1DB954;
+    border: none;
+  }
+  
+  .action-button.danger {
+    background-color: #E74C3C;
+    border: none;
+  }
+  
+  .action-button:hover {
+    opacity: 0.85;
+  }
+  
+  /* Spinner */
+  .spinner-border {
+    color: #1DB954;
+  }
+  
+  /* Error Message */
+  .errorText {
+    color: #E74C3C;
+    text-align: center;
+    font-size: 0.95rem; /* Más armonioso */
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .gpio-card h5 {
+      font-size: 1.1rem;
+    }
+  
+    .action-button {
+      font-size: 0.85rem; /* Aún más compacto para pantallas pequeñas */
+    }
+  }
+  

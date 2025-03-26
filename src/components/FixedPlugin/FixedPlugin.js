@@ -22,23 +22,30 @@ import { Button, useColorModeValue } from "@chakra-ui/react";
 import { SettingsIcon } from "components/Icons/Icons";
 import PropTypes from "prop-types";
 import React from "react";
+import { useHistory } from "react-router-dom";
+import { PiPlantBold } from "react-icons/pi";
 
 export default function FixedPlugin(props) {
   const { secondary, onChange, onSwitch, fixed, ...rest } = props;
+  let history = useHistory()
   // Chakra Color Mode
   let navbarIcon = "white";
   let bgButton = "brand.200";
   // if (props.secondary) {
   //   fixedDisplay = "none";
   // }
+const handleOpenSmartAutomation =() => {
+  history.push("/automation");
 
+}
   const settingsRef = React.useRef();
   return (
     <>
       <Button
         h='52px'
         w='52px'
-        onClick={props.onOpen}
+        // onClick={props.onOpen}
+        onClick={handleOpenSmartAutomation}
         bg={bgButton}
         position='fixed'
         variant='no-hover'
@@ -47,13 +54,14 @@ export default function FixedPlugin(props) {
         bottom='30px'
         borderRadius='50px'
         boxShadow='0 2px 12px 0 rgb(0 0 0 / 16%)'>
-        <SettingsIcon
+        {/* <SettingsIcon
           cursor='pointer'
           ref={settingsRef}
           color={navbarIcon}
           w='20px'
           h='20px'
-        />
+        /> */}
+        <PiPlantBold color="white" size="30px" /> {/* Aquí ajustamos el tamaño y el color */}
       </Button>
     </>
   );
