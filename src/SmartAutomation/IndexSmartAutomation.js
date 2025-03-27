@@ -13,7 +13,7 @@ export const IndexSmartAutomation = () => {
 
     const fetchGpioStatus = async () => {
         try {
-            const response = await fetch('https://reclining-starfish-6544.dataplicity.io/gpio');
+            const response = await fetch('https://polemic-quetzal-1242.dataplicity.io/gpio');
             if (!response.ok) throw new Error('Error en la respuesta del servidor');
             const data = await response.json();
             setGpioStatus(data);
@@ -28,7 +28,7 @@ export const IndexSmartAutomation = () => {
         try {
             setLoading(true);
             const newState = currentState === 0 ? 1 : 0;
-            await fetch(`https://reclining-starfish-6544.dataplicity.io/gpio/${gpioId}`, {
+            await fetch(`https://polemic-quetzal-1242.dataplicity.io/gpio/${gpioId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ turn: newState }),
