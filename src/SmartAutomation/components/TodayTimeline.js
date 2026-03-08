@@ -1,18 +1,9 @@
 import React from "react";
-import { Box, Text, Flex } from "@chakra-ui/react";
-import { colors } from "../theme/irrigationTheme";
+import { Box, Text, Flex, Icon } from "@chakra-ui/react";
+import { FaClock } from "react-icons/fa";
+import { colors, gradients, glassCard, gpioColors } from "../theme/irrigationTheme";
 
-const HOURS = Array.from({ length: 24 }, (_, i) => i);
-const TIMELINE_HEIGHT = 50;
-
-const gpioColors = [
-  colors.accent.green,
-  colors.accent.blue,
-  colors.accent.orange,
-  colors.accent.purple,
-  colors.accent.cyan,
-  colors.accent.red,
-];
+const HOURS = Array.from({ length: 25 }, (_, i) => i);
 
 const TodayTimeline = ({ schedules }) => {
   const today = new Date().getDay();
@@ -23,69 +14,92 @@ const TodayTimeline = ({ schedules }) => {
     return days.includes(today);
   });
 
-  // Assign colors to GPIO IDs
   const gpioIds = [...new Set(todaySchedules.map((s) => s.gpio_id))];
   const gpioColorMap = {};
   gpioIds.forEach((id, idx) => {
     gpioColorMap[id] = gpioColors[idx % gpioColors.length];
   });
 
-  const getBlockStyle = (schedule) => {
-    const startMinutes = schedule.time_hour * 60 + schedule.time_minute;
-    const totalMinutes = 24 * 60;
-    const left = `${(startMinutes / totalMinutes) * 100}%`;
-    const width = `${(schedule.duration_minutes / totalMinutes) * 100}%`;
-    return { left, width };
-  };
-
   const formatTime = (h, m) =>
     `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 
-  const nowMinutes = new Date().getHours() * 60 + new Date().getMinutes();
+  const now = new Date();
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
   const nowPercent = (nowMinutes / (24 * 60)) * 100;
 
   return (
     <Box>
-      <Flex justify="space-between" align="center" mb={4}>
+      <Flex justify="space-between" align="center" mb={6}>
         <Box>
-          <Text fontSize="lg" color={colors.text.primary} fontWeight="600">
-            Línea de Tiempo - Hoy
+          <Text fontSize="lg" fontWeight="700" color={colors.text.primary}>
+            Línea de Tiempo
           </Text>
           <Text fontSize="sm" color={colors.text.secondary}>
-            {todaySchedules.length} riego{todaySchedules.length !== 1 ? "s" : ""} programado{todaySchedules.length !== 1 ? "s" : ""}
+            {todaySchedules.length} riego{todaySchedules.length !== 1 ? "s" : ""} programado{todaySchedules.length !== 1 ? "s" : ""} hoy
           </Text>
         </Box>
+        <Flex
+          px={3}
+          py={1.5}
+          borderRadius="full"
+          bg="rgba(0, 230, 138, 0.08)"
+          border="1px solid"
+          borderColor={colors.border.default}
+          align="center"
+          gap={2}
+        >
+          <Icon as={FaClock} color={colors.green.soft} boxSize={3} />
+          <Text fontSize="xs" fontWeight="600" color={colors.green.soft}>
+            {formatTime(now.getHours(), now.getMinutes())}
+          </Text>
+        </Flex>
       </Flex>
 
       {/* Legend */}
-      <Flex gap={4} mb={4} flexWrap="wrap">
-        {gpioIds.map((id) => {
-          const schedule = todaySchedules.find((s) => s.gpio_id === id);
-          return (
-            <Flex key={id} align="center" gap={2}>
-              <Box w={3} h={3} borderRadius="full" bg={gpioColorMap[id]} />
-              <Text fontSize="xs" color={colors.text.secondary}>
-                {schedule ? schedule.gpio_label : `Salida ${id}`}
-              </Text>
-            </Flex>
-          );
-        })}
-      </Flex>
+      {gpioIds.length > 0 && (
+        <Flex gap={3} mb={5} flexWrap="wrap">
+          {gpioIds.map((id) => {
+            const s = todaySchedules.find((s) => s.gpio_id === id);
+            return (
+              <Flex
+                key={id}
+                align="center"
+                gap={2}
+                bg="rgba(16, 52, 44, 0.4)"
+                px={3}
+                py={1.5}
+                borderRadius="full"
+                border="1px solid"
+                borderColor={colors.border.subtle}
+              >
+                <Box w="8px" h="8px" borderRadius="full" bg={gpioColorMap[id]} boxShadow={`0 0 6px ${gpioColorMap[id]}40`} />
+                <Text fontSize="xs" color={colors.text.secondary} fontWeight="500">
+                  {s ? s.gpio_label : `Salida ${id}`}
+                </Text>
+              </Flex>
+            );
+          })}
+        </Flex>
+      )}
 
-      {/* Timeline */}
+      {/* Timeline container */}
       <Box
-        bg={colors.bg.secondary}
-        borderRadius="12px"
-        border="1px solid"
-        borderColor={colors.border.default}
-        p={4}
-        overflowX="auto"
+        sx={glassCard}
+        p={6}
+        className="glass-card"
       >
-        <Box position="relative" minW="800px">
-          {/* Hour markers */}
-          <Flex justify="space-between" mb={2}>
-            {HOURS.filter((h) => h % 2 === 0).map((h) => (
-              <Text key={h} fontSize="xs" color={colors.text.muted} w="8.33%">
+        <Box position="relative" minW="700px" overflowX="auto">
+          {/* Hour labels */}
+          <Flex mb={3}>
+            {HOURS.filter((h) => h % 3 === 0 && h < 25).map((h) => (
+              <Text
+                key={h}
+                fontSize="xs"
+                color={colors.text.dim}
+                fontWeight="500"
+                w={`${(3 / 24) * 100}%`}
+                flexShrink={0}
+              >
                 {String(h).padStart(2, "0")}:00
               </Text>
             ))}
@@ -94,14 +108,15 @@ const TodayTimeline = ({ schedules }) => {
           {/* Timeline bar */}
           <Box
             position="relative"
-            bg={colors.bg.input}
-            borderRadius="8px"
-            h={`${TIMELINE_HEIGHT}px`}
+            bg="rgba(10, 30, 25, 0.6)"
+            borderRadius="12px"
+            h="56px"
             border="1px solid"
-            borderColor={colors.border.default}
+            borderColor={colors.border.subtle}
+            overflow="hidden"
           >
-            {/* Hour grid lines */}
-            {HOURS.map((h) => (
+            {/* Grid lines */}
+            {HOURS.filter((h) => h > 0 && h < 24).map((h) => (
               <Box
                 key={h}
                 position="absolute"
@@ -109,83 +124,134 @@ const TodayTimeline = ({ schedules }) => {
                 top={0}
                 bottom={0}
                 w="1px"
-                bg={colors.border.default}
-                opacity={0.5}
+                bg={h % 6 === 0 ? "rgba(52, 211, 153, 0.08)" : "rgba(52, 211, 153, 0.03)"}
               />
             ))}
 
             {/* Schedule blocks */}
             {todaySchedules.map((s, idx) => {
-              const { left, width } = getBlockStyle(s);
+              const startMin = s.time_hour * 60 + s.time_minute;
+              const left = `${(startMin / (24 * 60)) * 100}%`;
+              const width = `${(s.duration_minutes / (24 * 60)) * 100}%`;
+              const color = gpioColorMap[s.gpio_id];
+
               return (
                 <Box
                   key={s.id || idx}
                   position="absolute"
-                  top="4px"
-                  bottom="4px"
+                  top="6px"
+                  bottom="6px"
                   left={left}
                   width={width}
-                  minW="4px"
-                  bg={gpioColorMap[s.gpio_id]}
-                  opacity={0.8}
-                  borderRadius="4px"
+                  minW="6px"
+                  bg={`${color}30`}
+                  border="1px solid"
+                  borderColor={`${color}50`}
+                  borderRadius="8px"
                   cursor="pointer"
                   title={`${s.gpio_label}: ${formatTime(s.time_hour, s.time_minute)} - ${s.duration_minutes}min`}
-                  _hover={{ opacity: 1, transform: "scaleY(1.1)" }}
-                  transition="all 0.2s"
-                />
+                  _hover={{
+                    bg: `${color}50`,
+                    transform: "scaleY(1.08)",
+                    zIndex: 5,
+                  }}
+                  transition="all 0.2s ease"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  overflow="hidden"
+                >
+                  <Text fontSize="9px" color={color} fontWeight="700" whiteSpace="nowrap" px={1}>
+                    {formatTime(s.time_hour, s.time_minute)}
+                  </Text>
+                </Box>
               );
             })}
 
-            {/* Current time indicator */}
+            {/* Current time line */}
             <Box
               position="absolute"
               left={`${nowPercent}%`}
-              top="-4px"
-              bottom="-4px"
+              top="-2px"
+              bottom="-2px"
               w="2px"
-              bg={colors.accent.red}
-              zIndex={2}
+              bg={colors.status.off}
+              zIndex={10}
+              boxShadow={`0 0 8px ${colors.status.off}`}
             >
               <Box
+                className="timeline-now-dot"
                 position="absolute"
-                top="-6px"
-                left="-3px"
-                w={2}
-                h={2}
+                top="-4px"
+                left="-4px"
+                w="10px"
+                h="10px"
                 borderRadius="full"
-                bg={colors.accent.red}
+                bg={colors.status.off}
+                boxShadow={`0 0 10px ${colors.status.off}`}
               />
             </Box>
           </Box>
 
-          {/* Schedule details below timeline */}
+          {/* Details below timeline */}
           {todaySchedules.length > 0 && (
-            <Flex gap={3} mt={3} flexWrap="wrap">
-              {todaySchedules.map((s) => (
-                <Flex
-                  key={s.id}
-                  align="center"
-                  gap={2}
-                  bg={colors.bg.card}
-                  px={3}
-                  py={1.5}
-                  borderRadius="8px"
-                  border="1px solid"
-                  borderColor={colors.border.default}
-                >
-                  <Box w={2} h={2} borderRadius="full" bg={gpioColorMap[s.gpio_id]} />
-                  <Text fontSize="xs" color={colors.text.primary} fontWeight="500">
-                    {formatTime(s.time_hour, s.time_minute)}
-                  </Text>
-                  <Text fontSize="xs" color={colors.text.muted}>
-                    {s.gpio_label} · {s.duration_minutes}min
-                  </Text>
-                </Flex>
-              ))}
+            <Flex gap={3} mt={4} flexWrap="wrap">
+              {todaySchedules
+                .sort((a, b) => a.time_hour * 60 + a.time_minute - (b.time_hour * 60 + b.time_minute))
+                .map((s) => {
+                  const color = gpioColorMap[s.gpio_id];
+                  const startMin = s.time_hour * 60 + s.time_minute;
+                  const isPast = startMin + s.duration_minutes < nowMinutes / 1;
+                  const isActive = startMin <= nowMinutes && startMin + s.duration_minutes > nowMinutes;
+
+                  return (
+                    <Flex
+                      key={s.id}
+                      align="center"
+                      gap={2.5}
+                      bg={isActive ? `${color}12` : colors.bg.input}
+                      px={3}
+                      py={2}
+                      borderRadius="10px"
+                      border="1px solid"
+                      borderColor={isActive ? `${color}40` : colors.border.subtle}
+                      opacity={isPast ? 0.5 : 1}
+                    >
+                      <Box w="6px" h="6px" borderRadius="full" bg={color} boxShadow={isActive ? `0 0 8px ${color}` : "none"} />
+                      <Text fontSize="xs" fontWeight="700" color={colors.text.primary}>
+                        {formatTime(s.time_hour, s.time_minute)}
+                      </Text>
+                      <Text fontSize="xs" color={colors.text.muted}>
+                        {s.gpio_label}
+                      </Text>
+                      <Text fontSize="xs" color={colors.text.dim}>
+                        {s.duration_minutes}min
+                      </Text>
+                      {isActive && (
+                        <Box
+                          px={2}
+                          py={0.5}
+                          borderRadius="full"
+                          bg={`${color}20`}
+                        >
+                          <Text fontSize="9px" fontWeight="700" color={color} textTransform="uppercase">
+                            Activo
+                          </Text>
+                        </Box>
+                      )}
+                    </Flex>
+                  );
+                })}
             </Flex>
           )}
         </Box>
+
+        {todaySchedules.length === 0 && (
+          <Flex direction="column" align="center" py={6}>
+            <Icon as={FaClock} color={colors.text.dim} boxSize={8} mb={3} />
+            <Text color={colors.text.muted} fontSize="sm">No hay riegos programados para hoy</Text>
+          </Flex>
+        )}
       </Box>
     </Box>
   );

@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from "react";
 import {
   Box,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
   Text,
   Flex,
   Badge,
   Button,
   Select,
+  Icon,
+  Spinner,
 } from "@chakra-ui/react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { colors, actionBadgeColors } from "../theme/irrigationTheme";
+import { FaChevronLeft, FaChevronRight, FaSync, FaHistory } from "react-icons/fa";
+import { colors, gradients, glassCard, actionBadgeColors } from "../theme/irrigationTheme";
 import { getLogs } from "actions/irrigation";
 
 const actionLabels = {
@@ -27,7 +23,7 @@ const actionLabels = {
   MANUAL_OFF: "Manual OFF",
 };
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 15;
 
 const IrrigationLogs = () => {
   const [logs, setLogs] = useState([]);
@@ -64,8 +60,7 @@ const IrrigationLogs = () => {
     const d = new Date(dateStr);
     return d.toLocaleString("es-CR", {
       day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
+      month: "short",
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -73,26 +68,30 @@ const IrrigationLogs = () => {
 
   return (
     <Box>
-      <Flex justify="space-between" align="center" mb={4} flexWrap="wrap" gap={3}>
+      {/* Header */}
+      <Flex justify="space-between" align="center" mb={6} flexWrap="wrap" gap={3}>
         <Box>
-          <Text fontSize="lg" color={colors.text.primary} fontWeight="600">
+          <Text fontSize="lg" fontWeight="700" color={colors.text.primary}>
             Historial
           </Text>
           <Text fontSize="sm" color={colors.text.secondary}>
             {filteredLogs.length} registros
           </Text>
         </Box>
-        <Flex gap={2}>
+        <Flex gap={2} align="center">
           <Select
             size="sm"
             bg={colors.bg.input}
             color={colors.text.primary}
             borderColor={colors.border.default}
-            _focus={{ borderColor: colors.accent.green }}
-            w="180px"
+            borderRadius="10px"
+            fontSize="xs"
+            h="36px"
+            _focus={{ borderColor: colors.green.soft }}
+            w="160px"
             value={filterAction}
             onChange={(e) => { setFilterAction(e.target.value); setPage(0); }}
-            placeholder="Todas las acciones"
+            placeholder="Todas"
           >
             {Object.entries(actionLabels).map(([key, label]) => (
               <option key={key} value={key} style={{ background: colors.bg.secondary }}>
@@ -102,111 +101,157 @@ const IrrigationLogs = () => {
           </Select>
           <Button
             size="sm"
-            variant="outline"
-            borderColor={colors.border.default}
+            h="36px"
+            bg="transparent"
             color={colors.text.secondary}
-            _hover={{ borderColor: colors.accent.green }}
+            border="1px solid"
+            borderColor={colors.border.default}
+            borderRadius="10px"
+            _hover={{ borderColor: colors.green.soft, color: colors.green.soft }}
             onClick={fetchLogs}
             isLoading={loading}
+            px={3}
           >
-            Actualizar
+            <Icon as={FaSync} boxSize={3} />
           </Button>
         </Flex>
       </Flex>
 
-      <Box
-        bg={colors.bg.secondary}
-        borderRadius="12px"
-        border="1px solid"
-        borderColor={colors.border.default}
-        overflow="hidden"
-      >
-        <Box overflowX="auto">
-          <Table size="sm">
-            <Thead>
-              <Tr>
-                <Th color={colors.text.muted} borderColor={colors.border.default}>Fecha</Th>
-                <Th color={colors.text.muted} borderColor={colors.border.default}>Salida</Th>
-                <Th color={colors.text.muted} borderColor={colors.border.default}>Acción</Th>
-                <Th color={colors.text.muted} borderColor={colors.border.default}>Mensaje</Th>
-                <Th color={colors.text.muted} borderColor={colors.border.default}>Cancelado por</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {paginatedLogs.length === 0 ? (
-                <Tr>
-                  <Td colSpan={5} textAlign="center" color={colors.text.muted} borderColor={colors.border.default} py={8}>
-                    No hay registros
-                  </Td>
-                </Tr>
-              ) : (
-                paginatedLogs.map((log) => {
-                  const badgeStyle = actionBadgeColors[log.action] || { bg: colors.bg.card, color: colors.text.muted };
-                  return (
-                    <Tr key={log.id} _hover={{ bg: colors.bg.card }}>
-                      <Td borderColor={colors.border.default}>
-                        <Text fontSize="xs" color={colors.text.secondary}>
-                          {formatDate(log.executed_at)}
-                        </Text>
-                      </Td>
-                      <Td borderColor={colors.border.default}>
-                        <Text fontSize="sm" color={colors.text.primary}>
-                          {log.gpio_label || `Salida ${log.gpio_id}`}
-                        </Text>
-                      </Td>
-                      <Td borderColor={colors.border.default}>
-                        <Badge
-                          px={2}
-                          py={0.5}
-                          borderRadius="6px"
-                          fontSize="xs"
-                          bg={badgeStyle.bg}
-                          color={badgeStyle.color}
-                        >
-                          {actionLabels[log.action] || log.action}
-                        </Badge>
-                      </Td>
-                      <Td borderColor={colors.border.default}>
-                        <Text fontSize="xs" color={colors.text.secondary} maxW="300px" noOfLines={2}>
-                          {log.message || "-"}
-                        </Text>
-                      </Td>
-                      <Td borderColor={colors.border.default}>
-                        <Text fontSize="xs" color={colors.text.secondary}>
-                          {log.cancelled_by || "-"}
-                        </Text>
-                      </Td>
-                    </Tr>
-                  );
-                })
-              )}
-            </Tbody>
-          </Table>
-        </Box>
+      {/* Log entries */}
+      <Box sx={glassCard} overflow="hidden" className="glass-card">
+        {loading && logs.length === 0 ? (
+          <Flex justify="center" py={10}>
+            <Spinner color={colors.green.glow} size="lg" thickness="3px" />
+          </Flex>
+        ) : paginatedLogs.length === 0 ? (
+          <Flex direction="column" align="center" py={10}>
+            <Icon as={FaHistory} color={colors.text.dim} boxSize={8} mb={3} />
+            <Text color={colors.text.muted} fontSize="sm">No hay registros</Text>
+          </Flex>
+        ) : (
+          <Box>
+            {paginatedLogs.map((log, idx) => {
+              const badge = actionBadgeColors[log.action] || { bg: colors.bg.card, color: colors.text.muted };
+              const isLast = idx === paginatedLogs.length - 1;
+
+              return (
+                <Flex
+                  key={log.id}
+                  px={5}
+                  py={3.5}
+                  align="center"
+                  gap={4}
+                  borderBottom={isLast ? "none" : "1px solid"}
+                  borderColor={colors.border.subtle}
+                  transition="background 0.2s"
+                  _hover={{ bg: "rgba(16, 52, 44, 0.3)" }}
+                  flexWrap={{ base: "wrap", md: "nowrap" }}
+                >
+                  {/* Colored dot */}
+                  <Box
+                    w="8px"
+                    h="8px"
+                    borderRadius="full"
+                    bg={badge.color}
+                    flexShrink={0}
+                    boxShadow={`0 0 6px ${badge.color}40`}
+                  />
+
+                  {/* Date */}
+                  <Text fontSize="xs" color={colors.text.dim} fontWeight="500" minW="90px" flexShrink={0}>
+                    {formatDate(log.executed_at)}
+                  </Text>
+
+                  {/* GPIO label */}
+                  <Text fontSize="sm" color={colors.text.primary} fontWeight="500" minW="80px" flexShrink={0}>
+                    {log.gpio_label || `Salida ${log.gpio_id}`}
+                  </Text>
+
+                  {/* Action badge */}
+                  <Badge
+                    px={2.5}
+                    py={1}
+                    borderRadius="full"
+                    fontSize="10px"
+                    fontWeight="600"
+                    bg={badge.bg}
+                    color={badge.color}
+                    letterSpacing="0.04em"
+                    textTransform="uppercase"
+                    flexShrink={0}
+                  >
+                    {actionLabels[log.action] || log.action}
+                  </Badge>
+
+                  {/* Message */}
+                  <Text fontSize="xs" color={colors.text.muted} flex={1} noOfLines={1}>
+                    {log.message || ""}
+                  </Text>
+
+                  {/* Cancelled by */}
+                  {log.cancelled_by && (
+                    <Text fontSize="xs" color={colors.status.off} fontWeight="500" flexShrink={0}>
+                      por {log.cancelled_by}
+                    </Text>
+                  )}
+                </Flex>
+              );
+            })}
+          </Box>
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <Flex justify="center" align="center" gap={3} py={3} borderTop="1px solid" borderColor={colors.border.default}>
+          <Flex
+            justify="center"
+            align="center"
+            gap={4}
+            py={3}
+            borderTop="1px solid"
+            borderColor={colors.border.subtle}
+          >
             <Button
               size="xs"
               variant="ghost"
-              color={colors.text.secondary}
+              color={colors.text.muted}
               isDisabled={page === 0}
               onClick={() => setPage(page - 1)}
-              leftIcon={<FaChevronLeft />}
+              _hover={{ color: colors.green.soft }}
+              leftIcon={<FaChevronLeft size={10} />}
             >
               Anterior
             </Button>
-            <Text fontSize="xs" color={colors.text.muted}>
-              {page + 1} / {totalPages}
-            </Text>
+            <Flex gap={1}>
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                const pageNum = page < 3 ? i : page - 2 + i;
+                if (pageNum >= totalPages) return null;
+                return (
+                  <Button
+                    key={pageNum}
+                    size="xs"
+                    variant="ghost"
+                    w="28px"
+                    h="28px"
+                    borderRadius="8px"
+                    color={pageNum === page ? colors.green.glow : colors.text.dim}
+                    bg={pageNum === page ? "rgba(0, 230, 138, 0.1)" : "transparent"}
+                    fontWeight={pageNum === page ? "700" : "400"}
+                    onClick={() => setPage(pageNum)}
+                    _hover={{ bg: "rgba(0, 230, 138, 0.06)" }}
+                  >
+                    {pageNum + 1}
+                  </Button>
+                );
+              })}
+            </Flex>
             <Button
               size="xs"
               variant="ghost"
-              color={colors.text.secondary}
+              color={colors.text.muted}
               isDisabled={page >= totalPages - 1}
               onClick={() => setPage(page + 1)}
-              rightIcon={<FaChevronRight />}
+              _hover={{ color: colors.green.soft }}
+              rightIcon={<FaChevronRight size={10} />}
             >
               Siguiente
             </Button>
