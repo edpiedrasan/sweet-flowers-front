@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight, FaSync, FaInbox } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaSync, FaUserCircle } from "react-icons/fa";
 import { actionBadgeColors } from "../theme/irrigationTheme";
 import { WaterDrops } from "./SvgIllustrations";
 import { getLogs } from "actions/irrigation";
@@ -144,11 +144,10 @@ const IrrigationLogs = () => {
                   </span>
 
                   {/* Created by */}
-                  {log.created_by && (
-                    <span className="irr-text-xs irr-text-teal irr-font-medium" style={{ flexShrink: 0 }}>
-                      {log.created_by}
-                    </span>
-                  )}
+                  <span className="irr-badge" style={{ background: "rgba(20,184,166,0.1)", color: "#2dd4bf", flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                    <FaUserCircle style={{ fontSize: 10 }} />
+                    {log.created_by || "Sistema"}
+                  </span>
 
                   {/* Cancelled by */}
                   {log.cancelled_by && (
