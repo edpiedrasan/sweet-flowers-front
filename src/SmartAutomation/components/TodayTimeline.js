@@ -1,6 +1,7 @@
 import React from "react";
 import { FaClock, FaCalendarAlt } from "react-icons/fa";
 import { gpioColors } from "../theme/irrigationTheme";
+import { RosePlant } from "./SvgIllustrations";
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
@@ -78,7 +79,7 @@ const TodayTimeline = ({ schedules }) => {
         <div className="irr-glass-body">
           {todaySchedules.length === 0 ? (
             <div className="irr-empty">
-              <div className="irr-empty-icon"><FaCalendarAlt /></div>
+              <RosePlant size={100} style={{ margin: "0 auto 12px", opacity: 0.5 }} />
               <div className="irr-text-sm irr-text-muted irr-font-medium">No hay riegos programados para hoy</div>
               <div className="irr-text-xs irr-text-dim irr-mt-1">Crea un horario en la pestaña Programación</div>
             </div>

@@ -8,6 +8,7 @@ import {
   FaHistory,
   FaLeaf,
 } from "react-icons/fa";
+import { RoseIcon } from "./components/SvgIllustrations";
 import GpioDashboard from "./components/GpioDashboard";
 import ScheduleManager from "./components/ScheduleManager";
 import TodayTimeline from "./components/TodayTimeline";
@@ -253,10 +254,10 @@ export const IndexSmartAutomation = () => {
         <div className="irr-header">
           <div className="irr-header-left">
             <div className="irr-header-icon">
-              <FaLeaf />
+              <RoseIcon size={24} color="#00e68a" />
             </div>
             <div>
-              <h1 className="irr-header-title irr-gradient-text">Control de Riego</h1>
+              <h1 className="irr-header-title irr-gradient-text">Sweet Flowers</h1>
               <div className="irr-header-meta">
                 <span className={activeCount > 0 ? "dot" : ""} style={activeCount === 0 ? { width: 6, height: 6, borderRadius: "50%", background: "#475569", display: "inline-block" } : undefined} />
                 <span>{activeCount} activas</span>

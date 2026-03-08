@@ -498,3 +498,49 @@
   display: inline-flex; align-items: center; justify-content: center;
   font-size: 24px; color: #475569; margin-bottom: 16px;
 }
+
+/* ---- Summary cards ---- */
+.irr-summary-card { min-height: 100px; }
+.irr-summary-card:hover { transform: translateY(-3px); }
+
+/* ---- GPIO cards enhanced ---- */
+.irr-gpio-card { overflow: hidden; }
+.irr-gpio-card .irr-glass-body { min-height: 220px; display: flex; flex-direction: column; }
+.irr-gpio-card .irr-flex-col { margin-top: auto; }
+
+/* ---- Floating water animation for active cards ---- */
+.irr-glass.active::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,230,138,0.04) 100%);
+  z-index: 0;
+  animation: waterWave 3s ease-in-out infinite;
+}
+@keyframes waterWave {
+  0%,100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* ---- Hero banner responsive ---- */
+@media (max-width: 768px) {
+  .irr-hero-plant { display: none; }
+}
+
+/* ---- Decorative floating leaves ---- */
+.irr-float-leaf {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.3;
+  animation: floatLeaf 8s ease-in-out infinite;
+}
+.irr-float-leaf:nth-child(2) { animation-delay: -3s; animation-duration: 10s; }
+.irr-float-leaf:nth-child(3) { animation-delay: -5s; animation-duration: 12s; }
+@keyframes floatLeaf {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(3deg); }
+  66% { transform: translateY(4px) rotate(-2deg); }
+}

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaEdit, FaTrash, FaPlus, FaClock, FaTint, FaHourglass, FaCalendarAlt, FaTimes } from "react-icons/fa";
 import ScheduleForm from "./ScheduleForm";
+import { CardPlantDecor, RosePlant } from "./SvgIllustrations";
 
 const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gpioStatus }) => {
   const [formOpen, setFormOpen] = useState(false);
@@ -55,12 +56,12 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
 
       {/* Empty state */}
       {schedules.length === 0 ? (
-        <div className="irr-glass">
-          <div className="irr-empty">
-            <div className="irr-empty-icon"><FaCalendarAlt /></div>
+        <div className="irr-glass" style={{ overflow: "hidden" }}>
+          <div className="irr-empty" style={{ position: "relative" }}>
+            <RosePlant size={100} style={{ margin: "0 auto 12px", opacity: 0.6 }} />
             <div className="irr-text-sm irr-text-muted irr-font-medium">No hay horarios programados</div>
             <div className="irr-text-xs irr-text-dim irr-mt-1" style={{ maxWidth: 260, margin: "6px auto 0" }}>
-              Crea un horario para automatizar el riego de tus salidas GPIO
+              Crea un horario para automatizar el riego de tus rosas
             </div>
             <button className="irr-btn irr-btn-green irr-btn-sm irr-mt-3" onClick={handleAdd}>
               <FaPlus size={10} /> Crear primer horario
@@ -69,13 +70,14 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
         </div>
       ) : (
         <div className="irr-grid irr-grid-3">
-          {schedules.map((s) => (
+          {schedules.map((s, idx) => (
             <div
               key={s.id}
               className={`irr-glass${s.enabled ? " active" : ""}`}
             >
+              <CardPlantDecor variant={idx} />
               <div className="irr-glass-accent" />
-              <div className="irr-glass-body">
+              <div className="irr-glass-body" style={{ position: "relative", zIndex: 1 }}>
                 {/* Header: label + toggle */}
                 <div className="irr-flex irr-flex-between irr-mb-4" style={{ alignItems: "flex-start" }}>
                   <div className="irr-flex irr-flex-center irr-gap-3">

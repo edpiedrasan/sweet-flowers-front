@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight, FaSync, FaInbox } from "react-icons/fa";
 import { actionBadgeColors } from "../theme/irrigationTheme";
+import { WaterDrops } from "./SvgIllustrations";
 import { getLogs } from "actions/irrigation";
 
 const actionLabels = {
@@ -100,7 +101,7 @@ const IrrigationLogs = () => {
           </div>
         ) : paginatedLogs.length === 0 ? (
           <div className="irr-empty">
-            <div className="irr-empty-icon"><FaInbox /></div>
+            <WaterDrops size={70} style={{ margin: "0 auto 12px", opacity: 0.6 }} />
             <div className="irr-text-sm irr-text-muted irr-font-medium">Sin registros</div>
             <div className="irr-text-xs irr-text-dim irr-mt-1">
               {filterAction ? "Prueba cambiando el filtro" : "Los eventos de riego aparecerán aquí"}
