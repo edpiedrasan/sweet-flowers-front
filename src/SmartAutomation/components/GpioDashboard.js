@@ -1,6 +1,36 @@
-import React from "react";
-import { FaPowerOff, FaRegLightbulb, FaClock, FaTint, FaWater, FaBell } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { FaPowerOff, FaRegLightbulb, FaClock, FaTint, FaWater, FaBell, FaHourglass } from "react-icons/fa";
 import { HeroBanner, CardPlantDecor, SmallLeaf, WaterDrops, RoseIcon } from "./SvgIllustrations";
+
+/* Live countdown for active irrigations */
+const CountdownTimer = ({ endTime }) => {
+  const [remaining, setRemaining] = useState("");
+
+  useEffect(() => {
+    const update = () => {
+      const now = new Date();
+      const diff = endTime - now;
+      if (diff <= 0) {
+        setRemaining("Finalizando...");
+        return;
+      }
+      const mins = Math.floor(diff / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+      setRemaining(`${mins}:${String(secs).padStart(2, "0")}`);
+    };
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [endTime]);
+
+  return (
+    <div className="irr-countdown">
+      <FaHourglass style={{ fontSize: 10, color: "#fbbf24" }} />
+      <span className="irr-countdown-time">{remaining}</span>
+      <span className="irr-text-xxs irr-text-muted">restante</span>
+    </div>
+  );
+};
 
 const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSchedule, schedules, nextIrrigation }) => {
   const activeCount = gpioStatus.filter((g) => g[2] === 1).length;
@@ -9,6 +39,30 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
   const getScheduleCount = (gpioId) => {
     if (!schedules) return 0;
     return schedules.filter((s) => s.gpio_id === gpioId && s.enabled).length;
+  };
+
+  /* Check if a GPIO is currently running a scheduled irrigation, return end time */
+  const getActiveIrrigationEnd = (gpioId) => {
+    if (!schedules) return null;
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const today = now.getDay();
+
+    for (const s of schedules) {
+      if (s.gpio_id !== gpioId || !s.enabled) continue;
+      const days = s.active_days.split(",").map(Number);
+      if (!days.includes(today)) continue;
+
+      const startMin = s.time_hour * 60 + s.time_minute;
+      const endMin = startMin + s.duration_minutes;
+
+      if (nowMin >= startMin && nowMin < endMin) {
+        const endTime = new Date();
+        endTime.setHours(Math.floor(endMin / 60), endMin % 60, 0, 0);
+        return endTime;
+      }
+    }
+    return null;
   };
 
   if (loading) {
@@ -144,6 +198,7 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
           const label = gpio[1];
           const scheduleCount = getScheduleCount(gpioId);
           const isToggling = togglingId === gpioId;
+          const irrigationEnd = isOn ? getActiveIrrigationEnd(gpioId) : null;
 
           return (
             <div key={gpioId} className={`irr-glass irr-gpio-card${isOn ? " active" : ""}`}>
@@ -168,17 +223,20 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
                   </span>
                 </div>
 
+                {/* Countdown timer when active irrigation */}
+                {irrigationEnd && <CountdownTimer endTime={irrigationEnd} />}
+
                 {/* Schedule count */}
-                {scheduleCount > 0 ? (
+                {!irrigationEnd && scheduleCount > 0 ? (
                   <div className="irr-flex irr-flex-center irr-gap-2 irr-mb-4">
                     <FaClock style={{ color: "#2dd4bf", fontSize: 12 }} />
                     <span className="irr-text-xs irr-text-teal irr-font-medium">
                       {scheduleCount} horario{scheduleCount > 1 ? "s" : ""}
                     </span>
                   </div>
-                ) : (
+                ) : !irrigationEnd ? (
                   <div className="irr-mb-4" />
-                )}
+                ) : null}
 
                 {/* Buttons */}
                 <div className="irr-flex irr-flex-col irr-gap-2">

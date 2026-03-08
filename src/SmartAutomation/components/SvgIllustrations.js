@@ -92,57 +92,89 @@ export const CardPlantDecor = ({ variant = 0 }) => {
   return variants[variant % variants.length];
 };
 
+/* Large tropical leaf for hero */
+export const TropicalLeaf = ({ size = 300, style, flip }) => (
+  <svg width={size} height={size} viewBox="0 0 300 300" fill="none" style={{ ...style, transform: flip ? "scaleX(-1)" : undefined }}>
+    {/* Main leaf */}
+    <path d="M150 280 C150 280, 145 200, 120 140 C100 95, 60 60, 30 40 C60 55, 110 50, 140 70 C155 80, 148 110, 150 140" stroke="rgba(0,230,138,0.25)" strokeWidth="2" fill="rgba(0,230,138,0.06)" strokeLinecap="round" />
+    <path d="M150 280 C150 280, 155 200, 180 140 C200 95, 240 60, 270 40 C240 55, 190 50, 160 70 C145 80, 152 110, 150 140" stroke="rgba(0,230,138,0.2)" strokeWidth="2" fill="rgba(0,230,138,0.04)" strokeLinecap="round" />
+    {/* Leaf veins */}
+    <path d="M150 260 C150 260, 140 200, 110 150" stroke="rgba(0,230,138,0.1)" strokeWidth="1" fill="none" />
+    <path d="M150 260 C150 260, 160 200, 190 150" stroke="rgba(0,230,138,0.1)" strokeWidth="1" fill="none" />
+    <path d="M150 220 C140 200, 120 180, 90 165" stroke="rgba(0,230,138,0.07)" strokeWidth="0.8" fill="none" />
+    <path d="M150 220 C160 200, 180 180, 210 165" stroke="rgba(0,230,138,0.07)" strokeWidth="0.8" fill="none" />
+    {/* Second smaller leaf */}
+    <path d="M120 270 C120 270, 100 220, 70 180 C55 160, 30 150, 15 145 C35 155, 65 150, 85 165 C95 172, 105 200, 120 230" stroke="rgba(20,184,166,0.2)" strokeWidth="1.5" fill="rgba(20,184,166,0.04)" strokeLinecap="round" />
+    {/* Third leaf */}
+    <path d="M180 265 C180 265, 200 215, 230 185 C245 170, 265 165, 280 162 C262 170, 240 168, 220 178 C210 184, 195 205, 180 235" stroke="rgba(0,230,138,0.15)" strokeWidth="1.2" fill="rgba(0,230,138,0.03)" strokeLinecap="round" />
+  </svg>
+);
+
 export const HeroBanner = () => (
   <div style={{ position: "relative", overflow: "hidden", borderRadius: 24, marginBottom: 24 }}>
-    {/* Background gradient */}
     <div style={{
-      background: "linear-gradient(135deg, rgba(0,230,138,0.08) 0%, rgba(16,52,44,0.6) 40%, rgba(20,184,166,0.06) 100%)",
+      background: "linear-gradient(135deg, rgba(8,40,32,0.9) 0%, rgba(12,48,38,0.85) 30%, rgba(16,56,44,0.8) 60%, rgba(10,42,34,0.9) 100%)",
       border: "1px solid rgba(0,230,138,0.15)",
       borderRadius: 24,
-      padding: "32px 28px",
+      padding: "36px 32px",
       position: "relative",
-      backdropFilter: "blur(20px)",
+      minHeight: 200,
       overflow: "hidden",
     }}>
-      {/* Decorative leaves background */}
-      <LeafBranch size={140} style={{ position: "absolute", top: -20, right: -10, opacity: 0.5 }} />
-      <LeafBranch size={100} style={{ position: "absolute", bottom: -15, left: -5, opacity: 0.3 }} flip />
+      {/* Large decorative leaves */}
+      <TropicalLeaf size={320} style={{ position: "absolute", top: -60, right: -40, opacity: 0.8 }} />
+      <TropicalLeaf size={250} style={{ position: "absolute", bottom: -80, left: -50, opacity: 0.5 }} flip />
+
+      {/* Glow spots */}
+      <div style={{ position: "absolute", top: "20%", right: "15%", width: 200, height: 200, background: "radial-gradient(circle, rgba(0,230,138,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: "10%", left: "10%", width: 150, height: 150, background: "radial-gradient(circle, rgba(20,184,166,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
 
       {/* Floating particles */}
       <svg width="100%" height="100%" style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}>
-        <circle cx="20%" cy="30%" r="2" fill="rgba(0,230,138,0.15)">
-          <animate attributeName="cy" values="30%;25%;30%" dur="4s" repeatCount="indefinite" />
+        <circle cx="15%" cy="25%" r="2" fill="rgba(0,230,138,0.2)">
+          <animate attributeName="cy" values="25%;20%;25%" dur="4s" repeatCount="indefinite" />
         </circle>
-        <circle cx="70%" cy="60%" r="1.5" fill="rgba(20,184,166,0.12)">
-          <animate attributeName="cy" values="60%;55%;60%" dur="5s" repeatCount="indefinite" />
+        <circle cx="75%" cy="40%" r="2.5" fill="rgba(20,184,166,0.15)">
+          <animate attributeName="cy" values="40%;35%;40%" dur="5s" repeatCount="indefinite" />
         </circle>
-        <circle cx="85%" cy="20%" r="1" fill="rgba(0,230,138,0.1)">
-          <animate attributeName="cy" values="20%;16%;20%" dur="3.5s" repeatCount="indefinite" />
+        <circle cx="55%" cy="70%" r="1.5" fill="rgba(0,230,138,0.12)">
+          <animate attributeName="cy" values="70%;66%;70%" dur="3.5s" repeatCount="indefinite" />
         </circle>
-        <circle cx="40%" cy="80%" r="1.5" fill="rgba(14,165,233,0.1)">
-          <animate attributeName="cy" values="80%;76%;80%" dur="4.5s" repeatCount="indefinite" />
+        <circle cx="90%" cy="60%" r="1.8" fill="rgba(14,165,233,0.1)">
+          <animate attributeName="cy" values="60%;56%;60%" dur="4.5s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="35%" cy="15%" r="1.2" fill="rgba(251,113,133,0.08)">
+          <animate attributeName="cy" values="15%;12%;15%" dur="6s" repeatCount="indefinite" />
         </circle>
       </svg>
 
-      <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
-        {/* Rose illustration */}
-        <RosePlant size={120} style={{ flexShrink: 0, filter: "drop-shadow(0 0 20px rgba(0,230,138,0.1))" }} />
-
-        <div style={{ flex: 1, minWidth: 200 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <RoseIcon size={20} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#f87171", textTransform: "uppercase", letterSpacing: "0.08em" }}>Sweet Flowers</span>
-          </div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#f0fdf4", lineHeight: 1.2, marginBottom: 8 }}>
-            Jardín de Rosas
-          </div>
-          <div style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.6, maxWidth: 380 }}>
-            Sistema automatizado de riego. Controla tus salidas GPIO, programa horarios y recibe notificaciones en Telegram.
-          </div>
+      <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 28 }}>
+        {/* Rose plant illustration */}
+        <div className="irr-hero-plant" style={{ flexShrink: 0 }}>
+          <RosePlant size={150} style={{ filter: "drop-shadow(0 0 30px rgba(0,230,138,0.12))" }} />
         </div>
 
-        {/* Mini water drops decoration */}
-        <WaterDrops size={70} style={{ flexShrink: 0, opacity: 0.7, display: "none" }} />
+        <div style={{ flex: 1, minWidth: 200 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+            <RoseIcon size={18} />
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#fb7185", textTransform: "uppercase", letterSpacing: "0.1em" }}>Sweet Flowers</span>
+          </div>
+          <div style={{ fontSize: 26, fontWeight: 800, color: "#f0fdf4", lineHeight: 1.15, marginBottom: 10 }}>
+            Jardín de Rosas
+          </div>
+          <div style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.7, maxWidth: 420 }}>
+            Sistema automatizado de riego para tus rosas. Controla las salidas, programa horarios y recibe alertas en Telegram antes de cada riego.
+          </div>
+          <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(0,230,138,0.08)", padding: "6px 14px", borderRadius: 100, border: "1px solid rgba(0,230,138,0.15)" }}>
+              <WaterDrops size={16} />
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#34d399" }}>Riego automático</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(20,184,166,0.06)", padding: "6px 14px", borderRadius: 100, border: "1px solid rgba(20,184,166,0.12)" }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#2dd4bf" }}>Telegram</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -66,26 +66,43 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 28px;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, rgba(12,44,36,0.7) 0%, rgba(16,52,44,0.5) 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(52,211,153,0.1);
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
 }
-.irr-header-left { display: flex; align-items: center; gap: 16px; }
+.irr-header::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -30px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(0,230,138,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.irr-header-left { display: flex; align-items: center; gap: 16px; position: relative; z-index: 1; }
 .irr-header-icon {
   width: 52px;
   height: 52px;
   border-radius: 16px;
-  background: rgba(0,230,138,0.1);
-  border: 1px solid rgba(0,230,138,0.2);
+  background: linear-gradient(135deg, rgba(0,230,138,0.15) 0%, rgba(20,184,166,0.1) 100%);
+  border: 1px solid rgba(0,230,138,0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #00e68a;
   font-size: 20px;
   flex-shrink: 0;
-  box-shadow: 0 0 25px rgba(0,230,138,0.1);
+  box-shadow: 0 0 30px rgba(0,230,138,0.12), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 .irr-header-title { font-size: 24px; margin: 0; line-height: 1.1; }
 .irr-header-meta { display: flex; gap: 12px; align-items: center; margin-top: 6px; font-size: 12px; color: #94a3b8; }
-.irr-header-meta .dot { width: 6px; height: 6px; border-radius: 50%; background: #00e68a; animation: glowPulse 2s ease-in-out infinite; }
+.irr-header-meta .dot { width: 6px; height: 6px; border-radius: 50%; background: #00e68a; animation: glowPulse 2s ease-in-out infinite; display: inline-block; }
 .irr-header-meta .sep { color: #475569; }
 .irr-header-meta .next { color: #34d399; }
 
@@ -528,6 +545,30 @@
 /* ---- Hero banner responsive ---- */
 @media (max-width: 768px) {
   .irr-hero-plant { display: none; }
+}
+
+/* ---- Countdown timer ---- */
+.irr-countdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 12px;
+  padding: 8px 14px;
+  margin-bottom: 16px;
+  animation: countdownPulse 2s ease-in-out infinite;
+}
+.irr-countdown-time {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fbbf24;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+@keyframes countdownPulse {
+  0%,100% { box-shadow: 0 0 0 rgba(245,158,11,0); }
+  50% { box-shadow: 0 0 12px rgba(245,158,11,0.08); }
 }
 
 /* ---- Decorative floating leaves ---- */
