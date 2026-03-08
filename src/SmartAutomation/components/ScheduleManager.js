@@ -18,6 +18,8 @@ import {
 } from "@chakra-ui/react";
 import { FaEdit, FaTrash, FaPlus, FaClock, FaTint, FaHourglass, FaCalendarAlt } from "react-icons/fa";
 import { colors, gradients, glassCard } from "../theme/irrigationTheme";
+
+const teal400 = colors.teal["400"];
 import ScheduleForm from "./ScheduleForm";
 
 const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gpioStatus }) => {
@@ -223,7 +225,7 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
                     _hover={{ borderColor: colors.border.default }}
                   >
                     <Flex align="center" gap={1.5} mb={1}>
-                      <Icon as={FaHourglass} color={colors.teal.400} boxSize={2.5} />
+                      <Icon as={FaHourglass} color={teal400} boxSize={2.5} />
                       <Text fontSize="10px" color={colors.text.muted} fontWeight="500" textTransform="uppercase" letterSpacing="0.05em">Duración</Text>
                     </Flex>
                     <Text fontSize="xl" fontWeight="800" color={colors.text.primary} lineHeight="1">
@@ -243,7 +245,7 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
                     <IconButton
                       size="xs"
                       variant="ghost"
-                      color={colors.teal.400}
+                      color={teal400}
                       _hover={{ bg: "rgba(20, 184, 166, 0.1)" }}
                       icon={<FaEdit />}
                       onClick={() => handleEdit(s)}

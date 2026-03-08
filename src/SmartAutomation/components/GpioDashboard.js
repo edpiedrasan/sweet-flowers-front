@@ -10,6 +10,8 @@ import {
 import { FaPowerOff, FaRegLightbulb, FaClock, FaTint, FaWater, FaBell } from "react-icons/fa";
 import { colors, gradients, glassCard } from "../theme/irrigationTheme";
 
+const teal400 = colors.teal["400"];
+
 /* Skeleton placeholder while loading */
 const SkeletonCard = () => (
   <Box
@@ -119,7 +121,7 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
                 justifyContent="center"
                 flexShrink={0}
               >
-                <Icon as={FaBell} color={colors.teal.400} boxSize={5} />
+                <Icon as={FaBell} color={teal400} boxSize={5} />
               </Box>
               <Box flex={1}>
                 <Text fontSize="xs" color={colors.text.muted} fontWeight="500" textTransform="uppercase" letterSpacing="0.06em">
@@ -128,7 +130,7 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
                 <Text fontSize="2xl" fontWeight="800" color={colors.text.primary} lineHeight="1" mt={0.5}>
                   {String(nextIrrigation.time_hour).padStart(2, "0")}:{String(nextIrrigation.time_minute).padStart(2, "0")}
                 </Text>
-                <Text fontSize="xs" color={colors.teal.400} mt={0.5}>
+                <Text fontSize="xs" color={teal400} mt={0.5}>
                   {nextIrrigation.gpio_label} — {nextIrrigation.duration_minutes} min
                 </Text>
               </Box>
@@ -223,8 +225,8 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
 
                   {scheduleCount > 0 && (
                     <Flex align="center" mb={4}>
-                      <Icon as={FaClock} color={colors.teal.400} boxSize={3} mr={1.5} />
-                      <Text fontSize="xs" color={colors.teal.400} fontWeight="500">
+                      <Icon as={FaClock} color={teal400} boxSize={3} mr={1.5} />
+                      <Text fontSize="xs" color={teal400} fontWeight="500">
                         {scheduleCount} horario{scheduleCount > 1 ? "s" : ""}
                       </Text>
                     </Flex>
@@ -267,8 +269,8 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
                       fontWeight="500"
                       fontSize="xs"
                       _hover={{
-                        borderColor: colors.teal.400,
-                        color: colors.teal.400,
+                        borderColor: teal400,
+                        color: teal400,
                         bg: "rgba(20, 184, 166, 0.05)",
                       }}
                       transition="all 0.2s ease"
