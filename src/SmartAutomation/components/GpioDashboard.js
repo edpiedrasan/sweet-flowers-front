@@ -134,7 +134,7 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
                   {nextIrrigation.gpio_label} — {nextIrrigation.duration_minutes} min
                 </Text>
               </Box>
-            </Box>
+            </Flex>
           </Box>
         )}
       </Grid>
