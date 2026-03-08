@@ -110,70 +110,70 @@ export const TropicalLeaf = ({ size = 300, style, flip }) => (
   </svg>
 );
 
-export const HeroBanner = () => (
-  <div style={{ position: "relative", overflow: "hidden", borderRadius: 24, marginBottom: 24 }}>
+export const HeroBanner = ({ activeCount, totalGpios, enabledSchedules, nextIrrigation }) => (
+  <div style={{ position: "relative", overflow: "hidden", borderRadius: 18, marginBottom: 16 }}>
     <div style={{
-      background: "linear-gradient(135deg, rgba(8,40,32,0.9) 0%, rgba(12,48,38,0.85) 30%, rgba(16,56,44,0.8) 60%, rgba(10,42,34,0.9) 100%)",
+      background: "linear-gradient(135deg, rgba(8,40,32,0.9) 0%, rgba(12,48,38,0.85) 50%, rgba(10,42,34,0.9) 100%)",
       border: "1px solid rgba(0,230,138,0.15)",
-      borderRadius: 24,
-      padding: "36px 32px",
+      borderRadius: 18,
+      padding: "20px 24px",
       position: "relative",
-      minHeight: 200,
       overflow: "hidden",
     }}>
-      {/* Large decorative leaves */}
-      <TropicalLeaf size={320} style={{ position: "absolute", top: -60, right: -40, opacity: 0.8 }} />
-      <TropicalLeaf size={250} style={{ position: "absolute", bottom: -80, left: -50, opacity: 0.5 }} flip />
+      {/* Decorative leaf - right side only */}
+      <TropicalLeaf size={200} style={{ position: "absolute", top: -50, right: -30, opacity: 0.6 }} />
 
-      {/* Glow spots */}
-      <div style={{ position: "absolute", top: "20%", right: "15%", width: 200, height: 200, background: "radial-gradient(circle, rgba(0,230,138,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", bottom: "10%", left: "10%", width: 150, height: 150, background: "radial-gradient(circle, rgba(20,184,166,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
+      {/* Glow */}
+      <div style={{ position: "absolute", top: 0, right: "10%", width: 150, height: 150, background: "radial-gradient(circle, rgba(0,230,138,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
 
       {/* Floating particles */}
       <svg width="100%" height="100%" style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}>
-        <circle cx="15%" cy="25%" r="2" fill="rgba(0,230,138,0.2)">
-          <animate attributeName="cy" values="25%;20%;25%" dur="4s" repeatCount="indefinite" />
+        <circle cx="80%" cy="30%" r="1.5" fill="rgba(0,230,138,0.15)">
+          <animate attributeName="cy" values="30%;25%;30%" dur="4s" repeatCount="indefinite" />
         </circle>
-        <circle cx="75%" cy="40%" r="2.5" fill="rgba(20,184,166,0.15)">
-          <animate attributeName="cy" values="40%;35%;40%" dur="5s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="55%" cy="70%" r="1.5" fill="rgba(0,230,138,0.12)">
-          <animate attributeName="cy" values="70%;66%;70%" dur="3.5s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="90%" cy="60%" r="1.8" fill="rgba(14,165,233,0.1)">
-          <animate attributeName="cy" values="60%;56%;60%" dur="4.5s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="35%" cy="15%" r="1.2" fill="rgba(251,113,133,0.08)">
-          <animate attributeName="cy" values="15%;12%;15%" dur="6s" repeatCount="indefinite" />
+        <circle cx="60%" cy="60%" r="1.2" fill="rgba(20,184,166,0.12)">
+          <animate attributeName="cy" values="60%;55%;60%" dur="5s" repeatCount="indefinite" />
         </circle>
       </svg>
 
-      <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 28 }}>
-        {/* Rose plant illustration */}
-        <div className="irr-hero-plant" style={{ flexShrink: 0 }}>
-          <RosePlant size={150} style={{ filter: "drop-shadow(0 0 30px rgba(0,230,138,0.12))" }} />
+      <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20 }}>
+        {/* Left: Rose + info */}
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div className="irr-hero-plant" style={{ flexShrink: 0 }}>
+            <RosePlant size={80} style={{ filter: "drop-shadow(0 0 20px rgba(0,230,138,0.1))" }} />
+          </div>
+          <div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: "#f0fdf4", lineHeight: 1.2, marginBottom: 4 }}>
+              Jardín de Rosas
+            </div>
+            <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.5 }}>
+              Controla las salidas y programa horarios de riego
+            </div>
+          </div>
         </div>
 
-        <div style={{ flex: 1, minWidth: 200 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-            <RoseIcon size={18} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#fb7185", textTransform: "uppercase", letterSpacing: "0.1em" }}>Sweet Flowers</span>
+        {/* Right: Quick stats */}
+        <div style={{ display: "flex", gap: 16, alignItems: "center", flexShrink: 0 }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: activeCount > 0 ? "#34d399" : "#64748b" }}>{activeCount}<span style={{ fontSize: 11, fontWeight: 500, color: "#64748b" }}>/{totalGpios}</span></div>
+            <div style={{ fontSize: 10, color: "#64748b", fontWeight: 500 }}>Encendidas</div>
           </div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: "#f0fdf4", lineHeight: 1.15, marginBottom: 10 }}>
-            Jardín de Rosas
+          <div style={{ width: 1, height: 30, background: "rgba(52,211,153,0.12)" }} />
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: "#2dd4bf" }}>{enabledSchedules}</div>
+            <div style={{ fontSize: 10, color: "#64748b", fontWeight: 500 }}>Horarios</div>
           </div>
-          <div style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.7, maxWidth: 420 }}>
-            Sistema automatizado de riego para tus rosas. Controla las salidas, programa horarios y recibe alertas en Telegram antes de cada riego.
-          </div>
-          <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(0,230,138,0.08)", padding: "6px 14px", borderRadius: 100, border: "1px solid rgba(0,230,138,0.15)" }}>
-              <WaterDrops size={16} />
-              <span style={{ fontSize: 11, fontWeight: 600, color: "#34d399" }}>Riego automático</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(20,184,166,0.06)", padding: "6px 14px", borderRadius: 100, border: "1px solid rgba(20,184,166,0.12)" }}>
-              <span style={{ fontSize: 11, fontWeight: 600, color: "#2dd4bf" }}>Telegram</span>
-            </div>
-          </div>
+          {nextIrrigation && (
+            <>
+              <div style={{ width: 1, height: 30, background: "rgba(52,211,153,0.12)" }} />
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "#fbbf24" }}>
+                  {String(nextIrrigation.time_hour).padStart(2, "0")}:{String(nextIrrigation.time_minute).padStart(2, "0")}
+                </div>
+                <div style={{ fontSize: 10, color: "#64748b", fontWeight: 500 }}>Próximo</div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

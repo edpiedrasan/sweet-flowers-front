@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { FaPowerOff, FaRegLightbulb, FaClock, FaTint, FaWater, FaBell, FaHourglass } from "react-icons/fa";
-import { HeroBanner, CardPlantDecor, SmallLeaf, WaterDrops, RoseIcon } from "./SvgIllustrations";
+import { FaPowerOff, FaRegLightbulb, FaClock, FaTint, FaHourglass } from "react-icons/fa";
+import { HeroBanner, CardPlantDecor, SmallLeaf } from "./SvgIllustrations";
 
 /* Live countdown for active irrigations */
 const CountdownTimer = ({ endTime }) => {
@@ -68,12 +68,9 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
   if (loading) {
     return (
       <div>
-        {/* Skeleton hero */}
-        <div className="irr-skeleton" style={{ height: 160, borderRadius: 24, marginBottom: 24 }} />
-        <div className="irr-grid irr-grid-summary irr-mb-6">
-          <div className="irr-skeleton" style={{ height: 100, borderRadius: 20 }} />
-          <div className="irr-skeleton" style={{ height: 100, borderRadius: 20 }} />
-        </div>
+        {/* Skeleton hero slim */}
+        <div className="irr-skeleton" style={{ height: 80, borderRadius: 18, marginBottom: 16 }} />
+        {/* Skeleton GPIO cards */}
         <div className="irr-grid irr-grid-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="irr-glass">
@@ -99,92 +96,20 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
 
   return (
     <div>
-      {/* Hero Banner */}
-      <HeroBanner />
-
-      {/* Summary Row */}
-      <div className="irr-grid irr-grid-summary irr-mb-6">
-        {/* Status card */}
-        <div className="irr-glass irr-summary-card">
-          <CardPlantDecor variant={1} />
-          <div className="irr-glass-body" style={{ position: "relative", zIndex: 1 }}>
-            <div className="irr-flex irr-flex-between irr-flex-center">
-              <div className="irr-flex irr-flex-center irr-gap-4">
-                <div className={`irr-icon-box irr-icon-box-lg ${activeCount > 0 ? "irr-icon-box-green" : "irr-icon-box-muted"}`}>
-                  <FaWater />
-                </div>
-                <div>
-                  <div className="irr-text-big irr-text-white">
-                    {activeCount}
-                    <span className="irr-text-sm irr-font-medium irr-text-muted" style={{ marginLeft: 8 }}>
-                      / {gpioStatus.length} encendidas
-                    </span>
-                  </div>
-                  <div className="irr-text-xs irr-text-muted irr-mt-1">
-                    {enabledSchedules} programaciones activas
-                  </div>
-                </div>
-              </div>
-              <div className={activeCount > 0 ? "irr-pill irr-pill-green" : "irr-pill irr-pill-muted"}>
-                <span className={`irr-dot ${activeCount > 0 ? "irr-dot-on" : ""}`} style={activeCount === 0 ? { background: "#64748b" } : undefined} />
-                {activeCount > 0 ? "Activo" : "Inactivo"}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Next irrigation / Quick stats card */}
-        {nextIrrigation ? (
-          <div className="irr-glass irr-summary-card" style={{ borderColor: "rgba(20,184,166,0.15)" }}>
-            <CardPlantDecor variant={2} />
-            <div className="irr-glass-body" style={{ position: "relative", zIndex: 1 }}>
-              <div className="irr-flex irr-flex-center irr-gap-4">
-                <div className="irr-icon-box irr-icon-box-lg irr-icon-box-teal">
-                  <FaBell />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div className="irr-label">Próximo riego</div>
-                  <div className="irr-text-big irr-text-white irr-mt-1">
-                    {String(nextIrrigation.time_hour).padStart(2, "0")}:{String(nextIrrigation.time_minute).padStart(2, "0")}
-                  </div>
-                  <div className="irr-text-xs irr-text-teal irr-mt-1">
-                    <RoseIcon size={12} color="#2dd4bf" />{" "}
-                    {nextIrrigation.gpio_label} — {nextIrrigation.duration_minutes} min
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="irr-glass irr-summary-card">
-            <CardPlantDecor variant={3} />
-            <div className="irr-glass-body" style={{ position: "relative", zIndex: 1 }}>
-              <div className="irr-flex irr-flex-center irr-gap-4">
-                <div className="irr-icon-box irr-icon-box-lg irr-icon-box-teal">
-                  <FaClock />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div className="irr-label">Horarios</div>
-                  <div className="irr-text-big irr-text-white irr-mt-1">
-                    {enabledSchedules}
-                    <span className="irr-text-sm irr-font-medium irr-text-muted" style={{ marginLeft: 8 }}>activos</span>
-                  </div>
-                  <div className="irr-text-xs irr-text-muted irr-mt-1">
-                    {schedules ? schedules.length : 0} totales configurados
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Slim Hero Banner with stats */}
+      <HeroBanner
+        activeCount={activeCount}
+        totalGpios={gpioStatus.length}
+        enabledSchedules={enabledSchedules}
+        nextIrrigation={nextIrrigation}
+      />
 
       {/* Section title */}
-      <div className="irr-flex irr-flex-between irr-flex-center irr-mb-4">
+      <div className="irr-flex irr-flex-between irr-flex-center irr-mb-3">
         <div className="irr-flex irr-flex-center irr-gap-3">
-          <SmallLeaf size={28} style={{ opacity: 0.7 }} />
+          <SmallLeaf size={24} style={{ opacity: 0.7 }} />
           <div>
-            <div className="irr-font-bold irr-text-white" style={{ fontSize: 16 }}>Salidas GPIO</div>
+            <div className="irr-font-bold irr-text-white" style={{ fontSize: 14 }}>Salidas GPIO</div>
             <div className="irr-text-xs irr-text-muted">{gpioStatus.length} zona{gpioStatus.length !== 1 ? "s" : ""} de riego</div>
           </div>
         </div>
@@ -205,7 +130,7 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
               <CardPlantDecor variant={idx} />
               <div className="irr-glass-accent" />
               <div className="irr-glass-body" style={{ position: "relative", zIndex: 1 }}>
-                <div className="irr-flex irr-flex-between irr-mb-4" style={{ alignItems: "flex-start" }}>
+                <div className="irr-flex irr-flex-between irr-mb-3" style={{ alignItems: "flex-start" }}>
                   <div>
                     <div className="irr-label irr-mb-1">Salida {gpioId}</div>
                     <div className="irr-font-bold irr-text-white" style={{ fontSize: 15, lineHeight: 1.2 }}>{label}</div>
@@ -228,14 +153,14 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
 
                 {/* Schedule count */}
                 {!irrigationEnd && scheduleCount > 0 ? (
-                  <div className="irr-flex irr-flex-center irr-gap-2 irr-mb-4">
+                  <div className="irr-flex irr-flex-center irr-gap-2 irr-mb-3">
                     <FaClock style={{ color: "#2dd4bf", fontSize: 12 }} />
                     <span className="irr-text-xs irr-text-teal irr-font-medium">
                       {scheduleCount} horario{scheduleCount > 1 ? "s" : ""}
                     </span>
                   </div>
                 ) : !irrigationEnd ? (
-                  <div className="irr-mb-4" />
+                  <div className="irr-mb-3" />
                 ) : null}
 
                 {/* Buttons */}
@@ -244,7 +169,7 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
                     className={`irr-btn irr-btn-full ${isOn ? "irr-btn-red" : "irr-btn-green"}`}
                     disabled={isToggling}
                     onClick={() => onToggleGpio(gpioId, isOn ? 0 : 1, label)}
-                    style={{ height: 40 }}
+                    style={{ height: 38 }}
                   >
                     {isToggling ? (
                       <><span className="irr-spinner" /> {isOn ? "Apagando..." : "Encendiendo..."}</>
@@ -255,7 +180,7 @@ const GpioDashboard = ({ gpioStatus, loading, togglingId, onToggleGpio, onOpenSc
                   <button
                     className="irr-btn irr-btn-outline irr-btn-full"
                     onClick={() => onOpenSchedule(gpioId, label)}
-                    style={{ height: 38 }}
+                    style={{ height: 36 }}
                   >
                     <FaClock size={11} /> Programar
                   </button>

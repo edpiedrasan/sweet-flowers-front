@@ -66,10 +66,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 28px;
-  padding: 16px 24px;
+  margin-bottom: 16px;
+  padding: 14px 22px;
   background: linear-gradient(135deg, rgba(12,44,36,0.7) 0%, rgba(16,52,44,0.5) 100%);
-  border-radius: 20px;
+  border-radius: 16px;
   border: 1px solid rgba(52,211,153,0.1);
   backdrop-filter: blur(20px);
   position: relative;
@@ -87,9 +87,9 @@
 }
 .irr-header-left { display: flex; align-items: center; gap: 16px; position: relative; z-index: 1; }
 .irr-header-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   background: linear-gradient(135deg, rgba(0,230,138,0.15) 0%, rgba(20,184,166,0.1) 100%);
   border: 1px solid rgba(0,230,138,0.25);
   display: flex;
@@ -100,8 +100,8 @@
   flex-shrink: 0;
   box-shadow: 0 0 30px rgba(0,230,138,0.12), inset 0 1px 0 rgba(255,255,255,0.05);
 }
-.irr-header-title { font-size: 24px; margin: 0; line-height: 1.1; }
-.irr-header-meta { display: flex; gap: 12px; align-items: center; margin-top: 6px; font-size: 12px; color: #94a3b8; }
+.irr-header-title { font-size: 22px; margin: 0; line-height: 1.1; }
+.irr-header-meta { display: flex; gap: 12px; align-items: center; margin-top: 4px; font-size: 11px; color: #94a3b8; }
 .irr-header-meta .dot { width: 6px; height: 6px; border-radius: 50%; background: #00e68a; animation: glowPulse 2s ease-in-out infinite; display: inline-block; }
 .irr-header-meta .sep { color: #475569; }
 .irr-header-meta .next { color: #34d399; }
@@ -166,13 +166,13 @@
   border: 1px solid rgba(52,211,153,0.12);
   padding: 6px;
   gap: 4px;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
   overflow-x: auto;
 }
 .irr-tabs::-webkit-scrollbar { display: none; }
 .irr-tab {
   flex: 1;
-  padding: 12px 16px;
+  padding: 10px 16px;
   border-radius: 12px;
   font-family: inherit;
   font-size: 13px;
@@ -219,10 +219,10 @@
 }
 .irr-glass-accent { height: 3px; background: linear-gradient(135deg,#00cc7a,#059669); opacity: 0; transition: opacity 0.4s; }
 .irr-glass.active .irr-glass-accent { opacity: 1; }
-.irr-glass-body { padding: 20px; }
+.irr-glass-body { padding: 16px; }
 
 /* ---- Grid ---- */
-.irr-grid { display: grid; gap: 20px; }
+.irr-grid { display: grid; gap: 16px; }
 .irr-grid-2 { grid-template-columns: repeat(2, 1fr); }
 .irr-grid-3 { grid-template-columns: repeat(3, 1fr); }
 .irr-grid-4 { grid-template-columns: repeat(4, 1fr); }
@@ -517,12 +517,12 @@
 }
 
 /* ---- Summary cards ---- */
-.irr-summary-card { min-height: 100px; }
-.irr-summary-card:hover { transform: translateY(-3px); }
+.irr-summary-card { min-height: 60px; }
+.irr-summary-card:hover { transform: translateY(-2px); }
 
 /* ---- GPIO cards enhanced ---- */
 .irr-gpio-card { overflow: hidden; }
-.irr-gpio-card .irr-glass-body { min-height: 220px; display: flex; flex-direction: column; }
+.irr-gpio-card .irr-glass-body { min-height: 190px; display: flex; flex-direction: column; }
 .irr-gpio-card .irr-flex-col { margin-top: auto; }
 
 /* ---- Floating water animation for active cards ---- */
@@ -545,6 +545,7 @@
 /* ---- Hero banner responsive ---- */
 @media (max-width: 768px) {
   .irr-hero-plant { display: none; }
+  .irr-header-title { font-size: 18px; }
 }
 
 /* ---- Countdown timer ---- */

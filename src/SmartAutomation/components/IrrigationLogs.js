@@ -143,6 +143,13 @@ const IrrigationLogs = () => {
                     {log.message || ""}
                   </span>
 
+                  {/* Created by */}
+                  {log.created_by && (
+                    <span className="irr-text-xs irr-text-teal irr-font-medium" style={{ flexShrink: 0 }}>
+                      {log.created_by}
+                    </span>
+                  )}
+
                   {/* Cancelled by */}
                   {log.cancelled_by && (
                     <span className="irr-text-xs irr-text-red irr-font-medium" style={{ flexShrink: 0 }}>
