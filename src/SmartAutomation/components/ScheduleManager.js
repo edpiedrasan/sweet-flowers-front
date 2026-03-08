@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Box,
   Text,
@@ -9,15 +9,24 @@ import {
   Icon,
   Grid,
   useDisclosure,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from "@chakra-ui/react";
-import { FaEdit, FaTrash, FaPlus, FaClock, FaTint, FaHourglass } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus, FaClock, FaTint, FaHourglass, FaCalendarAlt } from "react-icons/fa";
 import { colors, gradients, glassCard } from "../theme/irrigationTheme";
 import ScheduleForm from "./ScheduleForm";
 
 const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gpioStatus }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+  const cancelRef = useRef();
   const [editingSchedule, setEditingSchedule] = useState(null);
   const [selectedGpio, setSelectedGpio] = useState({ id: 0, label: "" });
+  const [deleteId, setDeleteId] = useState(null);
 
   const formatTime = (h, m) =>
     `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
@@ -44,6 +53,19 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
     }
   };
 
+  const confirmDelete = (id) => {
+    setDeleteId(id);
+    onDeleteOpen();
+  };
+
+  const executeDelete = () => {
+    if (deleteId) onDelete(deleteId);
+    onDeleteClose();
+    setDeleteId(null);
+  };
+
+  const enabledCount = schedules.filter((s) => s.enabled).length;
+
   return (
     <Box>
       {/* Header */}
@@ -53,20 +75,21 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
             Programación
           </Text>
           <Text fontSize="sm" color={colors.text.secondary}>
-            {schedules.filter((s) => s.enabled).length} de {schedules.length} horarios activos
+            {enabledCount} de {schedules.length} activos
           </Text>
         </Box>
         <Button
           size="sm"
-          h="38px"
+          h="40px"
+          className="btn-press"
           bg={gradients.greenButton}
           color="white"
-          borderRadius="10px"
+          borderRadius="12px"
           fontWeight="600"
           fontSize="xs"
+          px={5}
           border="none"
-          _hover={{ bg: gradients.greenButtonHover, transform: "scale(1.02)" }}
-          _active={{ transform: "scale(0.98)" }}
+          _hover={{ bg: gradients.greenButtonHover, boxShadow: "0 6px 20px rgba(0,204,122,0.2)" }}
           leftIcon={<FaPlus size={10} />}
           onClick={handleAdd}
         >
@@ -74,16 +97,44 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
         </Button>
       </Flex>
 
-      {/* Schedule Cards */}
+      {/* Empty state */}
       {schedules.length === 0 ? (
-        <Box sx={glassCard} p={10} textAlign="center">
-          <Icon as={FaClock} color={colors.text.dim} boxSize={10} mb={4} />
-          <Text color={colors.text.muted} fontSize="sm">
+        <Box sx={glassCard} py={14} textAlign="center" className="glass-card">
+          <Box
+            w="64px"
+            h="64px"
+            borderRadius="20px"
+            bg="rgba(100, 116, 139, 0.08)"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            mx="auto"
+            mb={4}
+          >
+            <Icon as={FaCalendarAlt} color={colors.text.dim} boxSize={6} />
+          </Box>
+          <Text color={colors.text.muted} fontSize="sm" fontWeight="500">
             No hay horarios programados
           </Text>
-          <Text color={colors.text.dim} fontSize="xs" mt={1}>
-            Presiona "Nuevo horario" para crear uno
+          <Text color={colors.text.dim} fontSize="xs" mt={1.5} maxW="260px" mx="auto">
+            Crea un horario para automatizar el riego de tus salidas GPIO
           </Text>
+          <Button
+            size="sm"
+            mt={5}
+            className="btn-press"
+            bg={gradients.greenButton}
+            color="white"
+            borderRadius="10px"
+            fontWeight="600"
+            fontSize="xs"
+            border="none"
+            _hover={{ bg: gradients.greenButtonHover }}
+            leftIcon={<FaPlus size={10} />}
+            onClick={handleAdd}
+          >
+            Crear primer horario
+          </Button>
         </Box>
       ) : (
         <Grid templateColumns={{ base: "1fr", md: "1fr 1fr", xl: "1fr 1fr 1fr" }} gap={4}>
@@ -93,40 +144,40 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
               className="glass-card"
               bg={s.enabled ? gradients.cardActive : gradients.card}
               backdropFilter="blur(20px)"
-              borderRadius="18px"
+              borderRadius="20px"
               border="1px solid"
               borderColor={s.enabled ? colors.border.active : colors.border.default}
               overflow="hidden"
-              transition="all 0.3s ease"
+              transition="all 0.35s cubic-bezier(0.4, 0, 0.2, 1)"
               _hover={{
                 borderColor: colors.border.glow,
-                transform: "translateY(-2px)",
-                boxShadow: "0 16px 32px rgba(0,0,0,0.25)",
+                transform: "translateY(-3px)",
+                boxShadow: "0 16px 36px rgba(0,0,0,0.25)",
               }}
             >
-              {/* Top accent */}
-              <Box h="2px" bg={s.enabled ? gradients.greenButton : "transparent"} opacity={s.enabled ? 0.7 : 0} />
+              <Box h="2px" bg={s.enabled ? gradients.greenButton : "transparent"} opacity={s.enabled ? 0.8 : 0} transition="opacity 0.3s" />
 
               <Box p={5}>
-                {/* Row 1: label + toggle */}
+                {/* Header: label + toggle */}
                 <Flex justify="space-between" align="flex-start" mb={4}>
                   <Flex align="center" gap={3}>
                     <Box
-                      w="36px"
-                      h="36px"
-                      borderRadius="10px"
-                      bg={s.enabled ? "rgba(0, 230, 138, 0.12)" : "rgba(100, 116, 139, 0.1)"}
+                      w="38px"
+                      h="38px"
+                      borderRadius="12px"
+                      bg={s.enabled ? "rgba(0, 230, 138, 0.1)" : "rgba(100, 116, 139, 0.08)"}
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
+                      transition="all 0.3s"
                     >
-                      <Icon as={FaTint} color={s.enabled ? colors.green.glow : colors.text.dim} boxSize={3.5} />
+                      <Icon as={FaTint} color={s.enabled ? colors.green.glow : colors.text.dim} boxSize={4} />
                     </Box>
                     <Box>
                       <Text fontSize="sm" fontWeight="600" color={colors.text.primary}>
                         {s.gpio_label}
                       </Text>
-                      <Text fontSize="xs" color={colors.text.muted}>
+                      <Text fontSize="10px" color={colors.text.muted} letterSpacing="0.04em">
                         Salida {s.gpio_id}
                       </Text>
                     </Box>
@@ -139,50 +190,55 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
                   />
                 </Flex>
 
-                {/* Row 2: Time & Duration */}
-                <Flex gap={4} mb={4}>
+                {/* Time & Duration pills */}
+                <Flex gap={3} mb={4}>
                   <Box
                     flex={1}
                     bg={colors.bg.input}
-                    borderRadius="12px"
-                    px={3}
-                    py={2.5}
+                    borderRadius="14px"
+                    px={3.5}
+                    py={3}
                     border="1px solid"
                     borderColor={colors.border.subtle}
+                    transition="all 0.2s"
+                    _hover={{ borderColor: colors.border.default }}
                   >
-                    <Flex align="center" gap={2}>
-                      <Icon as={FaClock} color={colors.green.soft} boxSize={3} />
-                      <Text fontSize="xs" color={colors.text.muted}>Hora</Text>
+                    <Flex align="center" gap={1.5} mb={1}>
+                      <Icon as={FaClock} color={colors.green.soft} boxSize={2.5} />
+                      <Text fontSize="10px" color={colors.text.muted} fontWeight="500" textTransform="uppercase" letterSpacing="0.05em">Hora</Text>
                     </Flex>
-                    <Text fontSize="xl" fontWeight="800" color={colors.text.primary} mt={1}>
+                    <Text fontSize="xl" fontWeight="800" color={colors.text.primary} lineHeight="1">
                       {formatTime(s.time_hour, s.time_minute)}
                     </Text>
                   </Box>
                   <Box
                     flex={1}
                     bg={colors.bg.input}
-                    borderRadius="12px"
-                    px={3}
-                    py={2.5}
+                    borderRadius="14px"
+                    px={3.5}
+                    py={3}
                     border="1px solid"
                     borderColor={colors.border.subtle}
+                    transition="all 0.2s"
+                    _hover={{ borderColor: colors.border.default }}
                   >
-                    <Flex align="center" gap={2}>
-                      <Icon as={FaHourglass} color={colors.teal.400} boxSize={3} />
-                      <Text fontSize="xs" color={colors.text.muted}>Duración</Text>
+                    <Flex align="center" gap={1.5} mb={1}>
+                      <Icon as={FaHourglass} color={colors.teal.400} boxSize={2.5} />
+                      <Text fontSize="10px" color={colors.text.muted} fontWeight="500" textTransform="uppercase" letterSpacing="0.05em">Duración</Text>
                     </Flex>
-                    <Text fontSize="xl" fontWeight="800" color={colors.text.primary} mt={1}>
+                    <Text fontSize="xl" fontWeight="800" color={colors.text.primary} lineHeight="1">
                       {s.duration_minutes}
                       <Text as="span" fontSize="xs" fontWeight="400" color={colors.text.muted} ml={1}>min</Text>
                     </Text>
                   </Box>
                 </Flex>
 
-                {/* Row 3: info + actions */}
+                {/* Footer: info + actions */}
                 <Flex justify="space-between" align="center">
-                  <Text fontSize="xs" color={colors.text.muted}>
-                    Todos los días
-                  </Text>
+                  <Flex align="center" gap={1.5}>
+                    <Icon as={FaCalendarAlt} color={colors.text.dim} boxSize={2.5} />
+                    <Text fontSize="xs" color={colors.text.muted}>Todos los días</Text>
+                  </Flex>
                   <Flex gap={1}>
                     <IconButton
                       size="xs"
@@ -200,7 +256,7 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
                       color={colors.status.off}
                       _hover={{ bg: "rgba(239, 68, 68, 0.1)" }}
                       icon={<FaTrash />}
-                      onClick={() => onDelete(s.id)}
+                      onClick={() => confirmDelete(s.id)}
                       aria-label="Eliminar"
                       borderRadius="8px"
                     />
@@ -212,6 +268,7 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
         </Grid>
       )}
 
+      {/* Schedule form modal */}
       <ScheduleForm
         isOpen={isOpen}
         onClose={onClose}
@@ -219,7 +276,52 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
         schedule={editingSchedule}
         gpioId={selectedGpio.id}
         gpioLabel={selectedGpio.label}
+        gpioOptions={gpioStatus}
       />
+
+      {/* Delete confirmation */}
+      <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={cancelRef} onClose={onDeleteClose} isCentered>
+        <AlertDialogOverlay bg={colors.bg.overlay} backdropFilter="blur(8px)" />
+        <AlertDialogContent bg={colors.bg.secondary} borderRadius="20px" border="1px solid" borderColor={colors.border.default} mx={4}>
+          <AlertDialogHeader fontSize="md" fontWeight="700" color={colors.text.primary} pt={6}>
+            Eliminar horario
+          </AlertDialogHeader>
+          <AlertDialogBody>
+            <Text fontSize="sm" color={colors.text.secondary}>
+              ¿Estás seguro? Esta acción no se puede deshacer.
+            </Text>
+          </AlertDialogBody>
+          <AlertDialogFooter gap={3} pb={6}>
+            <Button
+              ref={cancelRef}
+              onClick={onDeleteClose}
+              className="btn-press"
+              bg="transparent"
+              color={colors.text.secondary}
+              border="1px solid"
+              borderColor={colors.border.default}
+              borderRadius="10px"
+              fontSize="sm"
+              _hover={{ borderColor: colors.text.muted }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              className="btn-press"
+              bg={gradients.redButton}
+              color="white"
+              borderRadius="10px"
+              fontSize="sm"
+              fontWeight="600"
+              border="none"
+              _hover={{ opacity: 0.9 }}
+              onClick={executeDelete}
+            >
+              Eliminar
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Box>
   );
 };

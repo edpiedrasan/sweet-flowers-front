@@ -9,7 +9,7 @@ import {
   Icon,
   Spinner,
 } from "@chakra-ui/react";
-import { FaChevronLeft, FaChevronRight, FaSync, FaHistory } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaSync, FaHistory, FaInbox } from "react-icons/fa";
 import { colors, gradients, glassCard, actionBadgeColors } from "../theme/irrigationTheme";
 import { getLogs } from "actions/irrigation";
 
@@ -25,10 +25,22 @@ const actionLabels = {
 
 const PAGE_SIZE = 15;
 
+const timeAgo = (dateStr) => {
+  if (!dateStr) return "";
+  const now = new Date();
+  const d = new Date(dateStr);
+  const diff = Math.floor((now - d) / 1000);
+  if (diff < 60) return "Ahora";
+  if (diff < 3600) return `Hace ${Math.floor(diff / 60)} min`;
+  if (diff < 86400) return `Hace ${Math.floor(diff / 3600)}h`;
+  if (diff < 172800) return "Ayer";
+  return d.toLocaleDateString("es-CR", { day: "2-digit", month: "short" });
+};
+
 const IrrigationLogs = () => {
   const [logs, setLogs] = useState([]);
   const [page, setPage] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [filterAction, setFilterAction] = useState("");
 
   const fetchLogs = async () => {
@@ -55,17 +67,6 @@ const IrrigationLogs = () => {
   const paginatedLogs = filteredLogs.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
   const totalPages = Math.ceil(filteredLogs.length / PAGE_SIZE);
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) return "-";
-    const d = new Date(dateStr);
-    return d.toLocaleString("es-CR", {
-      day: "2-digit",
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   return (
     <Box>
       {/* Header */}
@@ -75,7 +76,7 @@ const IrrigationLogs = () => {
             Historial
           </Text>
           <Text fontSize="sm" color={colors.text.secondary}>
-            {filteredLogs.length} registros
+            {filteredLogs.length} registro{filteredLogs.length !== 1 ? "s" : ""}
           </Text>
         </Box>
         <Flex gap={2} align="center">
@@ -91,10 +92,10 @@ const IrrigationLogs = () => {
             w="160px"
             value={filterAction}
             onChange={(e) => { setFilterAction(e.target.value); setPage(0); }}
-            placeholder="Todas"
+            placeholder="Todas las acciones"
           >
             {Object.entries(actionLabels).map(([key, label]) => (
-              <option key={key} value={key} style={{ background: colors.bg.secondary }}>
+              <option key={key} value={key} style={{ background: colors.bg.secondary, color: colors.text.primary }}>
                 {label}
               </option>
             ))}
@@ -102,6 +103,9 @@ const IrrigationLogs = () => {
           <Button
             size="sm"
             h="36px"
+            w="36px"
+            p={0}
+            className="btn-press"
             bg="transparent"
             color={colors.text.secondary}
             border="1px solid"
@@ -110,60 +114,74 @@ const IrrigationLogs = () => {
             _hover={{ borderColor: colors.green.soft, color: colors.green.soft }}
             onClick={fetchLogs}
             isLoading={loading}
-            px={3}
           >
             <Icon as={FaSync} boxSize={3} />
           </Button>
         </Flex>
       </Flex>
 
-      {/* Log entries */}
+      {/* Log list */}
       <Box sx={glassCard} overflow="hidden" className="glass-card">
         {loading && logs.length === 0 ? (
-          <Flex justify="center" py={10}>
-            <Spinner color={colors.green.glow} size="lg" thickness="3px" />
+          <Flex justify="center" align="center" py={14} direction="column" gap={3}>
+            <Spinner color={colors.green.glow} size="lg" thickness="3px" speed="0.8s" />
+            <Text fontSize="xs" color={colors.text.muted}>Cargando historial...</Text>
           </Flex>
         ) : paginatedLogs.length === 0 ? (
-          <Flex direction="column" align="center" py={10}>
-            <Icon as={FaHistory} color={colors.text.dim} boxSize={8} mb={3} />
-            <Text color={colors.text.muted} fontSize="sm">No hay registros</Text>
+          <Flex direction="column" align="center" py={14}>
+            <Box
+              w="60px"
+              h="60px"
+              borderRadius="18px"
+              bg="rgba(100, 116, 139, 0.06)"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              mb={4}
+            >
+              <Icon as={FaInbox} color={colors.text.dim} boxSize={6} />
+            </Box>
+            <Text color={colors.text.muted} fontSize="sm" fontWeight="500">Sin registros</Text>
+            <Text color={colors.text.dim} fontSize="xs" mt={1}>
+              {filterAction ? "Prueba cambiando el filtro" : "Los eventos de riego aparecerán aquí"}
+            </Text>
           </Flex>
         ) : (
           <Box>
             {paginatedLogs.map((log, idx) => {
-              const badge = actionBadgeColors[log.action] || { bg: colors.bg.card, color: colors.text.muted };
+              const badge = actionBadgeColors[log.action] || { bg: "rgba(100,116,139,0.1)", color: colors.text.muted };
               const isLast = idx === paginatedLogs.length - 1;
 
               return (
                 <Flex
                   key={log.id}
-                  px={5}
+                  px={{ base: 4, md: 5 }}
                   py={3.5}
                   align="center"
-                  gap={4}
+                  gap={{ base: 3, md: 4 }}
                   borderBottom={isLast ? "none" : "1px solid"}
                   borderColor={colors.border.subtle}
-                  transition="background 0.2s"
-                  _hover={{ bg: "rgba(16, 52, 44, 0.3)" }}
+                  transition="background 0.2s ease"
+                  _hover={{ bg: "rgba(16, 52, 44, 0.25)" }}
                   flexWrap={{ base: "wrap", md: "nowrap" }}
                 >
-                  {/* Colored dot */}
+                  {/* Color dot */}
                   <Box
                     w="8px"
                     h="8px"
                     borderRadius="full"
                     bg={badge.color}
                     flexShrink={0}
-                    boxShadow={`0 0 6px ${badge.color}40`}
+                    boxShadow={`0 0 6px ${badge.color}30`}
                   />
 
-                  {/* Date */}
-                  <Text fontSize="xs" color={colors.text.dim} fontWeight="500" minW="90px" flexShrink={0}>
-                    {formatDate(log.executed_at)}
+                  {/* Time ago */}
+                  <Text fontSize="xs" color={colors.text.dim} fontWeight="500" minW={{ base: "auto", md: "80px" }} flexShrink={0}>
+                    {timeAgo(log.executed_at)}
                   </Text>
 
-                  {/* GPIO label */}
-                  <Text fontSize="sm" color={colors.text.primary} fontWeight="500" minW="80px" flexShrink={0}>
+                  {/* GPIO */}
+                  <Text fontSize="sm" color={colors.text.primary} fontWeight="500" minW={{ base: "auto", md: "90px" }} flexShrink={0}>
                     {log.gpio_label || `Salida ${log.gpio_id}`}
                   </Text>
 
@@ -173,7 +191,7 @@ const IrrigationLogs = () => {
                     py={1}
                     borderRadius="full"
                     fontSize="10px"
-                    fontWeight="600"
+                    fontWeight="700"
                     bg={badge.bg}
                     color={badge.color}
                     letterSpacing="0.04em"
@@ -184,14 +202,14 @@ const IrrigationLogs = () => {
                   </Badge>
 
                   {/* Message */}
-                  <Text fontSize="xs" color={colors.text.muted} flex={1} noOfLines={1}>
+                  <Text fontSize="xs" color={colors.text.muted} flex={1} noOfLines={1} display={{ base: "none", lg: "block" }}>
                     {log.message || ""}
                   </Text>
 
                   {/* Cancelled by */}
                   {log.cancelled_by && (
                     <Text fontSize="xs" color={colors.status.off} fontWeight="500" flexShrink={0}>
-                      por {log.cancelled_by}
+                      {log.cancelled_by}
                     </Text>
                   )}
                 </Flex>
@@ -205,7 +223,7 @@ const IrrigationLogs = () => {
           <Flex
             justify="center"
             align="center"
-            gap={4}
+            gap={3}
             py={3}
             borderTop="1px solid"
             borderColor={colors.border.subtle}
@@ -217,14 +235,14 @@ const IrrigationLogs = () => {
               isDisabled={page === 0}
               onClick={() => setPage(page - 1)}
               _hover={{ color: colors.green.soft }}
-              leftIcon={<FaChevronLeft size={10} />}
+              borderRadius="8px"
             >
-              Anterior
+              <Icon as={FaChevronLeft} boxSize={2.5} />
             </Button>
-            <Flex gap={1}>
+            <Flex gap={0.5}>
               {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                const pageNum = page < 3 ? i : page - 2 + i;
-                if (pageNum >= totalPages) return null;
+                const pageNum = page < 3 ? i : Math.min(page - 2 + i, totalPages - 1);
+                if (i > 0 && pageNum === parseInt(Array.from({ length: i }, (_, j) => page < 3 ? j : Math.min(page - 2 + j, totalPages - 1)).pop())) return null;
                 return (
                   <Button
                     key={pageNum}
@@ -235,7 +253,8 @@ const IrrigationLogs = () => {
                     borderRadius="8px"
                     color={pageNum === page ? colors.green.glow : colors.text.dim}
                     bg={pageNum === page ? "rgba(0, 230, 138, 0.1)" : "transparent"}
-                    fontWeight={pageNum === page ? "700" : "400"}
+                    fontWeight={pageNum === page ? "700" : "500"}
+                    fontSize="xs"
                     onClick={() => setPage(pageNum)}
                     _hover={{ bg: "rgba(0, 230, 138, 0.06)" }}
                   >
@@ -251,9 +270,9 @@ const IrrigationLogs = () => {
               isDisabled={page >= totalPages - 1}
               onClick={() => setPage(page + 1)}
               _hover={{ color: colors.green.soft }}
-              rightIcon={<FaChevronRight size={10} />}
+              borderRadius="8px"
             >
-              Siguiente
+              <Icon as={FaChevronRight} boxSize={2.5} />
             </Button>
           </Flex>
         )}

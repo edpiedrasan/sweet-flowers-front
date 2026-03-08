@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import {
   Box,
@@ -16,7 +16,6 @@ import {
 } from "@chakra-ui/react";
 import {
   FaArrowLeft,
-  FaTint,
   FaThLarge,
   FaClock,
   FaChartLine,
@@ -48,37 +47,39 @@ const tabItems = [
   { label: "Historial", icon: FaHistory },
 ];
 
+const REFRESH_INTERVAL = 15000; // 15s auto-refresh
+
 export const IndexSmartAutomation = () => {
   const history = useHistory();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const refreshRef = useRef(null);
 
   const [gpioStatus, setGpioStatus] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [togglingId, setTogglingId] = useState(null);
   const [selectedGpio, setSelectedGpio] = useState({ id: 0, label: "" });
   const [tabIndex, setTabIndex] = useState(0);
 
-  const fetchGpioStatus = useCallback(async () => {
+  const fetchGpioStatus = useCallback(async (silent = false) => {
     try {
       const res = await getGpioStatus();
       if (res && res.data && res.data.payload) {
         setGpioStatus(res.data.payload);
       } else {
         const response = await fetch("https://polemic-quetzal-1242.dataplicity.io/gpio");
-        if (response.ok) {
-          setGpioStatus(await response.json());
-        }
+        if (response.ok) setGpioStatus(await response.json());
       }
     } catch (error) {
       try {
         const response = await fetch("https://polemic-quetzal-1242.dataplicity.io/gpio");
         if (response.ok) setGpioStatus(await response.json());
       } catch (err) {
-        console.error("Error fetching GPIO:", err);
+        if (!silent) console.error("Error fetching GPIO:", err);
       }
     }
-    setLoading(false);
+    if (!silent) setLoading(false);
   }, []);
 
   const fetchSchedules = useCallback(async () => {
@@ -92,10 +93,19 @@ export const IndexSmartAutomation = () => {
     }
   }, []);
 
+  // Initial fetch
   useEffect(() => {
     fetchGpioStatus();
     fetchSchedules();
   }, [fetchGpioStatus, fetchSchedules]);
+
+  // Auto-refresh GPIO every 15s
+  useEffect(() => {
+    refreshRef.current = setInterval(() => {
+      fetchGpioStatus(true);
+    }, REFRESH_INTERVAL);
+    return () => clearInterval(refreshRef.current);
+  }, [fetchGpioStatus]);
 
   const showToast = (title, desc, status) => {
     toast({
@@ -105,12 +115,13 @@ export const IndexSmartAutomation = () => {
       duration: 3000,
       isClosable: true,
       position: "bottom-right",
+      variant: "subtle",
     });
   };
 
   const handleToggleGpio = async (gpioId, turn, label) => {
     try {
-      setLoading(true);
+      setTogglingId(gpioId);
       await toggleGpio(gpioId, turn, label);
       await fetchGpioStatus();
       showToast(
@@ -120,7 +131,8 @@ export const IndexSmartAutomation = () => {
       );
     } catch (error) {
       showToast("Error", "No se pudo cambiar el estado", "error");
-      setLoading(false);
+    } finally {
+      setTogglingId(null);
     }
   };
 
@@ -133,7 +145,7 @@ export const IndexSmartAutomation = () => {
     try {
       await createSchedule(data);
       await fetchSchedules();
-      showToast("Horario creado", "", "success");
+      showToast("Horario creado", `${data.gpio_label} a las ${String(data.time_hour).padStart(2,"0")}:${String(data.time_minute).padStart(2,"0")}`, "success");
     } catch (error) {
       showToast("Error", "No se pudo crear el horario", "error");
     }
@@ -143,7 +155,7 @@ export const IndexSmartAutomation = () => {
     try {
       await updateSchedule(id, data);
       await fetchSchedules();
-      showToast("Horario actualizado", "", "success");
+      showToast("Actualizado", "Horario modificado con éxito", "success");
     } catch (error) {
       showToast("Error", "No se pudo actualizar", "error");
     }
@@ -153,7 +165,7 @@ export const IndexSmartAutomation = () => {
     try {
       await deleteSchedule(id);
       await fetchSchedules();
-      showToast("Horario eliminado", "", "info");
+      showToast("Eliminado", "Horario removido", "info");
     } catch (error) {
       showToast("Error", "No se pudo eliminar", "error");
     }
@@ -168,47 +180,64 @@ export const IndexSmartAutomation = () => {
     }
   };
 
+  // Find next upcoming irrigation
+  const getNextIrrigation = () => {
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const today = now.getDay();
+    const enabled = schedules.filter((s) => {
+      if (!s.enabled) return false;
+      const days = s.active_days.split(",").map(Number);
+      return days.includes(today);
+    });
+    const upcoming = enabled
+      .filter((s) => s.time_hour * 60 + s.time_minute > nowMin)
+      .sort((a, b) => (a.time_hour * 60 + a.time_minute) - (b.time_hour * 60 + b.time_minute));
+    return upcoming.length > 0 ? upcoming[0] : null;
+  };
+
+  const nextIrrigation = getNextIrrigation();
+
   return (
-    <Box className="irrigation-root" px={{ base: 4, md: 6, lg: 8 }} py={6} position="relative" zIndex={1}>
-      {/* Header */}
+    <Box className="irrigation-root" px={{ base: 3, md: 6, lg: 8 }} py={{ base: 4, md: 6 }} position="relative" zIndex={1}>
+
+      {/* ---- Header ---- */}
       <Flex
         justify="space-between"
         align="center"
-        mb={8}
+        mb={{ base: 5, md: 7 }}
         maxW="1280px"
         mx="auto"
       >
-        <Flex align="center" gap={4}>
-          {/* Icon with glow */}
+        <Flex align="center" gap={{ base: 3, md: 4 }}>
           <Box
-            w="52px"
-            h="52px"
+            w={{ base: "44px", md: "52px" }}
+            h={{ base: "44px", md: "52px" }}
             borderRadius="16px"
             bg="rgba(0, 230, 138, 0.1)"
-            border="1px solid"
-            borderColor="rgba(0, 230, 138, 0.2)"
+            border="1px solid rgba(0, 230, 138, 0.2)"
             display="flex"
             alignItems="center"
             justifyContent="center"
             position="relative"
+            flexShrink={0}
           >
-            <Icon as={FaLeaf} color={colors.green.glow} boxSize={5} />
+            <Icon as={FaLeaf} color={colors.green.glow} boxSize={{ base: 4, md: 5 }} />
             <Box
               position="absolute"
-              inset="-4px"
-              borderRadius="20px"
-              bg="transparent"
-              boxShadow="0 0 20px rgba(0, 230, 138, 0.1)"
+              inset="-6px"
+              borderRadius="22px"
+              boxShadow="0 0 25px rgba(0, 230, 138, 0.12)"
               pointerEvents="none"
             />
           </Box>
           <Box>
-            <Text className="gradient-title" fontSize={{ base: "xl", md: "2xl" }} lineHeight="1.1">
+            <Text className="gradient-title" fontSize={{ base: "lg", md: "2xl" }} lineHeight="1.1">
               Control de Riego
             </Text>
-            <Flex gap={3} mt={1.5}>
+            <Flex gap={3} mt={1} flexWrap="wrap">
               <Flex align="center" gap={1.5}>
-                <Box w="6px" h="6px" borderRadius="full" bg={colors.green.glow} className="glow-dot" />
+                <Box w="6px" h="6px" borderRadius="full" bg={gpioStatus.filter((g) => g[2] === 1).length > 0 ? colors.green.glow : colors.text.dim} className={gpioStatus.filter((g) => g[2] === 1).length > 0 ? "glow-dot" : ""} />
                 <Text fontSize="xs" color={colors.text.secondary}>
                   {gpioStatus.filter((g) => g[2] === 1).length} activas
                 </Text>
@@ -220,6 +249,14 @@ export const IndexSmartAutomation = () => {
                   {schedules.filter((s) => s.enabled).length} horarios
                 </Text>
               </Flex>
+              {nextIrrigation && (
+                <>
+                  <Text fontSize="xs" color={colors.text.dim}>|</Text>
+                  <Text fontSize="xs" color={colors.green.soft}>
+                    Próximo: {String(nextIrrigation.time_hour).padStart(2, "0")}:{String(nextIrrigation.time_minute).padStart(2, "0")}
+                  </Text>
+                </>
+              )}
             </Flex>
           </Box>
         </Flex>
@@ -227,6 +264,7 @@ export const IndexSmartAutomation = () => {
         <Button
           size="sm"
           h="38px"
+          className="btn-press"
           bg="rgba(16, 52, 44, 0.4)"
           backdropFilter="blur(10px)"
           color={colors.text.secondary}
@@ -247,65 +285,69 @@ export const IndexSmartAutomation = () => {
         </Button>
       </Flex>
 
-      {/* Content */}
+      {/* ---- Content ---- */}
       <Box maxW="1280px" mx="auto">
-        <Tabs
-          index={tabIndex}
-          onChange={setTabIndex}
-          variant="unstyled"
-          isLazy
-        >
+        <Tabs index={tabIndex} onChange={setTabIndex} variant="unstyled" isLazy>
           {/* Tab bar */}
           <TabList
-            bg="rgba(16, 52, 44, 0.35)"
-            backdropFilter="blur(20px)"
+            bg="rgba(16, 52, 44, 0.3)"
+            backdropFilter="blur(24px)"
             borderRadius="16px"
             border="1px solid"
             borderColor={colors.border.default}
             p={1.5}
-            mb={8}
+            mb={{ base: 5, md: 7 }}
             gap={1}
+            overflowX="auto"
+            css={{ '&::-webkit-scrollbar': { display: 'none' } }}
           >
             {tabItems.map((tab, idx) => (
               <Tab
                 key={idx}
                 flex={1}
+                minW="auto"
                 py={2.5}
+                px={{ base: 3, md: 4 }}
                 borderRadius="12px"
                 fontSize="xs"
                 fontWeight="500"
                 color={colors.text.muted}
-                transition="all 0.3s ease"
+                transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                 _selected={{
                   bg: gradients.tabActive,
                   color: colors.green.glow,
                   fontWeight: "700",
                   boxShadow: "0 0 20px rgba(0, 230, 138, 0.05)",
+                  borderColor: "transparent",
                 }}
                 _hover={{
                   color: tabIndex === idx ? colors.green.glow : colors.text.secondary,
+                  bg: tabIndex === idx ? undefined : "rgba(16, 52, 44, 0.2)",
                 }}
+                _focus={{ boxShadow: "none" }}
               >
                 <Flex align="center" gap={2} justify="center">
                   <Icon as={tab.icon} boxSize={3.5} />
-                  <Text display={{ base: "none", sm: "block" }}>{tab.label}</Text>
+                  <Text display={{ base: "none", sm: "block" }} whiteSpace="nowrap">{tab.label}</Text>
                 </Flex>
               </Tab>
             ))}
           </TabList>
 
           <TabPanels>
-            <TabPanel p={0}>
+            <TabPanel p={0} className="tab-panel-animated">
               <GpioDashboard
                 gpioStatus={gpioStatus}
                 loading={loading}
+                togglingId={togglingId}
                 onToggleGpio={handleToggleGpio}
                 onOpenSchedule={handleOpenSchedule}
                 schedules={schedules}
+                nextIrrigation={nextIrrigation}
               />
             </TabPanel>
 
-            <TabPanel p={0}>
+            <TabPanel p={0} className="tab-panel-animated">
               <ScheduleManager
                 schedules={schedules}
                 onUpdate={handleUpdateSchedule}
@@ -316,18 +358,17 @@ export const IndexSmartAutomation = () => {
               />
             </TabPanel>
 
-            <TabPanel p={0}>
+            <TabPanel p={0} className="tab-panel-animated">
               <TodayTimeline schedules={schedules} />
             </TabPanel>
 
-            <TabPanel p={0}>
+            <TabPanel p={0} className="tab-panel-animated">
               <IrrigationLogs />
             </TabPanel>
           </TabPanels>
         </Tabs>
       </Box>
 
-      {/* Quick schedule modal from Dashboard */}
       <ScheduleForm
         isOpen={isOpen}
         onClose={onClose}
@@ -335,6 +376,7 @@ export const IndexSmartAutomation = () => {
         schedule={null}
         gpioId={selectedGpio.id}
         gpioLabel={selectedGpio.label}
+        gpioOptions={gpioStatus}
       />
     </Box>
   );
