@@ -26,6 +26,18 @@ export default {
     registerProductionProducts: `${urlBase}/production/register-production-products`,
   },
 
+  IRRIGATION: {
+    getSchedules: `${urlBase}/irrigation/schedules`,
+    getScheduleById: (id) => `${urlBase}/irrigation/schedules/${id}`,
+    createSchedule: `${urlBase}/irrigation/schedules`,
+    updateSchedule: (id) => `${urlBase}/irrigation/schedules/${id}`,
+    deleteSchedule: (id) => `${urlBase}/irrigation/schedules/${id}`,
+    toggleSchedule: (id) => `${urlBase}/irrigation/schedules/${id}/toggle`,
+    getLogs: `${urlBase}/irrigation/logs`,
+    getGpioStatus: `${urlBase}/irrigation/gpio-status`,
+    toggleGpio: (id) => `${urlBase}/irrigation/gpio-toggle/${id}`,
+  },
+
   BILLING: {
     newpurchaseorder: `${urlBase}/billing/new-purchase-order`,
     newbilling: `${urlBase}/billing/new-billing`,
