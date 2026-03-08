@@ -1,34 +1,12 @@
-import React, { useState, useRef } from "react";
-import {
-  Box,
-  Text,
-  Flex,
-  Switch,
-  IconButton,
-  Button,
-  Icon,
-  Grid,
-  useDisclosure,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-} from "@chakra-ui/react";
-import { FaEdit, FaTrash, FaPlus, FaClock, FaTint, FaHourglass, FaCalendarAlt } from "react-icons/fa";
-import { colors, gradients, glassCard } from "../theme/irrigationTheme";
-
-const teal400 = colors.teal["400"];
+import React, { useState } from "react";
+import { FaEdit, FaTrash, FaPlus, FaClock, FaTint, FaHourglass, FaCalendarAlt, FaTimes } from "react-icons/fa";
 import ScheduleForm from "./ScheduleForm";
 
 const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gpioStatus }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
-  const cancelRef = useRef();
+  const [formOpen, setFormOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(null);
   const [selectedGpio, setSelectedGpio] = useState({ id: 0, label: "" });
-  const [deleteId, setDeleteId] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const formatTime = (h, m) =>
     `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
@@ -36,7 +14,7 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
   const handleEdit = (schedule) => {
     setEditingSchedule(schedule);
     setSelectedGpio({ id: schedule.gpio_id, label: schedule.gpio_label });
-    onOpen();
+    setFormOpen(true);
   };
 
   const handleAdd = () => {
@@ -44,7 +22,7 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
     if (gpioStatus && gpioStatus.length > 0) {
       setSelectedGpio({ id: gpioStatus[0][0], label: gpioStatus[0][1] });
     }
-    onOpen();
+    setFormOpen(true);
   };
 
   const handleSave = (formData) => {
@@ -55,225 +33,127 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
     }
   };
 
-  const confirmDelete = (id) => {
-    setDeleteId(id);
-    onDeleteOpen();
-  };
-
   const executeDelete = () => {
-    if (deleteId) onDelete(deleteId);
-    onDeleteClose();
-    setDeleteId(null);
+    if (deleteConfirm) onDelete(deleteConfirm);
+    setDeleteConfirm(null);
   };
 
   const enabledCount = schedules.filter((s) => s.enabled).length;
 
   return (
-    <Box>
+    <div>
       {/* Header */}
-      <Flex justify="space-between" align="center" mb={6}>
-        <Box>
-          <Text fontSize="lg" fontWeight="700" color={colors.text.primary}>
-            Programación
-          </Text>
-          <Text fontSize="sm" color={colors.text.secondary}>
-            {enabledCount} de {schedules.length} activos
-          </Text>
-        </Box>
-        <Button
-          size="sm"
-          h="40px"
-          className="btn-press"
-          bg={gradients.greenButton}
-          color="white"
-          borderRadius="12px"
-          fontWeight="600"
-          fontSize="xs"
-          px={5}
-          border="none"
-          _hover={{ bg: gradients.greenButtonHover, boxShadow: "0 6px 20px rgba(0,204,122,0.2)" }}
-          leftIcon={<FaPlus size={10} />}
-          onClick={handleAdd}
-        >
-          Nuevo horario
-        </Button>
-      </Flex>
+      <div className="irr-flex irr-flex-between irr-flex-center irr-mb-6">
+        <div>
+          <div className="irr-font-bold irr-text-white" style={{ fontSize: 18 }}>Programación</div>
+          <div className="irr-text-sm irr-text-muted">{enabledCount} de {schedules.length} activos</div>
+        </div>
+        <button className="irr-btn irr-btn-green irr-btn-sm" onClick={handleAdd}>
+          <FaPlus size={10} /> Nuevo horario
+        </button>
+      </div>
 
       {/* Empty state */}
       {schedules.length === 0 ? (
-        <Box sx={glassCard} py={14} textAlign="center" className="glass-card">
-          <Box
-            w="64px"
-            h="64px"
-            borderRadius="20px"
-            bg="rgba(100, 116, 139, 0.08)"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            mx="auto"
-            mb={4}
-          >
-            <Icon as={FaCalendarAlt} color={colors.text.dim} boxSize={6} />
-          </Box>
-          <Text color={colors.text.muted} fontSize="sm" fontWeight="500">
-            No hay horarios programados
-          </Text>
-          <Text color={colors.text.dim} fontSize="xs" mt={1.5} maxW="260px" mx="auto">
-            Crea un horario para automatizar el riego de tus salidas GPIO
-          </Text>
-          <Button
-            size="sm"
-            mt={5}
-            className="btn-press"
-            bg={gradients.greenButton}
-            color="white"
-            borderRadius="10px"
-            fontWeight="600"
-            fontSize="xs"
-            border="none"
-            _hover={{ bg: gradients.greenButtonHover }}
-            leftIcon={<FaPlus size={10} />}
-            onClick={handleAdd}
-          >
-            Crear primer horario
-          </Button>
-        </Box>
+        <div className="irr-glass">
+          <div className="irr-empty">
+            <div className="irr-empty-icon"><FaCalendarAlt /></div>
+            <div className="irr-text-sm irr-text-muted irr-font-medium">No hay horarios programados</div>
+            <div className="irr-text-xs irr-text-dim irr-mt-1" style={{ maxWidth: 260, margin: "6px auto 0" }}>
+              Crea un horario para automatizar el riego de tus salidas GPIO
+            </div>
+            <button className="irr-btn irr-btn-green irr-btn-sm irr-mt-3" onClick={handleAdd}>
+              <FaPlus size={10} /> Crear primer horario
+            </button>
+          </div>
+        </div>
       ) : (
-        <Grid templateColumns={{ base: "1fr", md: "1fr 1fr", xl: "1fr 1fr 1fr" }} gap={4}>
+        <div className="irr-grid irr-grid-3">
           {schedules.map((s) => (
-            <Box
+            <div
               key={s.id}
-              className="glass-card"
-              bg={s.enabled ? gradients.cardActive : gradients.card}
-              backdropFilter="blur(20px)"
-              borderRadius="20px"
-              border="1px solid"
-              borderColor={s.enabled ? colors.border.active : colors.border.default}
-              overflow="hidden"
-              transition="all 0.35s cubic-bezier(0.4, 0, 0.2, 1)"
-              _hover={{
-                borderColor: colors.border.glow,
-                transform: "translateY(-3px)",
-                boxShadow: "0 16px 36px rgba(0,0,0,0.25)",
-              }}
+              className={`irr-glass${s.enabled ? " active" : ""}`}
             >
-              <Box h="2px" bg={s.enabled ? gradients.greenButton : "transparent"} opacity={s.enabled ? 0.8 : 0} transition="opacity 0.3s" />
-
-              <Box p={5}>
+              <div className="irr-glass-accent" />
+              <div className="irr-glass-body">
                 {/* Header: label + toggle */}
-                <Flex justify="space-between" align="flex-start" mb={4}>
-                  <Flex align="center" gap={3}>
-                    <Box
-                      w="38px"
-                      h="38px"
-                      borderRadius="12px"
-                      bg={s.enabled ? "rgba(0, 230, 138, 0.1)" : "rgba(100, 116, 139, 0.08)"}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      transition="all 0.3s"
-                    >
-                      <Icon as={FaTint} color={s.enabled ? colors.green.glow : colors.text.dim} boxSize={4} />
-                    </Box>
-                    <Box>
-                      <Text fontSize="sm" fontWeight="600" color={colors.text.primary}>
-                        {s.gpio_label}
-                      </Text>
-                      <Text fontSize="10px" color={colors.text.muted} letterSpacing="0.04em">
-                        Salida {s.gpio_id}
-                      </Text>
-                    </Box>
-                  </Flex>
-                  <Switch
-                    isChecked={s.enabled === 1}
-                    onChange={() => onToggle(s.id, s.enabled === 1 ? 0 : 1)}
-                    colorScheme="green"
-                    size="sm"
-                  />
-                </Flex>
+                <div className="irr-flex irr-flex-between irr-mb-4" style={{ alignItems: "flex-start" }}>
+                  <div className="irr-flex irr-flex-center irr-gap-3">
+                    <div className={`irr-icon-box ${s.enabled ? "irr-icon-box-green" : "irr-icon-box-muted"}`}>
+                      <FaTint />
+                    </div>
+                    <div>
+                      <div className="irr-text-sm irr-font-semibold irr-text-white">{s.gpio_label}</div>
+                      <div className="irr-label">Salida {s.gpio_id}</div>
+                    </div>
+                  </div>
+                  <label className="irr-switch">
+                    <input
+                      type="checkbox"
+                      checked={s.enabled === 1}
+                      onChange={() => onToggle(s.id, s.enabled === 1 ? 0 : 1)}
+                    />
+                    <span className="irr-switch-track" />
+                    <span className="irr-switch-thumb" />
+                  </label>
+                </div>
 
                 {/* Time & Duration pills */}
-                <Flex gap={3} mb={4}>
-                  <Box
-                    flex={1}
-                    bg={colors.bg.input}
-                    borderRadius="14px"
-                    px={3.5}
-                    py={3}
-                    border="1px solid"
-                    borderColor={colors.border.subtle}
-                    transition="all 0.2s"
-                    _hover={{ borderColor: colors.border.default }}
-                  >
-                    <Flex align="center" gap={1.5} mb={1}>
-                      <Icon as={FaClock} color={colors.green.soft} boxSize={2.5} />
-                      <Text fontSize="10px" color={colors.text.muted} fontWeight="500" textTransform="uppercase" letterSpacing="0.05em">Hora</Text>
-                    </Flex>
-                    <Text fontSize="xl" fontWeight="800" color={colors.text.primary} lineHeight="1">
-                      {formatTime(s.time_hour, s.time_minute)}
-                    </Text>
-                  </Box>
-                  <Box
-                    flex={1}
-                    bg={colors.bg.input}
-                    borderRadius="14px"
-                    px={3.5}
-                    py={3}
-                    border="1px solid"
-                    borderColor={colors.border.subtle}
-                    transition="all 0.2s"
-                    _hover={{ borderColor: colors.border.default }}
-                  >
-                    <Flex align="center" gap={1.5} mb={1}>
-                      <Icon as={FaHourglass} color={teal400} boxSize={2.5} />
-                      <Text fontSize="10px" color={colors.text.muted} fontWeight="500" textTransform="uppercase" letterSpacing="0.05em">Duración</Text>
-                    </Flex>
-                    <Text fontSize="xl" fontWeight="800" color={colors.text.primary} lineHeight="1">
+                <div className="irr-flex irr-gap-3 irr-mb-4">
+                  <div className="irr-inner-card">
+                    <div className="irr-flex irr-flex-center irr-gap-2 irr-mb-1">
+                      <FaClock style={{ color: "#34d399", fontSize: 10 }} />
+                      <span className="irr-label">Hora</span>
+                    </div>
+                    <div className="irr-text-xl irr-text-white">{formatTime(s.time_hour, s.time_minute)}</div>
+                  </div>
+                  <div className="irr-inner-card">
+                    <div className="irr-flex irr-flex-center irr-gap-2 irr-mb-1">
+                      <FaHourglass style={{ color: "#2dd4bf", fontSize: 10 }} />
+                      <span className="irr-label">Duración</span>
+                    </div>
+                    <div className="irr-text-xl irr-text-white">
                       {s.duration_minutes}
-                      <Text as="span" fontSize="xs" fontWeight="400" color={colors.text.muted} ml={1}>min</Text>
-                    </Text>
-                  </Box>
-                </Flex>
+                      <span className="irr-text-xs irr-text-muted irr-font-medium" style={{ marginLeft: 4 }}>min</span>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Footer: info + actions */}
-                <Flex justify="space-between" align="center">
-                  <Flex align="center" gap={1.5}>
-                    <Icon as={FaCalendarAlt} color={colors.text.dim} boxSize={2.5} />
-                    <Text fontSize="xs" color={colors.text.muted}>Todos los días</Text>
-                  </Flex>
-                  <Flex gap={1}>
-                    <IconButton
-                      size="xs"
-                      variant="ghost"
-                      color={teal400}
-                      _hover={{ bg: "rgba(20, 184, 166, 0.1)" }}
-                      icon={<FaEdit />}
+                <div className="irr-flex irr-flex-between irr-flex-center">
+                  <div className="irr-flex irr-flex-center irr-gap-2">
+                    <FaCalendarAlt style={{ color: "#475569", fontSize: 10 }} />
+                    <span className="irr-text-xs irr-text-muted">Todos los días</span>
+                  </div>
+                  <div className="irr-flex irr-gap-2">
+                    <button
+                      className="irr-btn irr-btn-icon irr-btn-outline"
+                      style={{ color: "#2dd4bf", borderColor: "transparent" }}
                       onClick={() => handleEdit(s)}
-                      aria-label="Editar"
-                      borderRadius="8px"
-                    />
-                    <IconButton
-                      size="xs"
-                      variant="ghost"
-                      color={colors.status.off}
-                      _hover={{ bg: "rgba(239, 68, 68, 0.1)" }}
-                      icon={<FaTrash />}
-                      onClick={() => confirmDelete(s.id)}
-                      aria-label="Eliminar"
-                      borderRadius="8px"
-                    />
-                  </Flex>
-                </Flex>
-              </Box>
-            </Box>
+                      title="Editar"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="irr-btn irr-btn-icon irr-btn-outline"
+                      style={{ color: "#ef4444", borderColor: "transparent" }}
+                      onClick={() => setDeleteConfirm(s.id)}
+                      title="Eliminar"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           ))}
-        </Grid>
+        </div>
       )}
 
       {/* Schedule form modal */}
       <ScheduleForm
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={formOpen}
+        onClose={() => setFormOpen(false)}
         onSave={handleSave}
         schedule={editingSchedule}
         gpioId={selectedGpio.id}
@@ -282,49 +162,29 @@ const ScheduleManager = ({ schedules, onUpdate, onDelete, onToggle, onCreate, gp
       />
 
       {/* Delete confirmation */}
-      <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={cancelRef} onClose={onDeleteClose} isCentered>
-        <AlertDialogOverlay bg={colors.bg.overlay} backdropFilter="blur(8px)" />
-        <AlertDialogContent bg={colors.bg.secondary} borderRadius="20px" border="1px solid" borderColor={colors.border.default} mx={4}>
-          <AlertDialogHeader fontSize="md" fontWeight="700" color={colors.text.primary} pt={6}>
-            Eliminar horario
-          </AlertDialogHeader>
-          <AlertDialogBody>
-            <Text fontSize="sm" color={colors.text.secondary}>
-              ¿Estás seguro? Esta acción no se puede deshacer.
-            </Text>
-          </AlertDialogBody>
-          <AlertDialogFooter gap={3} pb={6}>
-            <Button
-              ref={cancelRef}
-              onClick={onDeleteClose}
-              className="btn-press"
-              bg="transparent"
-              color={colors.text.secondary}
-              border="1px solid"
-              borderColor={colors.border.default}
-              borderRadius="10px"
-              fontSize="sm"
-              _hover={{ borderColor: colors.text.muted }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              className="btn-press"
-              bg={gradients.redButton}
-              color="white"
-              borderRadius="10px"
-              fontSize="sm"
-              fontWeight="600"
-              border="none"
-              _hover={{ opacity: 0.9 }}
-              onClick={executeDelete}
-            >
-              Eliminar
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </Box>
+      {deleteConfirm !== null && (
+        <div className="irr-overlay" onClick={(e) => { if (e.target === e.currentTarget) setDeleteConfirm(null); }}>
+          <div className="irr-modal" style={{ maxWidth: 380 }}>
+            <div className="irr-modal-header">
+              <div className="irr-font-bold irr-text-white" style={{ fontSize: 16 }}>Eliminar horario</div>
+            </div>
+            <div className="irr-modal-body">
+              <div className="irr-text-sm irr-text-muted">
+                ¿Estás seguro? Esta acción no se puede deshacer.
+              </div>
+            </div>
+            <div className="irr-modal-footer">
+              <button className="irr-btn irr-btn-outline" style={{ flex: 1, fontSize: 14 }} onClick={() => setDeleteConfirm(null)}>
+                Cancelar
+              </button>
+              <button className="irr-btn irr-btn-red" style={{ flex: 1, fontSize: 14, fontWeight: 600 }} onClick={executeDelete}>
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -70,23 +70,6 @@ export const gradients = {
   glow: "radial-gradient(ellipse at center, rgba(0, 230, 138, 0.15) 0%, transparent 70%)",
 };
 
-export const glassCard = {
-  bg: gradients.card,
-  backdropFilter: "blur(20px)",
-  borderRadius: "20px",
-  border: "1px solid",
-  borderColor: colors.border.default,
-  overflow: "hidden",
-  position: "relative",
-  transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-};
-
-export const glassCardHover = {
-  borderColor: colors.border.glow,
-  transform: "translateY(-4px)",
-  boxShadow: `0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 230, 138, 0.06)`,
-};
-
 export const actionBadgeColors = {
   NOTIFICATION_SENT: { bg: "rgba(59, 130, 246, 0.15)", color: "#60a5fa", icon: "bell" },
   CANCELLED: { bg: "rgba(239, 68, 68, 0.15)", color: "#f87171", icon: "x" },

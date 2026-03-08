@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Text,
-  Flex,
-  Badge,
-  Button,
-  Select,
-  Icon,
-  Spinner,
-} from "@chakra-ui/react";
-import { FaChevronLeft, FaChevronRight, FaSync, FaHistory, FaInbox } from "react-icons/fa";
-import { colors, gradients, glassCard, actionBadgeColors } from "../theme/irrigationTheme";
+import { FaChevronLeft, FaChevronRight, FaSync, FaInbox } from "react-icons/fa";
+import { actionBadgeColors } from "../theme/irrigationTheme";
 import { getLogs } from "actions/irrigation";
 
 const actionLabels = {
@@ -68,216 +58,144 @@ const IrrigationLogs = () => {
   const totalPages = Math.ceil(filteredLogs.length / PAGE_SIZE);
 
   return (
-    <Box>
+    <div>
       {/* Header */}
-      <Flex justify="space-between" align="center" mb={6} flexWrap="wrap" gap={3}>
-        <Box>
-          <Text fontSize="lg" fontWeight="700" color={colors.text.primary}>
-            Historial
-          </Text>
-          <Text fontSize="sm" color={colors.text.secondary}>
+      <div className="irr-flex irr-flex-between irr-flex-center irr-flex-wrap irr-gap-3 irr-mb-6">
+        <div>
+          <div className="irr-font-bold irr-text-white" style={{ fontSize: 18 }}>Historial</div>
+          <div className="irr-text-sm irr-text-muted">
             {filteredLogs.length} registro{filteredLogs.length !== 1 ? "s" : ""}
-          </Text>
-        </Box>
-        <Flex gap={2} align="center">
-          <Select
-            size="sm"
-            bg={colors.bg.input}
-            color={colors.text.primary}
-            borderColor={colors.border.default}
-            borderRadius="10px"
-            fontSize="xs"
-            h="36px"
-            _focus={{ borderColor: colors.green.soft }}
-            w="160px"
+          </div>
+        </div>
+        <div className="irr-flex irr-gap-2 irr-flex-center">
+          <select
+            className="irr-select"
             value={filterAction}
             onChange={(e) => { setFilterAction(e.target.value); setPage(0); }}
-            placeholder="Todas las acciones"
+            style={{ width: 160, height: 36, fontSize: 12, padding: "8px 36px 8px 12px" }}
           >
+            <option value="">Todas las acciones</option>
             {Object.entries(actionLabels).map(([key, label]) => (
-              <option key={key} value={key} style={{ background: colors.bg.secondary, color: colors.text.primary }}>
-                {label}
-              </option>
+              <option key={key} value={key}>{label}</option>
             ))}
-          </Select>
-          <Button
-            size="sm"
-            h="36px"
-            w="36px"
-            p={0}
-            className="btn-press"
-            bg="transparent"
-            color={colors.text.secondary}
-            border="1px solid"
-            borderColor={colors.border.default}
-            borderRadius="10px"
-            _hover={{ borderColor: colors.green.soft, color: colors.green.soft }}
+          </select>
+          <button
+            className="irr-btn irr-btn-outline irr-btn-icon"
             onClick={fetchLogs}
-            isLoading={loading}
+            disabled={loading}
+            style={{ width: 36, height: 36 }}
+            title="Refrescar"
           >
-            <Icon as={FaSync} boxSize={3} />
-          </Button>
-        </Flex>
-      </Flex>
+            {loading ? <span className="irr-spinner" /> : <FaSync style={{ fontSize: 12 }} />}
+          </button>
+        </div>
+      </div>
 
       {/* Log list */}
-      <Box sx={glassCard} overflow="hidden" className="glass-card">
+      <div className="irr-glass" style={{ overflow: "hidden" }}>
         {loading && logs.length === 0 ? (
-          <Flex justify="center" align="center" py={14} direction="column" gap={3}>
-            <Spinner color={colors.green.glow} size="lg" thickness="3px" speed="0.8s" />
-            <Text fontSize="xs" color={colors.text.muted}>Cargando historial...</Text>
-          </Flex>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "56px 20px", gap: 12 }}>
+            <span className="irr-spinner" style={{ width: 28, height: 28, borderWidth: 3 }} />
+            <span className="irr-text-xs irr-text-muted">Cargando historial...</span>
+          </div>
         ) : paginatedLogs.length === 0 ? (
-          <Flex direction="column" align="center" py={14}>
-            <Box
-              w="60px"
-              h="60px"
-              borderRadius="18px"
-              bg="rgba(100, 116, 139, 0.06)"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              mb={4}
-            >
-              <Icon as={FaInbox} color={colors.text.dim} boxSize={6} />
-            </Box>
-            <Text color={colors.text.muted} fontSize="sm" fontWeight="500">Sin registros</Text>
-            <Text color={colors.text.dim} fontSize="xs" mt={1}>
+          <div className="irr-empty">
+            <div className="irr-empty-icon"><FaInbox /></div>
+            <div className="irr-text-sm irr-text-muted irr-font-medium">Sin registros</div>
+            <div className="irr-text-xs irr-text-dim irr-mt-1">
               {filterAction ? "Prueba cambiando el filtro" : "Los eventos de riego aparecerán aquí"}
-            </Text>
-          </Flex>
+            </div>
+          </div>
         ) : (
-          <Box>
-            {paginatedLogs.map((log, idx) => {
-              const badge = actionBadgeColors[log.action] || { bg: "rgba(100,116,139,0.1)", color: colors.text.muted };
-              const isLast = idx === paginatedLogs.length - 1;
+          <div>
+            {paginatedLogs.map((log) => {
+              const badge = actionBadgeColors[log.action] || { bg: "rgba(100,116,139,0.1)", color: "#64748b" };
 
               return (
-                <Flex
-                  key={log.id}
-                  px={{ base: 4, md: 5 }}
-                  py={3.5}
-                  align="center"
-                  gap={{ base: 3, md: 4 }}
-                  borderBottom={isLast ? "none" : "1px solid"}
-                  borderColor={colors.border.subtle}
-                  transition="background 0.2s ease"
-                  _hover={{ bg: "rgba(16, 52, 44, 0.25)" }}
-                  flexWrap={{ base: "wrap", md: "nowrap" }}
-                >
+                <div key={log.id} className="irr-log-row">
                   {/* Color dot */}
-                  <Box
-                    w="8px"
-                    h="8px"
-                    borderRadius="full"
-                    bg={badge.color}
-                    flexShrink={0}
-                    boxShadow={`0 0 6px ${badge.color}30`}
+                  <span
+                    className="irr-dot"
+                    style={{ background: badge.color, boxShadow: `0 0 6px ${badge.color}30` }}
                   />
 
                   {/* Time ago */}
-                  <Text fontSize="xs" color={colors.text.dim} fontWeight="500" minW={{ base: "auto", md: "80px" }} flexShrink={0}>
+                  <span className="irr-text-xs irr-text-dim irr-font-medium" style={{ minWidth: 80, flexShrink: 0 }}>
                     {timeAgo(log.executed_at)}
-                  </Text>
+                  </span>
 
                   {/* GPIO */}
-                  <Text fontSize="sm" color={colors.text.primary} fontWeight="500" minW={{ base: "auto", md: "90px" }} flexShrink={0}>
+                  <span className="irr-text-sm irr-text-white irr-font-medium" style={{ minWidth: 90, flexShrink: 0 }}>
                     {log.gpio_label || `Salida ${log.gpio_id}`}
-                  </Text>
+                  </span>
 
                   {/* Action badge */}
-                  <Badge
-                    px={2.5}
-                    py={1}
-                    borderRadius="full"
-                    fontSize="10px"
-                    fontWeight="700"
-                    bg={badge.bg}
-                    color={badge.color}
-                    letterSpacing="0.04em"
-                    textTransform="uppercase"
-                    flexShrink={0}
+                  <span
+                    className="irr-badge"
+                    style={{ background: badge.bg, color: badge.color, flexShrink: 0 }}
                   >
                     {actionLabels[log.action] || log.action}
-                  </Badge>
+                  </span>
 
                   {/* Message */}
-                  <Text fontSize="xs" color={colors.text.muted} flex={1} noOfLines={1} display={{ base: "none", lg: "block" }}>
+                  <span className="irr-text-xs irr-text-muted" style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {log.message || ""}
-                  </Text>
+                  </span>
 
                   {/* Cancelled by */}
                   {log.cancelled_by && (
-                    <Text fontSize="xs" color={colors.status.off} fontWeight="500" flexShrink={0}>
+                    <span className="irr-text-xs irr-text-red irr-font-medium" style={{ flexShrink: 0 }}>
                       {log.cancelled_by}
-                    </Text>
+                    </span>
                   )}
-                </Flex>
+                </div>
               );
             })}
-          </Box>
+          </div>
         )}
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <Flex
-            justify="center"
-            align="center"
-            gap={3}
-            py={3}
-            borderTop="1px solid"
-            borderColor={colors.border.subtle}
-          >
-            <Button
-              size="xs"
-              variant="ghost"
-              color={colors.text.muted}
-              isDisabled={page === 0}
+          <div className="irr-pagination">
+            <button
+              className="irr-page-btn"
+              disabled={page === 0}
               onClick={() => setPage(page - 1)}
-              _hover={{ color: colors.green.soft }}
-              borderRadius="8px"
             >
-              <Icon as={FaChevronLeft} boxSize={2.5} />
-            </Button>
-            <Flex gap={0.5}>
-              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                const pageNum = page < 3 ? i : Math.min(page - 2 + i, totalPages - 1);
-                if (i > 0 && pageNum === parseInt(Array.from({ length: i }, (_, j) => page < 3 ? j : Math.min(page - 2 + j, totalPages - 1)).pop())) return null;
-                return (
-                  <Button
-                    key={pageNum}
-                    size="xs"
-                    variant="ghost"
-                    w="28px"
-                    h="28px"
-                    borderRadius="8px"
-                    color={pageNum === page ? colors.green.glow : colors.text.dim}
-                    bg={pageNum === page ? "rgba(0, 230, 138, 0.1)" : "transparent"}
-                    fontWeight={pageNum === page ? "700" : "500"}
-                    fontSize="xs"
-                    onClick={() => setPage(pageNum)}
-                    _hover={{ bg: "rgba(0, 230, 138, 0.06)" }}
-                  >
-                    {pageNum + 1}
-                  </Button>
-                );
-              })}
-            </Flex>
-            <Button
-              size="xs"
-              variant="ghost"
-              color={colors.text.muted}
-              isDisabled={page >= totalPages - 1}
+              <FaChevronLeft style={{ fontSize: 10 }} />
+            </button>
+            {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 7) {
+                pageNum = i;
+              } else if (page < 4) {
+                pageNum = i;
+              } else if (page > totalPages - 5) {
+                pageNum = totalPages - 7 + i;
+              } else {
+                pageNum = page - 3 + i;
+              }
+              return (
+                <button
+                  key={pageNum}
+                  className={`irr-page-btn${pageNum === page ? " active" : ""}`}
+                  onClick={() => setPage(pageNum)}
+                >
+                  {pageNum + 1}
+                </button>
+              );
+            })}
+            <button
+              className="irr-page-btn"
+              disabled={page >= totalPages - 1}
               onClick={() => setPage(page + 1)}
-              _hover={{ color: colors.green.soft }}
-              borderRadius="8px"
             >
-              <Icon as={FaChevronRight} boxSize={2.5} />
-            </Button>
-          </Flex>
+              <FaChevronRight style={{ fontSize: 10 }} />
+            </button>
+          </div>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

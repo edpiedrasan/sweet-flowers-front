@@ -1,30 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Select,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Flex,
-  Box,
-  Text,
-  Switch,
-  Icon,
-} from "@chakra-ui/react";
-import { FaTint, FaClock, FaLeaf } from "react-icons/fa";
-import { colors, gradients } from "../theme/irrigationTheme";
+import { FaTint, FaClock, FaLeaf, FaTimes } from "react-icons/fa";
 
 const ScheduleForm = ({ isOpen, onClose, onSave, schedule, gpioId, gpioLabel, gpioOptions }) => {
   const [form, setForm] = useState({
@@ -61,6 +36,8 @@ const ScheduleForm = ({ isOpen, onClose, onSave, schedule, gpioId, gpioLabel, gp
     }
   }, [schedule, gpioId, gpioLabel, isOpen]);
 
+  if (!isOpen) return null;
+
   const handleTimeChange = (e) => {
     const [h, m] = e.target.value.split(":").map(Number);
     setForm({ ...form, time_hour: h || 0, time_minute: m || 0 });
@@ -79,222 +56,115 @@ const ScheduleForm = ({ isOpen, onClose, onSave, schedule, gpioId, gpioLabel, gp
     onClose();
   };
 
-  const inputStyle = {
-    bg: colors.bg.input,
-    border: "1px solid",
-    borderColor: colors.border.default,
-    borderRadius: "12px",
-    color: colors.text.primary,
-    fontSize: "lg",
-    fontWeight: "600",
-    h: "48px",
-    _focus: { borderColor: colors.green.soft, boxShadow: `0 0 0 1px ${colors.green.deep}` },
-    _hover: { borderColor: colors.border.glow },
-  };
-
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered size="md" motionPreset="slideInBottom">
-      <ModalOverlay bg={colors.bg.overlay} backdropFilter="blur(16px)" />
-      <ModalContent
-        bg={colors.bg.secondary}
-        borderRadius="24px"
-        border="1px solid"
-        borderColor={colors.border.default}
-        overflow="hidden"
-        mx={4}
-        boxShadow="0 32px 64px rgba(0,0,0,0.5)"
-      >
-        <Box h="3px" bg={gradients.header} />
+    <div className="irr-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="irr-modal">
+        <div className="irr-modal-accent" />
 
-        <ModalHeader pt={6} pb={2} px={6}>
-          <Flex align="center" gap={3}>
-            <Box
-              w="44px"
-              h="44px"
-              borderRadius="14px"
-              bg="rgba(0, 230, 138, 0.1)"
-              border="1px solid rgba(0, 230, 138, 0.15)"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Icon as={FaLeaf} color={colors.green.glow} boxSize={4} />
-            </Box>
-            <Box>
-              <Text fontSize="lg" fontWeight="700" color={colors.text.primary}>
-                {schedule ? "Editar Horario" : "Nuevo Horario"}
-              </Text>
-              <Text fontSize="xs" color={colors.text.muted} fontWeight="400">
-                Configuración de riego automático
-              </Text>
-            </Box>
-          </Flex>
-        </ModalHeader>
-        <ModalCloseButton color={colors.text.muted} top={5} right={5} _hover={{ color: colors.text.primary }} />
+        {/* Header */}
+        <div className="irr-modal-header" style={{ position: "relative" }}>
+          <div className="irr-icon-box irr-icon-box-green" style={{ width: 44, height: 44, borderRadius: 14, border: "1px solid rgba(0,230,138,0.15)" }}>
+            <FaLeaf />
+          </div>
+          <div>
+            <div className="irr-font-bold irr-text-white" style={{ fontSize: 18 }}>
+              {schedule ? "Editar Horario" : "Nuevo Horario"}
+            </div>
+            <div className="irr-text-xs irr-text-muted irr-font-medium">
+              Configuración de riego automático
+            </div>
+          </div>
+          <button className="irr-modal-close" onClick={onClose}><FaTimes /></button>
+        </div>
 
-        <ModalBody py={5} px={6}>
-          {/* GPIO selector - visible when adding new + gpioOptions available */}
+        {/* Body */}
+        <div className="irr-modal-body">
+          {/* GPIO selector (new schedule only) */}
           {!schedule && gpioOptions && gpioOptions.length > 0 && (
-            <FormControl mb={5}>
-              <FormLabel fontSize="xs" color={colors.text.secondary} fontWeight="600" letterSpacing="0.06em" textTransform="uppercase" mb={2}>
-                Salida
-              </FormLabel>
-              <Select
-                value={form.gpio_id}
-                onChange={handleGpioChange}
-                {...inputStyle}
-                fontSize="sm"
-                icon={<FaTint />}
-                iconColor={colors.green.soft}
-              >
+            <div className="irr-mb-4">
+              <label className="irr-label" style={{ display: "block", marginBottom: 8 }}>Salida</label>
+              <select className="irr-select" value={form.gpio_id} onChange={handleGpioChange}>
                 {gpioOptions.map((g) => (
-                  <option key={g[0]} value={g[0]} style={{ background: colors.bg.secondary, color: colors.text.primary }}>
-                    Salida {g[0]} — {g[1]}
-                  </option>
+                  <option key={g[0]} value={g[0]}>Salida {g[0]} — {g[1]}</option>
                 ))}
-              </Select>
-            </FormControl>
+              </select>
+            </div>
           )}
 
+          {/* Display current GPIO when editing */}
           {schedule && (
-            <Box
-              mb={5}
-              bg={colors.bg.input}
-              border="1px solid"
-              borderColor={colors.border.subtle}
-              borderRadius="12px"
-              px={4}
-              py={3}
-            >
-              <Flex align="center" gap={2}>
-                <Icon as={FaTint} color={colors.green.soft} boxSize={3} />
-                <Text fontSize="sm" color={colors.text.primary} fontWeight="600">
-                  {form.gpio_label}
-                </Text>
-                <Text fontSize="xs" color={colors.text.muted}>— Salida {form.gpio_id}</Text>
-              </Flex>
-            </Box>
+            <div className="irr-inner-card irr-mb-4">
+              <div className="irr-flex irr-flex-center irr-gap-2">
+                <FaTint style={{ color: "#34d399", fontSize: 12 }} />
+                <span className="irr-text-sm irr-font-semibold irr-text-white">{form.gpio_label}</span>
+                <span className="irr-text-xs irr-text-muted">— Salida {form.gpio_id}</span>
+              </div>
+            </div>
           )}
 
           {/* Time */}
-          <FormControl mb={5}>
-            <FormLabel fontSize="xs" color={colors.text.secondary} fontWeight="600" letterSpacing="0.06em" textTransform="uppercase" mb={2}>
-              Hora de riego
-            </FormLabel>
-            <Flex align="center" gap={3}>
-              <Box
-                w="40px"
-                h="40px"
-                borderRadius="10px"
-                bg="rgba(52, 211, 153, 0.08)"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                flexShrink={0}
-              >
-                <Icon as={FaClock} color={colors.green.soft} boxSize={4} />
-              </Box>
-              <Input type="time" value={timeValue} onChange={handleTimeChange} {...inputStyle} flex={1} />
-            </Flex>
-          </FormControl>
+          <div className="irr-mb-4">
+            <label className="irr-label" style={{ display: "block", marginBottom: 8 }}>Hora de riego</label>
+            <div className="irr-flex irr-flex-center irr-gap-3">
+              <div className="irr-icon-box irr-icon-box-green" style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(52,211,153,0.08)" }}>
+                <FaClock style={{ fontSize: 14 }} />
+              </div>
+              <input type="time" className="irr-input" value={timeValue} onChange={handleTimeChange} style={{ flex: 1 }} />
+            </div>
+          </div>
 
           {/* Duration */}
-          <FormControl mb={5}>
-            <FormLabel fontSize="xs" color={colors.text.secondary} fontWeight="600" letterSpacing="0.06em" textTransform="uppercase" mb={2}>
-              Duración (minutos)
-            </FormLabel>
-            <NumberInput
+          <div className="irr-mb-4">
+            <label className="irr-label" style={{ display: "block", marginBottom: 8 }}>Duración (minutos)</label>
+            <input
+              type="number"
+              className="irr-input"
+              min="1"
+              max="120"
               value={form.duration_minutes}
-              min={1}
-              max={120}
-              onChange={(v) => setForm({ ...form, duration_minutes: parseInt(v) || 1 })}
-            >
-              <NumberInputField {...inputStyle} />
-              <NumberInputStepper>
-                <NumberIncrementStepper color={colors.text.muted} borderColor={colors.border.default} />
-                <NumberDecrementStepper color={colors.text.muted} borderColor={colors.border.default} />
-              </NumberInputStepper>
-            </NumberInput>
-          </FormControl>
+              onChange={(e) => setForm({ ...form, duration_minutes: parseInt(e.target.value) || 1 })}
+            />
+          </div>
 
           {/* Info banner */}
-          <Box
-            bg="rgba(0, 230, 138, 0.05)"
-            border="1px solid rgba(0, 230, 138, 0.1)"
-            borderRadius="12px"
-            px={4}
-            py={3}
-            mb={5}
-          >
-            <Flex align="center" gap={2}>
-              <Box w="6px" h="6px" borderRadius="full" bg={colors.green.soft} flexShrink={0} />
-              <Text fontSize="xs" color={colors.green.soft}>
-                Se ejecutará todos los días. Recibirás una notificación en Telegram 5 minutos antes con opción de cancelar.
-              </Text>
-            </Flex>
-          </Box>
+          <div className="irr-info irr-mb-4">
+            <span className="irr-dot" />
+            <span className="irr-text-xs irr-text-green">
+              Se ejecutará todos los días. Recibirás una notificación en Telegram 5 minutos antes con opción de cancelar.
+            </span>
+          </div>
 
           {/* Enabled toggle */}
-          <Flex
-            justify="space-between"
-            align="center"
-            bg={colors.bg.input}
-            border="1px solid"
-            borderColor={colors.border.default}
-            borderRadius="12px"
-            px={4}
-            py={3}
-            transition="all 0.2s"
-            _hover={{ borderColor: colors.border.glow }}
-          >
-            <Box>
-              <Text fontSize="sm" color={colors.text.primary} fontWeight="500">Habilitado</Text>
-              <Text fontSize="xs" color={colors.text.muted}>Activar este horario</Text>
-            </Box>
-            <Switch
-              isChecked={form.enabled === 1}
-              onChange={(e) => setForm({ ...form, enabled: e.target.checked ? 1 : 0 })}
-              colorScheme="green"
-              size="lg"
-            />
-          </Flex>
-        </ModalBody>
+          <div className="irr-inner-card">
+            <div className="irr-flex irr-flex-between irr-flex-center">
+              <div>
+                <div className="irr-text-sm irr-font-medium irr-text-white">Habilitado</div>
+                <div className="irr-text-xs irr-text-muted">Activar este horario</div>
+              </div>
+              <label className="irr-switch">
+                <input
+                  type="checkbox"
+                  checked={form.enabled === 1}
+                  onChange={(e) => setForm({ ...form, enabled: e.target.checked ? 1 : 0 })}
+                />
+                <span className="irr-switch-track" />
+                <span className="irr-switch-thumb" />
+              </label>
+            </div>
+          </div>
+        </div>
 
-        <ModalFooter px={6} pb={6} pt={2} gap={3}>
-          <Button
-            flex={1}
-            h="46px"
-            className="btn-press"
-            bg="transparent"
-            color={colors.text.secondary}
-            border="1px solid"
-            borderColor={colors.border.default}
-            borderRadius="12px"
-            fontWeight="500"
-            fontSize="sm"
-            _hover={{ borderColor: colors.text.muted, color: colors.text.primary }}
-            onClick={onClose}
-          >
+        {/* Footer */}
+        <div className="irr-modal-footer">
+          <button className="irr-btn irr-btn-outline" style={{ flex: 1, height: 46, fontSize: 14 }} onClick={onClose}>
             Cancelar
-          </Button>
-          <Button
-            flex={1}
-            h="46px"
-            className="btn-press"
-            bg={gradients.greenButton}
-            color="white"
-            borderRadius="12px"
-            fontWeight="700"
-            fontSize="sm"
-            border="none"
-            _hover={{ bg: gradients.greenButtonHover, boxShadow: "0 8px 24px rgba(0, 204, 122, 0.25)" }}
-            onClick={handleSave}
-          >
+          </button>
+          <button className="irr-btn irr-btn-green" style={{ flex: 1, height: 46, fontSize: 14, fontWeight: 700 }} onClick={handleSave}>
             {schedule ? "Guardar cambios" : "Crear horario"}
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 
