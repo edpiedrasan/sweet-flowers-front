@@ -104,9 +104,11 @@ export const IndexSmartAutomation = () => {
   const fetchGpioStatus = useCallback(async (silent = false) => {
     try {
       const res = await getGpioStatus();
+      if (!silent) console.log("DEBUG getGpioStatus:", res);
       if (res && res.data && res.data.payload) {
         setGpioStatus(res.data.payload);
       } else {
+        if (!silent) console.warn("DEBUG GPIO sin payload, fallback directo");
         const response = await fetch("https://polemic-quetzal-1242.dataplicity.io/gpio");
         if (response.ok) setGpioStatus(await response.json());
       }
@@ -124,8 +126,11 @@ export const IndexSmartAutomation = () => {
   const fetchSchedules = useCallback(async () => {
     try {
       const res = await getSchedules();
+      console.log("DEBUG getSchedules:", res);
       if (res && res.data && res.data.payload) {
         setSchedules(res.data.payload);
+      } else {
+        console.warn("DEBUG schedules sin payload:", res?.status, res?.data, res?.message);
       }
     } catch (error) {
       console.error("Error fetching schedules:", error);

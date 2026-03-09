@@ -38,8 +38,11 @@ const IrrigationLogs = () => {
     setLoading(true);
     try {
       const res = await getLogs(100, 0);
+      console.log("DEBUG getLogs response:", res);
       if (res && res.data && res.data.payload) {
         setLogs(res.data.payload);
+      } else {
+        console.warn("DEBUG getLogs sin payload:", res?.status, res?.data, res?.message);
       }
     } catch (error) {
       console.error("Error fetching logs:", error);
