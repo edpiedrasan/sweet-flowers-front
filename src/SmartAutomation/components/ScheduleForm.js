@@ -12,29 +12,35 @@ const ScheduleForm = ({ isOpen, onClose, onSave, schedule, gpioId, gpioLabel, gp
     enabled: 1,
   });
 
+  const [prevOpen, setPrevOpen] = useState(false);
+
   useEffect(() => {
-    if (schedule) {
-      setForm({
-        gpio_id: schedule.gpio_id,
-        gpio_label: schedule.gpio_label,
-        time_hour: schedule.time_hour,
-        time_minute: schedule.time_minute,
-        duration_minutes: schedule.duration_minutes,
-        active_days: schedule.active_days,
-        enabled: schedule.enabled,
-      });
-    } else {
-      setForm({
-        gpio_id: gpioId || 0,
-        gpio_label: gpioLabel || "",
-        time_hour: 6,
-        time_minute: 0,
-        duration_minutes: 5,
-        active_days: "0,1,2,3,4,5,6",
-        enabled: 1,
-      });
+    // Only reset form when modal OPENS (transition from closed to open)
+    if (isOpen && !prevOpen) {
+      if (schedule) {
+        setForm({
+          gpio_id: schedule.gpio_id,
+          gpio_label: schedule.gpio_label,
+          time_hour: schedule.time_hour,
+          time_minute: schedule.time_minute,
+          duration_minutes: schedule.duration_minutes,
+          active_days: schedule.active_days,
+          enabled: schedule.enabled,
+        });
+      } else {
+        setForm({
+          gpio_id: gpioId || 0,
+          gpio_label: gpioLabel || "",
+          time_hour: 6,
+          time_minute: 0,
+          duration_minutes: 5,
+          active_days: "0,1,2,3,4,5,6",
+          enabled: 1,
+        });
+      }
     }
-  }, [schedule, gpioId, gpioLabel, isOpen]);
+    setPrevOpen(isOpen);
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!isOpen) return null;
 
