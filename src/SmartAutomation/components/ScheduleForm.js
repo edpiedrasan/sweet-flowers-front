@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaTint, FaClock, FaLeaf, FaTimes } from "react-icons/fa";
+import { FaTint, FaClock, FaLeaf, FaTimes, FaChevronUp, FaChevronDown } from "react-icons/fa";
 
 const ScheduleForm = ({ isOpen, onClose, onSave, schedule, gpioId, gpioLabel, gpioOptions }) => {
   const [form, setForm] = useState({
@@ -51,7 +51,10 @@ const ScheduleForm = ({ isOpen, onClose, onSave, schedule, gpioId, gpioLabel, gp
 
   const timeValue = `${String(form.time_hour).padStart(2, "0")}:${String(form.time_minute).padStart(2, "0")}`;
 
+  const isValid = form.duration_minutes >= 1 && form.duration_minutes <= 120 && form.gpio_id > 0;
+
   const handleSave = () => {
+    if (!isValid) return;
     onSave(form);
     onClose();
   };
@@ -116,14 +119,55 @@ const ScheduleForm = ({ isOpen, onClose, onSave, schedule, gpioId, gpioLabel, gp
           {/* Duration */}
           <div className="irr-mb-4">
             <label className="irr-label" style={{ display: "block", marginBottom: 8 }}>Duración (minutos)</label>
-            <input
-              type="number"
-              className="irr-input"
-              min="1"
-              max="120"
-              value={form.duration_minutes}
-              onChange={(e) => setForm({ ...form, duration_minutes: parseInt(e.target.value) || 1 })}
-            />
+            <div className="irr-flex irr-flex-center irr-gap-2">
+              <button
+                type="button"
+                className="irr-btn irr-btn-outline irr-btn-icon"
+                style={{ width: 44, height: 44, borderRadius: 12, fontSize: 14 }}
+                onClick={() => setForm({ ...form, duration_minutes: Math.max(1, form.duration_minutes - 1) })}
+                disabled={form.duration_minutes <= 1}
+              >
+                <FaChevronDown />
+              </button>
+              <div
+                className="irr-input"
+                style={{
+                  flex: 1,
+                  textAlign: "center",
+                  fontSize: 22,
+                  fontWeight: 800,
+                  padding: "10px 14px",
+                  letterSpacing: "0.02em",
+                  cursor: "default",
+                  userSelect: "none",
+                }}
+              >
+                {form.duration_minutes} <span style={{ fontSize: 12, fontWeight: 500, color: "#64748b" }}>min</span>
+              </div>
+              <button
+                type="button"
+                className="irr-btn irr-btn-outline irr-btn-icon"
+                style={{ width: 44, height: 44, borderRadius: 12, fontSize: 14 }}
+                onClick={() => setForm({ ...form, duration_minutes: Math.min(120, form.duration_minutes + 1) })}
+                disabled={form.duration_minutes >= 120}
+              >
+                <FaChevronUp />
+              </button>
+            </div>
+            {/* Quick presets */}
+            <div className="irr-flex irr-gap-2" style={{ marginTop: 8 }}>
+              {[3, 5, 10, 15, 30].map((min) => (
+                <button
+                  key={min}
+                  type="button"
+                  className={`irr-btn irr-btn-sm ${form.duration_minutes === min ? "irr-btn-green" : "irr-btn-outline"}`}
+                  style={{ flex: 1, padding: "6px 0", fontSize: 11 }}
+                  onClick={() => setForm({ ...form, duration_minutes: min })}
+                >
+                  {min} min
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Info banner */}
@@ -159,7 +203,7 @@ const ScheduleForm = ({ isOpen, onClose, onSave, schedule, gpioId, gpioLabel, gp
           <button className="irr-btn irr-btn-outline" style={{ flex: 1, height: 46, fontSize: 14 }} onClick={onClose}>
             Cancelar
           </button>
-          <button className="irr-btn irr-btn-green" style={{ flex: 1, height: 46, fontSize: 14, fontWeight: 700 }} onClick={handleSave}>
+          <button className="irr-btn irr-btn-green" style={{ flex: 1, height: 46, fontSize: 14, fontWeight: 700 }} onClick={handleSave} disabled={!isValid}>
             {schedule ? "Guardar cambios" : "Crear horario"}
           </button>
         </div>
