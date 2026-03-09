@@ -7,7 +7,7 @@ const headers = () => ({
   Platform: "SS",
 });
 
-export const getSchedules = () => method.get(urls.IRRIGATION.getSchedules)();
+export const getSchedules = () => method.post(urls.IRRIGATION.getSchedules, {})();
 
 export const createSchedule = (props) => method.post(urls.IRRIGATION.createSchedule, props)();
 
@@ -18,9 +18,9 @@ export const deleteSchedule = (id) => method.del(urls.IRRIGATION.deleteSchedule(
 export const toggleSchedule = (id, enabled) => method.put(urls.IRRIGATION.toggleSchedule(id), { enabled })();
 
 export const getLogs = (limit = 50, offset = 0) =>
-  method.get(`${urls.IRRIGATION.getLogs}?limit=${limit}&offset=${offset}`)();
+  method.post(urls.IRRIGATION.getLogs, { limit, offset })();
 
-export const getGpioStatus = () => method.get(urls.IRRIGATION.getGpioStatus)();
+export const getGpioStatus = () => method.post(urls.IRRIGATION.getGpioStatus, {})();
 
 export const toggleGpio = (id, turn, gpio_label) =>
   method.post(urls.IRRIGATION.toggleGpio(id), { turn, gpio_label })();

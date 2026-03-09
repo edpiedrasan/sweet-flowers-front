@@ -27,13 +27,13 @@ export default {
   },
 
   IRRIGATION: {
-    getSchedules: `${urlBase}/irrigation/schedules`,
-    getScheduleById: (id) => `${urlBase}/irrigation/schedules/${id}`,
+    getSchedules: `${urlBase}/irrigation/schedules/list`,
+    getScheduleById: (id) => `${urlBase}/irrigation/schedules/get/${id}`,
     createSchedule: `${urlBase}/irrigation/schedules`,
     updateSchedule: (id) => `${urlBase}/irrigation/schedules/${id}`,
     deleteSchedule: (id) => `${urlBase}/irrigation/schedules/${id}`,
     toggleSchedule: (id) => `${urlBase}/irrigation/schedules/${id}/toggle`,
-    getLogs: `${urlBase}/irrigation/logs`,
+    getLogs: `${urlBase}/irrigation/logs/list`,
     getGpioStatus: `${urlBase}/irrigation/gpio-status`,
     toggleGpio: (id) => `${urlBase}/irrigation/gpio-toggle/${id}`,
   },
